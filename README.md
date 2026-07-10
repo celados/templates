@@ -1,21 +1,35 @@
-# TanStack Start + shadcn/ui
+# Calque Clonesite Template
 
-This is a template for a new TanStack Start project with React, TypeScript, and shadcn/ui.
+An independent Git template for projects created with Vite+ and tailored to the
+Calque clonesite workflow.
 
-## Adding components
+The template starts from shadcn/ui's `b0` TanStack Start preset, uses Base UI,
+Tailwind CSS v4, React 19, TypeScript, Bun, and Vite+.
 
-To add components to your app, run the following command:
+## Create a project
+
+The default branch is the only template source. The template does not publish or
+maintain versioned releases.
 
 ```bash
-npx shadcn@latest add button
+vp create github:celados/template-calque-clonesite \
+  --package-manager bun \
+  --no-agent \
+  --no-editor \
+  --no-hooks \
+  --git \
+  --no-interactive \
+  -- <project-directory>
 ```
 
-This will place the ui components in the `components` directory.
+## Develop the template
 
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
+```bash
+vp install
+vp dev --port 3000
+vp check
+vp build
 ```
+
+The AI-native template contract and its agent guidance are intentionally outside
+this baseline and will be designed separately.
