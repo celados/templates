@@ -1,4 +1,4 @@
-# Calque Clonesite Template
+# TanStack Start Calque Clonesite Template
 
 An independent Git template for projects created with Vite+ and tailored to the
 Calque clonesite workflow.
@@ -12,7 +12,7 @@ The default branch is the only template source. The template does not publish or
 maintain versioned releases.
 
 ```bash
-vp create github:celados/template-calque-clonesite \
+vp create github:celados/template-tanstack-start-calque-clonesite \
   --package-manager bun \
   --no-agent \
   --no-editor \
