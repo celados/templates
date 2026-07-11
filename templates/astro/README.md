@@ -16,8 +16,8 @@ maintain versioned releases.
 vp create github:celados/templates/templates/astro \
   --package-manager bun \
   --no-agent \
-  --no-editor \
-  --no-hooks \
+  --editor vscode \
+  --hooks \
   --git \
   --no-interactive \
   -- <project-directory>
@@ -36,6 +36,20 @@ Astro owns its runtime and build lifecycle, so use `vp run` for the scripts
 instead of invoking `vp dev` or `vp build` directly. Vite+ owns dependency
 management, formatting, linting, and TypeScript checks; `astro check` covers
 framework component diagnostics.
+
+## Cloudflare Workers
+
+This template keeps Astro's default static output and deploys `dist/` as
+Cloudflare Worker static assets. Static Astro sites do not need an adapter; add
+the official `@astrojs/cloudflare` adapter only when the project adopts
+on-demand rendering, server islands, actions, or sessions. See Astro's
+[Cloudflare deployment guide](https://docs.astro.build/en/guides/deploy/cloudflare/)
+and [Cloudflare adapter guide](https://docs.astro.build/en/guides/integrations-guide/cloudflare/).
+
+```bash
+vp run preview:cf
+vp run deploy
+```
 
 ## Adding components
 

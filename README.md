@@ -17,8 +17,8 @@ Create an Astro project:
 vp create github:celados/templates/templates/astro \
   --package-manager bun \
   --no-agent \
-  --no-editor \
-  --no-hooks \
+  --editor vscode \
+  --hooks \
   --git \
   --no-interactive \
   -- <project-directory>
@@ -30,8 +30,8 @@ Create a TanStack Start project:
 vp create github:celados/templates/templates/tanstack-start \
   --package-manager bun \
   --no-agent \
-  --no-editor \
-  --no-hooks \
+  --editor vscode \
+  --hooks \
   --git \
   --no-interactive \
   -- <project-directory>
@@ -54,8 +54,9 @@ bun run shared:check
 Edit the source under `shared/`, run `shared:sync`, and commit the source and
 materialized copies together. Do not edit a mapped copy directly.
 
-`shared/agent/` is reserved for the Agent Native context, skills, workflow
-contracts, and acceptance gates that will be designed across both templates.
+`shared/agent/` and `shared/editor/` hold the common agent and VS Code
+contracts. The Agent Native context, skills, workflow contracts, and acceptance
+gates will continue to evolve in this shared layer.
 
 ## Validate
 

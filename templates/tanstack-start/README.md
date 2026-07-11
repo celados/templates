@@ -15,8 +15,8 @@ maintain versioned releases.
 vp create github:celados/templates/templates/tanstack-start \
   --package-manager bun \
   --no-agent \
-  --no-editor \
-  --no-hooks \
+  --editor vscode \
+  --hooks \
   --git \
   --no-interactive \
   -- <project-directory>

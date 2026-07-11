@@ -1,4 +1,6 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+#!/usr/bin/env bun
+
+import { chmod, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 type Mapping = {
@@ -9,6 +11,24 @@ type Mapping = {
 const root = resolve(import.meta.dir, "..");
 const checkOnly = process.argv.includes("--check");
 const mappings = [
+  {
+    source: "shared/agent/AGENTS.md",
+    targets: ["templates/astro/AGENTS.md", "templates/tanstack-start/AGENTS.md"],
+  },
+  {
+    source: "shared/editor/vscode/extensions.json",
+    targets: [
+      "templates/astro/.vscode/extensions.json",
+      "templates/tanstack-start/.vscode/extensions.json",
+    ],
+  },
+  {
+    source: "shared/editor/vscode/settings.json",
+    targets: [
+      "templates/astro/.vscode/settings.json",
+      "templates/tanstack-start/.vscode/settings.json",
+    ],
+  },
   {
     source: "shared/github/workflows/ci.yml",
     targets: [
@@ -31,13 +51,18 @@ let hasDrift = false;
 // Remote subdirectory scaffolds must contain regular files; links to repository-level
 // shared content would be broken once only one template directory is extracted.
 for (const mapping of mappings) {
-  const source = await readFile(resolve(root, mapping.source));
+  const sourcePath = resolve(root, mapping.source);
+  const source = await readFile(sourcePath);
+  const sourceMode = (await stat(sourcePath)).mode & 0o777;
 
   for (const target of mapping.targets) {
     const targetPath = resolve(root, target);
     const existing = await readFile(targetPath).catch(() => null);
+    const existingMode = await stat(targetPath)
+      .then((metadata) => metadata.mode & 0o777)
+      .catch(() => null);
 
-    if (existing?.equals(source)) {
+    if (existing?.equals(source) && existingMode === sourceMode) {
       continue;
     }
 
@@ -49,6 +74,7 @@ for (const mapping of mappings) {
 
     await mkdir(dirname(targetPath), { recursive: true });
     await writeFile(targetPath, source);
+    await chmod(targetPath, sourceMode);
     console.log(`Synced ${target}`);
   }
 }

@@ -7,6 +7,9 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 
 const ROUTER_GEN_PATH = "src/route-tree.gen.ts";
 const config = defineConfig({
+  staged: {
+    "*": "vp check --fix",
+  },
   // TanStack Router regenerates this file with Prettier, so checking it with
   // Oxfmt would create permanent build/check drift.
   lint: { ignorePatterns: [ROUTER_GEN_PATH] },
