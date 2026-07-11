@@ -95,6 +95,11 @@ Change mappings and consumers together.
 - Astro remains static by default and deploys `dist/` as Cloudflare Worker
   static assets. Do not add the Cloudflare adapter until on-demand rendering or
   another Worker runtime feature is actually required.
+- Astro's Keystatic integration uses local filesystem storage for authoring.
+  Production builds set `SKIP_KEYSTATIC=true`, omit the server-only Admin/API
+  routes, and render committed Markdoc content statically. Do not claim a
+  deployed `/keystatic` CMS without moving to a Keystatic-supported Node.js
+  host and GitHub or Cloud storage.
 - TanStack Start uses the Cloudflare Vite plugin for its SSR environment. Do
   not copy that plugin into the static Astro template for symmetry.
 

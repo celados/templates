@@ -6,10 +6,10 @@ repository does not maintain versioned template releases.
 
 ## Templates
 
-| Template       | Source directory           | Runtime                                    |
-| -------------- | -------------------------- | ------------------------------------------ |
-| Astro          | `templates/astro`          | Astro 7, React 19 islands, Tailwind CSS v4 |
-| TanStack Start | `templates/tanstack-start` | TanStack Start, React 19, Tailwind CSS v4  |
+| Template       | Source directory           | Runtime                                               |
+| -------------- | -------------------------- | ----------------------------------------------------- |
+| Astro          | `templates/astro`          | Astro 7, Keystatic, React 19 islands, Tailwind CSS v4 |
+| TanStack Start | `templates/tanstack-start` | TanStack Start, React 19, Tailwind CSS v4             |
 
 Create an Astro project:
 

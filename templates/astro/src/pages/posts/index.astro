@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content'
+
+import Layout from '@/layouts/main.astro'
+
+const posts = await getCollection('posts')
+---
+
+<Layout>
+	<main class="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-8 p-6 py-16">
+		<header class="space-y-2">
+			<a class="text-sm text-muted-foreground hover:text-foreground" href="/">Home</a>
+			<h1 class="text-3xl font-semibold tracking-tight">Posts</h1>
+		</header>
+		<ul class="grid gap-3">
+			{
+				posts.map((post) => (
+					<li>
+						<a
+							class="block rounded-lg border p-4 font-medium transition-colors hover:bg-muted"
+							href={`/posts/${post.id}/`}
+						>
+							{post.data.title}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</main>
+</Layout>
