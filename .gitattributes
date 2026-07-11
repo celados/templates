@@ -1,0 +1,2 @@
+# Wrangler owns this declaration byte-for-byte and currently emits trailing spaces.
+templates/tanstack-start/src/worker-configuration.d.ts -whitespace
