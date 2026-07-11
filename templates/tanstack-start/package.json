@@ -6,10 +6,10 @@
 		"dev": "vp dev --port 3000",
 		"build": "vp build",
 		"preview": "vp preview",
-		"check": "vp check",
+		"check": "vp check && bun run cf-typegen --check",
 		"deploy": "vp build && wrangler deploy",
 		"deploy:temporary": "vp build && wrangler deploy --temporary",
-		"cf-typegen": "wrangler types"
+		"cf-typegen": "wrangler types src/worker-configuration.d.ts"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.6.0",

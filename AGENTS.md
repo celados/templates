@@ -103,9 +103,11 @@ Change mappings and consumers together.
 - Do not commit `node_modules/`, `dist/`, `.astro/`, or `.wrangler/` output.
 - TanStack Router may regenerate `src/route-tree.gen.ts`. Do not hand-format
   it; the template intentionally excludes it from formatter and lint drift.
-- `wrangler types` owns `worker-configuration.d.ts`. Inspect generated changes
-  and commit the file only when the template's binding/type contract requires
-  it; never hand-edit generated declarations.
+- `bun run cf-typegen` owns
+  `templates/tanstack-start/src/worker-configuration.d.ts`. Keep the output
+  under `src/` so the template's TypeScript project includes it. Inspect and
+  commit generated changes when the Worker binding/type contract changes;
+  never hand-edit generated declarations.
 - Shared materialized files are generated but intentionally committed because
   standalone subdirectory extraction requires them.
 

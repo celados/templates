@@ -34,5 +34,15 @@ vp build
 The organization Oxfmt baseline lives in `tooling/oxfmt.ts`; `vite.config.ts`
 adds TanStack Start's generated-route exclusion and Tailwind stylesheet path.
 
+Cloudflare bindings and runtime types are generated inside the TypeScript
+source tree:
+
+```bash
+bun run cf-typegen
+```
+
+This writes `src/worker-configuration.d.ts`. The template's `check` script also
+runs Wrangler in check mode so configuration and generated types cannot drift.
+
 The Agent Native project contract and guidance are maintained as a shared layer
 with the Astro template.
