@@ -44,6 +44,10 @@ const mappings = [
     source: "shared/template/styles/global.css",
     targets: ["templates/astro/src/styles/global.css", "templates/tanstack-start/src/styles.css"],
   },
+  {
+    source: "shared/tooling/oxfmt.ts",
+    targets: ["templates/astro/tooling/oxfmt.ts", "templates/tanstack-start/tooling/oxfmt.ts"],
+  },
 ] satisfies readonly Mapping[];
 
 let hasDrift = false;
