@@ -1,7 +1,7 @@
-# TanStack Start Calque Clonesite Template
+# TanStack Start Template
 
-An independent Git template for projects created with Vite+ and tailored to the
-Calque clonesite workflow.
+An organization-shared TanStack Start template for Agent Native projects
+created with Vite+.
 
 The template starts from shadcn/ui's `b0` TanStack Start preset, uses Base UI,
 Tailwind CSS v4, React 19, TypeScript, Bun, and Vite+.
@@ -12,7 +12,7 @@ The default branch is the only template source. The template does not publish or
 maintain versioned releases.
 
 ```bash
-vp create github:celados/template-calque-clonesite/templates/tanstack-start \
+vp create github:celados/templates/templates/tanstack-start \
   --package-manager bun \
   --no-agent \
   --no-editor \
@@ -31,5 +31,5 @@ vp check
 vp build
 ```
 
-The AI-native template contract and its agent guidance are intentionally outside
-this baseline and will be designed separately.
+The Agent Native project contract and guidance are maintained as a shared layer
+with the Astro template.

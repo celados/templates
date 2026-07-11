@@ -1,7 +1,7 @@
-# Calque Clonesite Templates
+# Agent Native Framework Templates
 
-The single GitHub source for Calque-tailored Clonesite project templates.
-Every template is a complete standalone project materialized from `main`; the
+The organization-wide GitHub source for Agent Native framework templates. Every
+template is a complete standalone project materialized from `main`; the
 repository does not maintain versioned template releases.
 
 ## Templates
@@ -14,7 +14,7 @@ repository does not maintain versioned template releases.
 Create an Astro project:
 
 ```bash
-vp create github:celados/template-calque-clonesite/templates/astro \
+vp create github:celados/templates/templates/astro \
   --package-manager bun \
   --no-agent \
   --no-editor \
@@ -27,7 +27,7 @@ vp create github:celados/template-calque-clonesite/templates/astro \
 Create a TanStack Start project:
 
 ```bash
-vp create github:celados/template-calque-clonesite/templates/tanstack-start \
+vp create github:celados/templates/templates/tanstack-start \
   --package-manager bun \
   --no-agent \
   --no-editor \

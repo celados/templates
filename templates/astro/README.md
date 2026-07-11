@@ -1,7 +1,7 @@
-# Astro Calque Clonesite Template
+# Astro Template
 
-An independent Git template for projects created with Vite+ and tailored to the
-Calque clonesite workflow.
+An organization-shared Astro template for Agent Native projects created with
+Vite+.
 
 The template starts from shadcn/ui's `b0` Astro preset, uses Base UI, Tailwind
 CSS v4, React 19 islands, TypeScript, Bun, and Vite+. Astro 7 keeps the runtime
@@ -13,7 +13,7 @@ The default branch is the only template source. The template does not publish or
 maintain versioned releases.
 
 ```bash
-vp create github:celados/template-calque-clonesite/templates/astro \
+vp create github:celados/templates/templates/astro \
   --package-manager bun \
   --no-agent \
   --no-editor \
@@ -45,5 +45,5 @@ Add shadcn/ui components with Bun:
 bunx --bun shadcn@latest add <component>
 ```
 
-The Agent Native project contract and guidance will be designed as a separate
-layer shared with the TanStack Start template.
+The Agent Native project contract and guidance are maintained as a shared layer
+with the TanStack Start template.

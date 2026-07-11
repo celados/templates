@@ -1,7 +1,7 @@
 ---
 type: Backlog
 title: Deferred work
-description: Known follow-up work for the aggregated Clonesite templates.
+description: Known follow-up work for the shared framework templates.
 ---
 
 # Deferred Work
