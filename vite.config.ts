@@ -1,8 +1,12 @@
 import { defineConfig } from "vite-plus";
 
+// Scratch and trash hold foreign or disposable trees; template sources are checked by
+// their own standalone configs so root policy does not reinterpret framework files.
+const ignoredPaths = [".scratch/**", ".trash/**", "shared/**", "templates/**"];
+
 export default defineConfig({
   lint: {
-    ignorePatterns: ["shared/**", "templates/**"],
+    ignorePatterns: ignoredPaths,
     options: {
       typeAware: true,
       typeCheck: true,
@@ -18,6 +22,6 @@ export default defineConfig({
     },
   },
   fmt: {
-    ignorePatterns: ["shared/**", "templates/**"],
+    ignorePatterns: ignoredPaths,
   },
 });

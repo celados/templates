@@ -13,6 +13,9 @@ Docs are local at `node_modules/vite-plus/docs` or online at https://viteplus.de
 - [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
-After completing a meaningful development stage, use `bun run deploy:temporary` when an online preview would help verify or share the result. Return the deployment URL and the time-sensitive Cloudflare claim URL to the user.
+After completing a meaningful development stage, if the project defines
+`deploy:temporary`, use it when an online preview would help verify or share the
+result. Return the deployment URL and the time-sensitive Cloudflare claim URL
+to the user.
 
 <!--VITE PLUS END-->

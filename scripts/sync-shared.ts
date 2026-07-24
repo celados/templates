@@ -1,9 +1,12 @@
 #!/usr/bin/env bun
 
+import { Buffer } from "node:buffer";
 import { chmod, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 type Mapping = {
+  // Framework overlays keep extracted AGENTS.md files self-contained without copying the shared base.
+  appendTextSources?: readonly string[];
   source: string;
   targets: readonly string[];
 };
@@ -16,6 +19,11 @@ const mappings = [
     targets: ["templates/astro/AGENTS.md", "templates/tanstack-start/AGENTS.md"],
   },
   {
+    appendTextSources: ["shared/agent/ripple-ts.md"],
+    source: "shared/agent/AGENTS.md",
+    targets: ["templates/ripple-ts/AGENTS.md"],
+  },
+  {
     source: "shared/editor/vscode/extensions.json",
     targets: [
       "templates/astro/.vscode/extensions.json",
@@ -26,6 +34,7 @@ const mappings = [
     source: "shared/editor/vscode/settings.json",
     targets: [
       "templates/astro/.vscode/settings.json",
+      "templates/ripple-ts/.vscode/settings.json",
       "templates/tanstack-start/.vscode/settings.json",
     ],
   },
@@ -33,6 +42,7 @@ const mappings = [
     source: "shared/github/workflows/ci.yml",
     targets: [
       "templates/astro/.github/workflows/ci.yml",
+      "templates/ripple-ts/.github/workflows/ci.yml",
       "templates/tanstack-start/.github/workflows/ci.yml",
     ],
   },
@@ -46,7 +56,11 @@ const mappings = [
   },
   {
     source: "shared/tooling/oxfmt.ts",
-    targets: ["templates/astro/tooling/oxfmt.ts", "templates/tanstack-start/tooling/oxfmt.ts"],
+    targets: [
+      "templates/astro/tooling/oxfmt.ts",
+      "templates/ripple-ts/tooling/oxfmt.ts",
+      "templates/tanstack-start/tooling/oxfmt.ts",
+    ],
   },
 ] satisfies readonly Mapping[];
 
@@ -56,7 +70,14 @@ let hasDrift = false;
 // shared content would be broken once only one template directory is extracted.
 for (const mapping of mappings) {
   const sourcePath = resolve(root, mapping.source);
-  const source = await readFile(sourcePath);
+  const sourceParts = await Promise.all(
+    [mapping.source, ...(mapping.appendTextSources ?? [])].map((path) =>
+      readFile(resolve(root, path)),
+    ),
+  );
+  const source = Buffer.concat(
+    sourceParts.flatMap((part, index) => (index === 0 ? [part] : [Buffer.from("\n"), part])),
+  );
   const sourceMode = (await stat(sourcePath)).mode & 0o777;
 
   for (const target of mapping.targets) {

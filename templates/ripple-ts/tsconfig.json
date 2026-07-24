@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"lib": ["ES2024", "DOM", "DOM.Iterable"],
+		"allowImportingTsExtensions": true,
+		"allowArbitraryExtensions": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"jsxImportSource": "ripple",
+		"moduleResolution": "bundler",
+		"noEmit": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"types": ["vite/client"],
+		"plugins": [
+			{
+				"name": "@tsrx/typescript-plugin"
+			}
+		]
+	},
+	"include": ["apps", "packages", "vite.config.ts"]
+}

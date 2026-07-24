@@ -1,0 +1,20 @@
+{
+	"name": "@app/ui",
+	"version": "0.0.0",
+	"files": [
+		"src"
+	],
+	"type": "module",
+	"exports": {
+		".": "./src/index.tsrx"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"pack:check": "bun pm pack --dry-run"
+	},
+	"peerDependencies": {
+		"ripple": "^0.3.110"
+	}
+}

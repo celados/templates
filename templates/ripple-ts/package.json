@@ -1,0 +1,25 @@
+{
+	"name": "template-ripple-ts",
+	"version": "0.0.0",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"type": "module",
+	"scripts": {
+		"dev": "vp dev apps/web --port 3000",
+		"build": "vp build apps/web",
+		"preview": "vp preview apps/web",
+		"check": "vp check && tsrx-tsc --noEmit && bun run pack:check",
+		"pack:check": "bun run --cwd packages/ui pack:check"
+	},
+	"devDependencies": {
+		"@ripple-ts/language-server": "^0.3.110",
+		"@ripple-ts/vite-plugin": "^0.3.110",
+		"@tsrx/typescript-plugin": "^0.3.110",
+		"typescript": "^5.9.3",
+		"vite": "npm:@voidzero-dev/vite-plus-core",
+		"vite-plus": "^0.2.6"
+	}
+}
