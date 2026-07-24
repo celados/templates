@@ -4,6 +4,9 @@
   language server and TSRX TypeScript plugin both require that peer range. Do
   not upgrade TypeScript until both packages declare support for the newer line
   and `bun run check && bun run build` pass.
+- Do not use ordinary JavaScript destructuring in `.tsrx` files. Reactive state
+  uses TSRX-specific destructuring syntax; learn the correct form from the
+  indexes below before inspecting or editing code.
 - Before inspecting or editing application or component code, read
   https://ripple-ts.com/llms.txt in full.
 - When changing TSRX syntax, compiler or language tooling, or behavior shared

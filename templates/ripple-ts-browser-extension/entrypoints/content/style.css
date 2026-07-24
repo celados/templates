@@ -1,0 +1,15 @@
+.ripple-extension-widget {
+	position: fixed;
+	z-index: 2147483647;
+	right: 20px;
+	bottom: 20px;
+	width: min(340px, calc(100vw - 40px));
+}
+
+@media (max-width: 480px) {
+	.ripple-extension-widget {
+		right: 12px;
+		bottom: 12px;
+		width: calc(100vw - 24px);
+	}
+}

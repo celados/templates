@@ -5,11 +5,11 @@
   "scripts": {
     "shared:sync": "bun scripts/sync-shared.ts",
     "shared:check": "bun scripts/sync-shared.ts --check",
-    "install:templates": "bun install --cwd templates/astro --frozen-lockfile && bun install --cwd templates/ripple-ts --frozen-lockfile && bun install --cwd templates/tanstack-start --frozen-lockfile",
+    "install:templates": "bun install --cwd templates/astro --frozen-lockfile && bun install --cwd templates/ripple-ts --frozen-lockfile && bun install --cwd templates/ripple-ts-browser-extension --frozen-lockfile && bun install --cwd templates/tanstack-start --frozen-lockfile",
     "check:root": "vp check",
-    "check:templates": "bun run --cwd templates/astro check && bun run --cwd templates/ripple-ts check && bun run --cwd templates/tanstack-start check",
+    "check:templates": "bun run --cwd templates/astro check && bun run --cwd templates/ripple-ts check && bun run --cwd templates/ripple-ts-browser-extension check && bun run --cwd templates/tanstack-start check",
     "check": "bun run check:root && bun run shared:check && bun run check:templates",
-    "build": "bun run --cwd templates/astro build && bun run --cwd templates/ripple-ts build && bun run --cwd templates/tanstack-start build"
+    "build": "bun run --cwd templates/astro build && bun run --cwd templates/ripple-ts build && bun run --cwd templates/ripple-ts-browser-extension build && bun run --cwd templates/tanstack-start build"
   },
   "devDependencies": {
     "@types/bun": "^1.3.14",

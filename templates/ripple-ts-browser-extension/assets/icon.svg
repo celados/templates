@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+	<defs>
+		<linearGradient id="ripple" x1="18" y1="14" x2="108" y2="116" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#8b7cff" />
+			<stop offset="1" stop-color="#3ed6c5" />
+		</linearGradient>
+	</defs>
+	<rect width="128" height="128" rx="30" fill="#10131d" />
+	<circle cx="64" cy="64" r="42" fill="none" stroke="url(#ripple)" stroke-width="10" />
+	<circle cx="64" cy="64" r="20" fill="none" stroke="url(#ripple)" stroke-width="10" opacity=".72" />
+	<circle cx="64" cy="64" r="5" fill="#f7f8ff" />
+</svg>

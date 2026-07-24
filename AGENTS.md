@@ -44,6 +44,11 @@ framework-specific values such as its Tailwind stylesheet path.
 
 - `templates/astro/`: standalone Astro template and Astro-specific runtime,
   build, and Cloudflare static-assets configuration.
+- `templates/ripple-ts/`: standalone Ripple TS small-app workspace with a
+  source-first reusable component package.
+- `templates/ripple-ts-browser-extension/`: standalone Manifest V3 extension
+  template with Ripple UI, WXT entrypoints, typed messaging, and a source-first
+  reusable component package.
 - `templates/tanstack-start/`: standalone TanStack Start template and its
   Cloudflare Workers SSR configuration.
 - `shared/agent/`: agent instructions materialized into every template.
@@ -128,8 +133,8 @@ bun run build
 ```
 
 After changing a shared source, run `bun run shared:sync` before validation.
-`bun run check` covers root checks, shared drift, and both template checks;
-`bun run build` builds both templates.
+`bun run check` covers root checks, shared drift, and every template check;
+`bun run build` builds every template.
 
 For a framework-local investigation, run scripts from that template directory
 or through `bun run --cwd templates/<name> <script>`. Astro lifecycle commands
