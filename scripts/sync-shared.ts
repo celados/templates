@@ -24,6 +24,11 @@ const mappings = [
     targets: ["templates/ripple-ts/AGENTS.md"],
   },
   {
+    appendTextSources: ["shared/agent/ripple-ts.md", "shared/agent/ripple-ts-browser-extension.md"],
+    source: "shared/agent/AGENTS.md",
+    targets: ["templates/ripple-ts-browser-extension/AGENTS.md"],
+  },
+  {
     source: "shared/editor/vscode/extensions.json",
     targets: [
       "templates/astro/.vscode/extensions.json",
@@ -34,6 +39,7 @@ const mappings = [
     source: "shared/editor/vscode/settings.json",
     targets: [
       "templates/astro/.vscode/settings.json",
+      "templates/ripple-ts-browser-extension/.vscode/settings.json",
       "templates/ripple-ts/.vscode/settings.json",
       "templates/tanstack-start/.vscode/settings.json",
     ],
@@ -58,6 +64,7 @@ const mappings = [
     source: "shared/tooling/oxfmt.ts",
     targets: [
       "templates/astro/tooling/oxfmt.ts",
+      "templates/ripple-ts-browser-extension/tooling/oxfmt.ts",
       "templates/ripple-ts/tooling/oxfmt.ts",
       "templates/tanstack-start/tooling/oxfmt.ts",
     ],

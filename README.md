@@ -6,11 +6,12 @@ repository does not maintain versioned template releases.
 
 ## Templates
 
-| Template       | Source directory           | Runtime                                               |
-| -------------- | -------------------------- | ----------------------------------------------------- |
-| Astro          | `templates/astro`          | Astro 7, Keystatic, React 19 islands, Tailwind CSS v4 |
-| Ripple TS      | `templates/ripple-ts`      | Ripple, TSRX, Vite+, Bun workspace                    |
-| TanStack Start | `templates/tanstack-start` | TanStack Start, React 19, Tailwind CSS v4             |
+| Template                    | Source directory                        | Runtime                                               |
+| --------------------------- | --------------------------------------- | ----------------------------------------------------- |
+| Astro                       | `templates/astro`                       | Astro 7, Keystatic, React 19 islands, Tailwind CSS v4 |
+| Ripple TS                   | `templates/ripple-ts`                   | Ripple, TSRX, Vite+, Bun workspace                    |
+| Ripple TS Browser Extension | `templates/ripple-ts-browser-extension` | Ripple, WXT, Manifest V3, Bun workspace               |
+| TanStack Start              | `templates/tanstack-start`              | TanStack Start, React 19, Tailwind CSS v4             |
 
 Create an Astro project:
 
@@ -29,6 +30,19 @@ Create a Ripple TS project:
 
 ```bash
 vp create github:celados/templates/templates/ripple-ts \
+  --package-manager bun \
+  --no-agent \
+  --editor vscode \
+  --hooks \
+  --git \
+  --no-interactive \
+  -- <project-directory>
+```
+
+Create a Ripple TS browser extension:
+
+```bash
+vp create github:celados/templates/templates/ripple-ts-browser-extension \
   --package-manager bun \
   --no-agent \
   --editor vscode \

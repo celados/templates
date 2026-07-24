@@ -1,0 +1,9 @@
+node_modules
+.output
+.wxt
+.chrome-profile
+*.local
+.env*
+*.tgz
+*.tsbuildinfo
+test-results
