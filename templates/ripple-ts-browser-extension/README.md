@@ -41,6 +41,9 @@ vp install
 bun run dev
 ```
 
+`vp install` runs the package `prepare` script and restores the project-scoped
+skills declared in `.agents/skills/manifest.json`.
+
 In another terminal, open the repository-owned system Chrome profile:
 
 ```bash
@@ -59,10 +62,10 @@ bun run build
 bun run zip
 ```
 
-`check` covers formatting, linting, TypeScript/TSRX, fake-browser storage tests,
-and the publishable package boundary. `build` also verifies MV3 entrypoints and
-least-privilege permissions. `zip` produces the Chrome submission artifact in
-`.output/`.
+`check` covers formatting, TypeScript/TSRX, fake-browser storage tests, and the
+publishable package boundary. Vite+ lint rules are disabled. `build` also
+verifies MV3 entrypoints and least-privilege permissions. `zip` produces the
+Chrome submission artifact in `.output/`.
 
 ## Run system Chrome E2E
 

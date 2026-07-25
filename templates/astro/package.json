@@ -4,6 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"prepare": "skill install",
 		"dev": "astro dev --port 3000",
 		"build": "SKIP_KEYSTATIC=true astro build",
 		"preview": "astro preview",
@@ -36,6 +37,7 @@
 	"devDependencies": {
 		"@astrojs/check": "0.9.9",
 		"@types/node": "^26.1.1",
+		"skill": "github:ethan-huo/skill#v0.1.30",
 		"typescript": "~6",
 		"vite": "npm:@voidzero-dev/vite-plus-core@0.2.4",
 		"vite-plus": "0.2.4",

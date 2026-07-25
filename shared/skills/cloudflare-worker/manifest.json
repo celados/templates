@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "items": [
+    {
+      "type": "skills",
+      "repo": "celados/agents",
+      "skills": [
+        "fullstack",
+        "gh-action",
+        "publish-package",
+        "typescript"
+      ]
+    }
+  ]
+}

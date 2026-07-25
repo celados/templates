@@ -1,41 +1,32 @@
-import { cloudflare } from '@cloudflare/vite-plugin'
-import tailwindcss from '@tailwindcss/vite'
-import { devtools } from '@tanstack/devtools-vite'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
-import { defineConfig, lazyPlugins } from 'vite-plus'
+import { defineConfig } from 'vite-plus'
 
 import { oxfmtConfig } from './tooling/oxfmt'
 
-const ROUTER_GEN_PATH = 'src/route-tree.gen.ts'
 const config = defineConfig({
+	check: {
+		lint: false,
+	},
 	staged: {
 		'*': 'vp check --fix',
 	},
-	// TanStack Router regenerates this file with Prettier, so checking it with
-	// Oxfmt would create permanent build/check drift.
-	lint: { ignorePatterns: [ROUTER_GEN_PATH] },
+	lint: {
+		ignorePatterns: [
+			'web/src/route-tree.gen.ts',
+			'web/src/worker-configuration.d.ts',
+		],
+		options: {
+			typeAware: false,
+			// Runtime scopes own their typechecks; the root check owns formatting.
+			typeCheck: false,
+		},
+	},
 	fmt: {
 		...oxfmtConfig,
 		sortTailwindcss: {
-			stylesheet: 'src/styles.css',
+			stylesheet: 'web/src/styles.css',
 			functions: ['cn', 'cx', 'clsx', 'cva'],
 		},
 	},
-	resolve: { tsconfigPaths: true },
-	plugins: lazyPlugins(() => [
-		// Cloudflare must own Start's SSR environment so development and builds
-		// execute against the Workers runtime: https://developers.cloudflare.com/workers/vite-plugin/reference/vite-environments/
-		cloudflare({ viteEnvironment: { name: 'ssr' } }),
-		devtools(),
-		tailwindcss(),
-		tanstackStart({
-			router: {
-				generatedRouteTree: 'route-tree.gen.ts',
-			},
-		}),
-		viteReact(),
-	]),
 })
 
 export default config

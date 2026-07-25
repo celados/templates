@@ -9,6 +9,7 @@ repository does not maintain versioned template releases.
 | Template                    | Source directory                        | Runtime                                               |
 | --------------------------- | --------------------------------------- | ----------------------------------------------------- |
 | Astro                       | `templates/astro`                       | Astro 7, Keystatic, React 19 islands, Tailwind CSS v4 |
+| Cloudflare Worker           | `templates/cloudflare-worker`           | Hono, oRPC, Better Auth, Hyperdrive, Drizzle          |
 | Ripple TS                   | `templates/ripple-ts`                   | Ripple, TSRX, Vite+, Bun workspace                    |
 | Ripple TS Browser Extension | `templates/ripple-ts-browser-extension` | Ripple, WXT, Manifest V3, Bun workspace               |
 | TanStack Start              | `templates/tanstack-start`              | TanStack Start, React 19, Tailwind CSS v4             |
@@ -17,6 +18,19 @@ Create an Astro project:
 
 ```bash
 vp create github:celados/templates/templates/astro \
+  --package-manager bun \
+  --no-agent \
+  --editor vscode \
+  --hooks \
+  --git \
+  --no-interactive \
+  -- <project-directory>
+```
+
+Create a Cloudflare Worker backend:
+
+```bash
+vp create github:celados/templates/templates/cloudflare-worker \
   --package-manager bun \
   --no-agent \
   --editor vscode \
@@ -82,9 +96,10 @@ bun run shared:check
 Edit the source under `shared/`, run `shared:sync`, and commit the source and
 materialized copies together. Do not edit a mapped copy directly.
 
-`shared/agent/`, `shared/editor/`, and `shared/tooling/` hold the common agent,
-VS Code, and toolchain contracts. The Agent Native context, skills, workflow
-contracts, and acceptance gates will continue to evolve in this shared layer.
+`shared/agent/`, `shared/editor/`, `shared/skills/`, and `shared/tooling/` hold
+the common agent, VS Code, project-skill manifests, and toolchain contracts.
+Generated skill links and ignore files are owned by `skill install`, not the
+template source.
 
 ## Validate
 

@@ -1,0 +1,23 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "template-cloudflare-worker",
+	"main": "apps/worker/src/index.ts",
+	"compatibility_date": "2026-07-24",
+	"compatibility_flags": ["nodejs_compat"],
+	"workers_dev": true,
+	"preview_urls": true,
+	"observability": {
+		"enabled": true,
+	},
+	"vars": {
+		"BETTER_AUTH_URL": "http://localhost:8787",
+		"CORS_ORIGIN": "http://localhost:3000",
+	},
+	"hyperdrive": [
+		{
+			"binding": "HYPERDRIVE",
+			// Replace this zero ID with the configuration created for your PlanetScale branch.
+			"id": "00000000000000000000000000000000",
+		},
+	],
+}

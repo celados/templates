@@ -7,6 +7,7 @@
 	],
 	"type": "module",
 	"scripts": {
+		"prepare": "skill install",
 		"dev": "wxt --browser chrome",
 		"postinstall": "wxt prepare",
 		"types:prepare": "wxt prepare",
@@ -31,6 +32,7 @@
 		"@types/bun": "^1.3.14",
 		"@types/chrome": "^0.2.2",
 		"@wxt-dev/auto-icons": "^1.1.1",
+		"skill": "github:ethan-huo/skill#v0.1.30",
 		"typescript": "^5.9.3",
 		"vite-plus": "^0.2.6",
 		"vitest": "^4.1.10",

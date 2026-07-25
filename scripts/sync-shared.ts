@@ -16,7 +16,17 @@ const checkOnly = process.argv.includes("--check");
 const mappings = [
   {
     source: "shared/agent/AGENTS.md",
-    targets: ["templates/astro/AGENTS.md", "templates/tanstack-start/AGENTS.md"],
+    targets: ["templates/astro/AGENTS.md"],
+  },
+  {
+    appendTextSources: ["shared/agent/tanstack-start.md"],
+    source: "shared/agent/AGENTS.md",
+    targets: ["templates/tanstack-start/AGENTS.md"],
+  },
+  {
+    appendTextSources: ["shared/agent/cloudflare-worker.md"],
+    source: "shared/agent/AGENTS.md",
+    targets: ["templates/cloudflare-worker/AGENTS.md"],
   },
   {
     appendTextSources: ["shared/agent/ripple-ts.md"],
@@ -32,6 +42,7 @@ const mappings = [
     source: "shared/editor/vscode/extensions.json",
     targets: [
       "templates/astro/.vscode/extensions.json",
+      "templates/cloudflare-worker/.vscode/extensions.json",
       "templates/tanstack-start/.vscode/extensions.json",
     ],
   },
@@ -39,31 +50,55 @@ const mappings = [
     source: "shared/editor/vscode/settings.json",
     targets: [
       "templates/astro/.vscode/settings.json",
+      "templates/cloudflare-worker/.vscode/settings.json",
       "templates/ripple-ts-browser-extension/.vscode/settings.json",
       "templates/ripple-ts/.vscode/settings.json",
       "templates/tanstack-start/.vscode/settings.json",
     ],
   },
   {
+    source: "shared/skills/cloudflare-worker/manifest.json",
+    targets: ["templates/cloudflare-worker/.agents/skills/manifest.json"],
+  },
+  {
+    source: "shared/skills/publish-package/manifest.json",
+    targets: [
+      "templates/ripple-ts-browser-extension/.agents/skills/manifest.json",
+      "templates/ripple-ts/.agents/skills/manifest.json",
+    ],
+  },
+  {
+    source: "shared/skills/sigil/manifest.json",
+    targets: [
+      "templates/astro/.agents/skills/manifest.json",
+      "templates/tanstack-start/.agents/skills/manifest.json",
+    ],
+  },
+  {
     source: "shared/github/workflows/ci.yml",
     targets: [
       "templates/astro/.github/workflows/ci.yml",
+      "templates/cloudflare-worker/.github/workflows/ci.yml",
       "templates/ripple-ts/.github/workflows/ci.yml",
       "templates/tanstack-start/.github/workflows/ci.yml",
     ],
   },
   {
     source: "shared/template/lib/utils.ts",
-    targets: ["templates/astro/src/lib/utils.ts", "templates/tanstack-start/src/lib/utils.ts"],
+    targets: ["templates/astro/src/lib/utils.ts", "templates/tanstack-start/web/src/lib/utils.ts"],
   },
   {
     source: "shared/template/styles/global.css",
-    targets: ["templates/astro/src/styles/global.css", "templates/tanstack-start/src/styles.css"],
+    targets: [
+      "templates/astro/src/styles/global.css",
+      "templates/tanstack-start/web/src/styles.css",
+    ],
   },
   {
     source: "shared/tooling/oxfmt.ts",
     targets: [
       "templates/astro/tooling/oxfmt.ts",
+      "templates/cloudflare-worker/tooling/oxfmt.ts",
       "templates/ripple-ts-browser-extension/tooling/oxfmt.ts",
       "templates/ripple-ts/tooling/oxfmt.ts",
       "templates/tanstack-start/tooling/oxfmt.ts",

@@ -44,6 +44,8 @@ framework-specific values such as its Tailwind stylesheet path.
 
 - `templates/astro/`: standalone Astro template and Astro-specific runtime,
   build, and Cloudflare static-assets configuration.
+- `templates/cloudflare-worker/`: backend-only Cloudflare Worker template with
+  oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle.
 - `templates/ripple-ts/`: standalone Ripple TS small-app workspace with a
   source-first reusable component package.
 - `templates/ripple-ts-browser-extension/`: standalone Manifest V3 extension
@@ -54,6 +56,8 @@ framework-specific values such as its Tailwind stylesheet path.
 - `shared/agent/`: agent instructions materialized into every template.
 - `shared/editor/`: common editor configuration.
 - `shared/github/`: common template-level GitHub workflows.
+- `shared/skills/`: project skill manifests materialized into templates by
+  capability.
 - `shared/template/`: shared application source and styles.
 - `shared/tooling/`: reusable toolchain policy imported by each template.
 - `scripts/`: repository-maintenance programs. Its nested `AGENTS.md` adds the
@@ -91,9 +95,9 @@ Change mappings and consumers together.
 - Canonical creation enables `--editor vscode`, `--hooks`, `--git`, Bun, and
   non-interactive execution. Keep the exact user-facing commands in the root
   and template READMEs.
-- Vite+ owns package management, formatting, linting, staged checks, and the
-  aggregate task runner. Framework CLIs continue to own framework-specific
-  lifecycle behavior.
+- Vite+ owns package management, formatting, staged checks, and the aggregate
+  task runner. Every template sets `check.lint: false`; formatting, type
+  checking, framework checks, and tests are the acceptance signal.
 - Oxfmt options belong in the Vite+ `fmt` block, not a competing
   `.oxfmtrc.jsonc`. Keep the common options in `shared/tooling/oxfmt.ts` and
   compose them from each template's `vite.config.ts`.
@@ -107,17 +111,23 @@ Change mappings and consumers together.
   host and GitHub or Cloud storage.
 - TanStack Start uses the Cloudflare Vite plugin for its SSR environment. Do
   not copy that plugin into the static Astro template for symmetry.
+- Cloudflare Worker exposes the oRPC RPC protocol only. Its absence of OpenAPI
+  dependencies, handlers, specifications, and reference UI is intentional.
 
 ## Generated and Ignored Artifacts
 
 - Do not commit `node_modules/`, `dist/`, `.astro/`, or `.wrangler/` output.
 - TanStack Router may regenerate `src/route-tree.gen.ts`. Do not hand-format
-  it; the template intentionally excludes it from formatter and lint drift.
+  it; the template intentionally excludes it from formatter drift.
 - `bun run cf-typegen` owns
+  `templates/cloudflare-worker/apps/worker/src/worker-configuration.d.ts` and
   `templates/tanstack-start/src/worker-configuration.d.ts`. Keep the output
-  under `src/` so the template's TypeScript project includes it. Inspect and
+  under `src/` so each template's TypeScript project includes it. Inspect and
   commit generated changes when the Worker binding/type contract changes;
   never hand-edit generated declarations.
+- `.agents/skills/manifest.json` is the only tracked skill-install contract.
+  Each template's package `prepare` runs `skill install`; generated skill links
+  and managed `.gitignore` files do not belong in template source.
 - Shared materialized files are generated but intentionally committed because
   standalone subdirectory extraction requires them.
 

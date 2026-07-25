@@ -34,9 +34,10 @@ vp run build
 
 Astro owns its runtime and build lifecycle, so use `vp run` for the scripts
 instead of invoking `vp dev` or `vp build` directly. Vite+ owns dependency
-management, formatting, linting, and TypeScript checks; `astro check` covers
-framework component diagnostics. The organization Oxfmt baseline lives in
-`tooling/oxfmt.ts`; `vite.config.ts` adds Astro's Tailwind stylesheet path.
+management, formatting, and TypeScript checks; `astro check` covers framework
+component diagnostics. Vite+ lint rules are disabled. The organization Oxfmt
+baseline lives in `tooling/oxfmt.ts`; `vite.config.ts` adds Astro's Tailwind
+stylesheet path.
 
 ## Content management
 

@@ -1,0 +1,41 @@
+{
+	"name": "template-cloudflare-worker",
+	"version": "0.0.0",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"type": "module",
+	"scripts": {
+		"prepare": "skill install && bun run build:contract",
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"build": "bun run build:contract && wrangler deploy --dry-run --outdir dist/worker",
+		"build:contract": "bun run --cwd packages/api-contract build",
+		"check": "bun run build:contract && vp check && tsc --noEmit && bun run cf-typegen --check && bun run verify:template && bun run test && bun run pack:check",
+		"test": "vp test --run",
+		"cf-typegen": "wrangler types apps/worker/src/worker-configuration.d.ts",
+		"verify:template": "bun scripts/verify-template.ts",
+		"pack:check": "bun run --cwd packages/api-contract pack:check",
+		"db:generate": "bun run --cwd packages/db db:generate",
+		"db:migrate": "bun run --cwd packages/db db:migrate",
+		"db:push": "bun run --cwd packages/db db:push",
+		"db:studio": "bun run --cwd packages/db db:studio"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.3.14",
+		"skill": "github:ethan-huo/skill#v0.1.30",
+		"typescript": "^6",
+		"vite-plus": "^0.2.6",
+		"vitest": "^4.1.10",
+		"wrangler": "^4.114.0"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "bun",
+			"version": "1.3.14",
+			"onFail": "download"
+		}
+	}
+}

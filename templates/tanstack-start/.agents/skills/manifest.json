@@ -1,10 +1,12 @@
 {
-	"version": 2,
-	"items": [
-		{
-			"type": "skills",
-			"repo": "celados/sigil",
-			"skills": ["sigil"]
-		}
-	]
+  "version": 2,
+  "items": [
+    {
+      "type": "skills",
+      "repo": "celados/sigil",
+      "skills": [
+        "sigil"
+      ]
+    }
+  ]
 }

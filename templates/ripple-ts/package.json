@@ -8,6 +8,7 @@
 	],
 	"type": "module",
 	"scripts": {
+		"prepare": "skill install",
 		"dev": "vp dev apps/web --port 3000",
 		"build": "vp build apps/web",
 		"preview": "vp preview apps/web",
@@ -18,6 +19,7 @@
 		"@ripple-ts/language-server": "^0.3.110",
 		"@ripple-ts/vite-plugin": "^0.3.110",
 		"@tsrx/typescript-plugin": "^0.3.110",
+		"skill": "github:ethan-huo/skill#v0.1.30",
 		"typescript": "^5.9.3",
 		"vite": "npm:@voidzero-dev/vite-plus-core",
 		"vite-plus": "^0.2.6"

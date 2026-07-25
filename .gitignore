@@ -1,4 +1,5 @@
 node_modules/
 .trash/
+.wireit/
 .DS_Store
 *.local

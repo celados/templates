@@ -3,26 +3,37 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vp dev --port 3000",
-		"build": "vp build",
-		"preview": "vp preview",
-		"check": "vp check && bun run cf-typegen --check",
-		"deploy": "vp build && wrangler deploy",
-		"deploy:temporary": "vp build && wrangler deploy --temporary",
-		"cf-typegen": "wrangler types src/worker-configuration.d.ts"
+		"prepare": "skill install",
+		"dev": "wireit",
+		"web:dev": "wireit",
+		"convex:dev": "wireit",
+		"codegen": "wireit",
+		"build": "wireit",
+		"preview": "vp preview web",
+		"check": "vp check && tsc -p web/tsconfig.json --noEmit && convex typecheck && bun run cf-typegen:check",
+		"deploy": "bun run build && wrangler deploy --cwd web",
+		"deploy:temporary": "bun run build && wrangler deploy --cwd web --temporary",
+		"cf-typegen": "wireit",
+		"cf-typegen:check": "wrangler types --cwd web src/worker-configuration.d.ts --check"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.6.0",
+		"@convex-dev/better-auth": "^0.12.5",
+		"@convex-dev/react-query": "^0.1.0",
+		"@convex-dev/stripe": "^0.1.6",
 		"@fontsource-variable/inter": "^5.2.8",
 		"@tailwindcss/vite": "^4",
 		"@tanstack/react-devtools": "latest",
+		"@tanstack/react-query": "^5.101.4",
 		"@tanstack/react-router": "latest",
 		"@tanstack/react-router-devtools": "latest",
 		"@tanstack/react-router-ssr-query": "latest",
 		"@tanstack/react-start": "latest",
 		"@tanstack/router-plugin": "latest",
+		"better-auth": "^1.6.25",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"convex": "^1.42.3",
 		"lucide-react": "^1.24.0",
 		"react": "^19.2.6",
 		"react-dom": "^19.2.6",
@@ -41,10 +52,12 @@
 		"@types/react-dom": "^19",
 		"@vitejs/plugin-react": "^6",
 		"jsdom": "^28",
-		"typescript": "^6",
+		"skill": "github:ethan-huo/skill#v0.1.30",
+		"typescript": "5",
 		"vite": "npm:@voidzero-dev/vite-plus-core@0.2.4",
 		"vite-plus": "0.2.4",
 		"vitest": "4.1.10",
+		"wireit": "^0.14.13",
 		"wrangler": "^4.110.0"
 	},
 	"overrides": {
@@ -56,6 +69,53 @@
 			"name": "bun",
 			"version": "1.3.14",
 			"onFail": "download"
+		}
+	},
+	"wireit": {
+		"dev": {
+			"dependencies": [
+				"web:dev"
+			]
+		},
+		"web:dev": {
+			"command": "vp dev web --port 3000 --strictPort",
+			"service": true,
+			"dependencies": [
+				{
+					"script": "convex:dev",
+					"cascade": false
+				},
+				"codegen"
+			]
+		},
+		"convex:dev": {
+			"command": "convex dev --typecheck-components",
+			"service": {
+				"readyWhen": {
+					"lineMatches": "Convex functions ready!"
+				}
+			}
+		},
+		"codegen": {
+			"dependencies": [
+				"cf-typegen"
+			]
+		},
+		"cf-typegen": {
+			"command": "wrangler types --cwd web src/worker-configuration.d.ts",
+			"files": [
+				"package.json",
+				"web/wrangler.jsonc"
+			],
+			"output": [
+				"web/src/worker-configuration.d.ts"
+			]
+		},
+		"build": {
+			"command": "vp build web",
+			"dependencies": [
+				"codegen"
+			]
 		}
 	}
 }

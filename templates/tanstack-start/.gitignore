@@ -1,10 +1,15 @@
 node_modules
+.agents/skills/.gitignore
 .DS_Store
 dist
 dist-ssr
 *.local
 .env*
+!.env
+!.env.example
 .tanstack
+.convex
+.wireit
 .wrangler
 .output
 .vinxi

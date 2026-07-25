@@ -9,7 +9,7 @@ Docs are local at `node_modules/vite-plus/docs` or online at https://viteplus.de
 ## Review Checklist
 
 - [ ] Run `vp install` after pulling remote changes and before getting started.
-- [ ] Run `vp check` and `vp test` to format, lint, type check and test changes.
+- [ ] Run `vp check` and `vp test` to format, type check and test changes.
 - [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
@@ -19,3 +19,31 @@ result. Return the deployment URL and the time-sensitive Cloudflare claim URL
 to the user.
 
 <!--VITE PLUS END-->
+
+# TanStack Start + Convex
+
+This is one full-stack application with one root `package.json`. `web/` owns
+the TanStack Start runtime and its configuration; `convex/` is a peer,
+application-scoped backend module. Neither is a separate package or workspace.
+Add other application modules at the root and connect them with TypeScript path
+aliases; introduce a package boundary only when code is independently consumed
+and published.
+
+Before editing Convex integration code, read the current source-of-truth
+documentation:
+
+- https://docs.convex.dev/llms.txt
+- https://labs.convex.dev/better-auth/framework-guides/tanstack-start
+- https://github.com/get-convex/stripe
+
+Do not edit `convex/_generated/` or `web/src/route-tree.gen.ts` by hand.
+Convex generates and expects its `_generated` files to be committed. TanStack
+Router owns the route tree.
+
+`bun run dev` uses Wireit to wait for the Convex service and the `codegen`
+aggregate before starting the web service. Add independent generators to
+`codegen.dependencies`; do not hide them in framework-specific start commands.
+
+Keep secrets in the Convex deployment environment. Only public deployment URLs
+use the `VITE_` prefix. Stripe checkout price IDs are server-owned configuration;
+never accept an arbitrary Stripe price ID from a browser action.

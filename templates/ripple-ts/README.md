@@ -28,6 +28,9 @@ vp run check
 vp run build
 ```
 
+`vp install` runs the package `prepare` script and restores the project-scoped
+skills declared in `.agents/skills/manifest.json`.
+
 `apps/web` owns the browser application and mount lifecycle. `packages/ui` owns
 reusable named TSRX components and exposes a deliberate public package boundary.
 The app consumes that package through the Bun workspace.

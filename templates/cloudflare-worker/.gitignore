@@ -1,0 +1,12 @@
+node_modules/
+.agents/skills/.gitignore
+dist/
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.env
+.env.*
+!.env.example
+*.tgz
+*.tsbuildinfo
