@@ -15,7 +15,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { createServerFn } from '@tanstack/react-start'
 
 import { authClient } from '@/lib/auth-client'
-import { getToken } from '@/lib/auth-server'
+import { getToken } from '@/lib/auth.server'
 
 import appCss from '../styles.css?url'
 

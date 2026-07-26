@@ -49,10 +49,33 @@ Configure backend secrets in the selected Convex deployment:
 ```bash
 bunx convex env set SITE_URL http://localhost:3000
 bunx convex env set BETTER_AUTH_SECRET "$(openssl rand -base64 32)"
+bunx convex env set GOOGLE_CLIENT_ID ...
+bunx convex env set GOOGLE_CLIENT_SECRET ...
+bunx convex env set RESEND_API_KEY re_...
+bunx convex env set AUTH_EMAIL_FROM "App <auth@example.com>"
 bunx convex env set STRIPE_SECRET_KEY sk_test_...
 bunx convex env set STRIPE_WEBHOOK_SECRET whsec_...
 bunx convex env set STRIPE_PRICE_ID price_...
+bun run auth:jwks
 ```
+
+Better Auth defaults to passwordless authentication. The bundled
+`/auth/sign-in` route supports Google and a five-minute, single-use magic link.
+Configure this authorized redirect URI in Google Cloud:
+
+```text
+http://localhost:3000/api/auth/callback/google
+```
+
+Add the corresponding production URL before deployment. Resend must also be
+allowed to send from the domain in `AUTH_EMAIL_FROM`.
+
+`bun run auth:jwks` writes deployment-local Static JWKS into the selected
+Convex environment. This embeds the signing key data and removes the remaining
+JWKS HTTP lookup from Convex token validation. Until the command is run, the
+same configuration falls back to the component's remote JWKS endpoint. Run it
+once for every deployment after the auth variables are configured, and refresh
+the value whenever signing keys are rotated.
 
 Create a Stripe webhook endpoint at
 `<VITE_CONVEX_SITE_URL>/stripe/webhook`. The bundled Stripe component persists
@@ -104,3 +127,10 @@ TanStack Router, and Cloudflare type files are excluded from formatting.
 
 The Agent Native project contract and guidance are maintained as a shared layer
 with the Astro template.
+
+Authentication implementation sources:
+
+- https://labs.convex.dev/better-auth/experimental
+- https://www.better-auth.com/docs/plugins/magic-link
+- https://www.better-auth.com/docs/authentication/google
+- https://better-auth-ui.com/docs/shadcn/integrations/tanstack-start

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { AuthDemo } from '@/components/auth-demo'
+import { AuthStatus } from '@/components/auth-status'
 import { BillingDemo } from '@/components/billing-demo'
 import { TodoDemo } from '@/components/todo-demo'
 
@@ -24,7 +24,7 @@ function App() {
 			</header>
 
 			<section className="grid gap-5 lg:grid-cols-3">
-				<AuthDemo />
+				<AuthStatus />
 				<TodoDemo />
 				<BillingDemo />
 			</section>

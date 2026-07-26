@@ -69,10 +69,11 @@ const mappings = [
   },
   {
     source: "shared/skills/sigil/manifest.json",
-    targets: [
-      "templates/astro/.agents/skills/manifest.json",
-      "templates/tanstack-start/.agents/skills/manifest.json",
-    ],
+    targets: ["templates/astro/.agents/skills/manifest.json"],
+  },
+  {
+    source: "shared/skills/tanstack-start/manifest.json",
+    targets: ["templates/tanstack-start/.agents/skills/manifest.json"],
   },
   {
     source: "shared/github/workflows/ci.yml",
