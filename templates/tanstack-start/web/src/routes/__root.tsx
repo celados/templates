@@ -3,7 +3,6 @@ import type { ConvexQueryClient } from '@convex-dev/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 
 import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import {
 	HeadContent,
 	Outlet,
@@ -11,9 +10,11 @@ import {
 	createRootRouteWithContext,
 	useRouteContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { createServerFn } from '@tanstack/react-start'
+import { lazy, Suspense, useEffect, useState } from 'react'
 
+import { DefaultError } from '@/components/default-error'
+import { NotFound } from '@/components/not-found'
 import { authClient } from '@/lib/auth-client'
 import { getToken } from '@/lib/auth.server'
 
@@ -22,6 +23,14 @@ import appCss from '../styles.css?url'
 const getAuthToken = createServerFn({ method: 'GET' }).handler(async () =>
 	getToken(),
 )
+
+const LazyAppDevtools = import.meta.env.DEV
+	? lazy(() =>
+			import('@/components/app-devtools').then((module) => ({
+				default: module.AppDevtools,
+			})),
+		)
+	: null
 
 type RouterContext = {
 	convexQueryClient: ConvexQueryClient
@@ -37,6 +46,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			{
 				name: 'viewport',
 				content: 'width=device-width, initial-scale=1',
+			},
+			{
+				name: 'description',
+				content: 'A production-ready TanStack Start application.',
+			},
+			{
+				name: 'theme-color',
+				content: '#ffffff',
 			},
 			{
 				title: 'TanStack Start + Convex',
@@ -62,12 +79,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 		}
 	},
 	component: RootComponent,
-	notFoundComponent: () => (
-		<main className="container mx-auto p-4 pt-16">
-			<h1>404</h1>
-			<p>The requested page could not be found.</p>
-		</main>
-	),
+	errorComponent: DefaultError,
+	notFoundComponent: NotFound,
 	shellComponent: RootDocument,
 })
 
@@ -94,21 +107,29 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className="min-h-screen">
 				{children}
-				<TanStackDevtools
-					config={{
-						position: 'bottom-right',
-					}}
-					plugins={[
-						{
-							name: 'Tanstack Router',
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-					]}
-				/>
+				{LazyAppDevtools ? <DevelopmentTools /> : null}
 				<Scripts />
 			</body>
 		</html>
+	)
+}
+
+function DevelopmentTools() {
+	const [isReady, setIsReady] = useState(false)
+
+	useEffect(() => {
+		// Let application hydration and route data win the initial main-thread budget.
+		const timeout = window.setTimeout(() => setIsReady(true), 2_000)
+		return () => window.clearTimeout(timeout)
+	}, [])
+
+	if (!isReady || !LazyAppDevtools) return null
+
+	return (
+		<Suspense fallback={null}>
+			<LazyAppDevtools />
+		</Suspense>
 	)
 }

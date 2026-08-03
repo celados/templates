@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"prepare": "skill install",
+		"prepare": "bun scripts/install-skills.mjs",
 		"dev": "astro dev --port 3000",
 		"build": "SKIP_KEYSTATIC=true astro build",
 		"preview": "astro preview",

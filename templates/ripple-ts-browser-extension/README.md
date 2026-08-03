@@ -41,8 +41,9 @@ vp install
 bun run dev
 ```
 
-`vp install` runs the package `prepare` script and restores the project-scoped
-skills declared in `.agents/skills/manifest.json`.
+On local macOS environments, `vp install` restores the project-scoped skills
+declared in `.agents/skills/manifest.json`. CI and non-macOS installs skip that
+agent-tooling bootstrap.
 
 In another terminal, open the repository-owned system Chrome profile:
 

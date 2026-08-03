@@ -28,8 +28,9 @@ vp run check
 vp run build
 ```
 
-`vp install` runs the package `prepare` script and restores the project-scoped
-skills declared in `.agents/skills/manifest.json`.
+On local macOS environments, `vp install` restores the project-scoped skills
+declared in `.agents/skills/manifest.json`. CI and non-macOS installs skip that
+agent-tooling bootstrap.
 
 `apps/web` owns the browser application and mount lifecycle. `packages/ui` owns
 reusable named TSRX components and exposes a deliberate public package boundary.

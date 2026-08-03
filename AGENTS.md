@@ -126,8 +126,10 @@ Change mappings and consumers together.
   commit generated changes when the Worker binding/type contract changes;
   never hand-edit generated declarations.
 - `.agents/skills/manifest.json` is the only tracked skill-install contract.
-  Each template's package `prepare` runs `skill install`; generated skill links
-  and managed `.gitignore` files do not belong in template source.
+  Each template's package `prepare` installs skills only for a local macOS
+  environment; CI and non-macOS hosts must not need private skill repositories.
+  Generated skill links and managed `.gitignore` files do not belong in
+  template source.
 - Shared materialized files are generated but intentionally committed because
   standalone subdirectory extraction requires them.
 

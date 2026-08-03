@@ -34,10 +34,11 @@ cp .env.example .env
 cp .dev.vars.example .dev.vars
 ```
 
-`vp install` runs the package `prepare` script, which restores the
+`vp install` runs the package `prepare` script, which always builds the local
+API contract package. On local macOS environments, it also restores the
 project-scoped TypeScript, Cloudflare, GitHub Actions, and private-package
-publishing guidance from `.agents/skills/manifest.json`, then builds the local
-API contract package.
+publishing guidance from `.agents/skills/manifest.json`; CI and non-macOS
+installs skip that agent-tooling bootstrap.
 
 Before running the service:
 

@@ -98,8 +98,9 @@ materialized copies together. Do not edit a mapped copy directly.
 
 `shared/agent/`, `shared/editor/`, `shared/skills/`, and `shared/tooling/` hold
 the common agent, VS Code, project-skill manifests, and toolchain contracts.
-Generated skill links and ignore files are owned by `skill install`, not the
-template source.
+Generated skill links and ignore files are owned by the local macOS
+`skill install` bootstrap, not the template source. CI and non-macOS installs
+skip that bootstrap.
 
 ## Validate
 

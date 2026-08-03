@@ -91,11 +91,14 @@ dev
 └── web:dev
     ├── convex:dev  (service; waits for "Convex functions ready!")
     └── codegen
+        ├── routegen
         └── cf-typegen
 ```
 
-Add future generators to `codegen.dependencies`. The web service will wait for
-all of them without coupling their lifecycle to Convex or Vite.
+`routegen` makes checks and builds reproducible even when no generated route
+tree exists yet. Add future generators to `codegen.dependencies`; the web
+service will wait for all of them without coupling their lifecycle to Convex or
+Vite.
 
 Cloudflare bindings and runtime types are generated inside the TypeScript
 source tree:

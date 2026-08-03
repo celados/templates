@@ -8,7 +8,7 @@
 	],
 	"type": "module",
 	"scripts": {
-		"prepare": "skill install",
+		"prepare": "bun scripts/install-skills.mjs",
 		"dev": "vp dev apps/web --port 3000",
 		"build": "vp build apps/web",
 		"preview": "vp preview apps/web",

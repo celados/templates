@@ -19,6 +19,16 @@ const mappings = [
     targets: ["templates/astro/AGENTS.md"],
   },
   {
+    source: "shared/agent/install-skills.mjs",
+    targets: [
+      "templates/astro/scripts/install-skills.mjs",
+      "templates/cloudflare-worker/scripts/install-skills.mjs",
+      "templates/ripple-ts-browser-extension/scripts/install-skills.mjs",
+      "templates/ripple-ts/scripts/install-skills.mjs",
+      "templates/tanstack-start/scripts/install-skills.mjs",
+    ],
+  },
+  {
     appendTextSources: ["shared/agent/tanstack-start.md"],
     source: "shared/agent/AGENTS.md",
     targets: ["templates/tanstack-start/AGENTS.md"],
