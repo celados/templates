@@ -1,0 +1,37 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"include": [
+		"src",
+		"../../shared",
+		"../../tooling/create-site-vite-config.ts",
+		"vite.config.ts"
+	],
+	"exclude": ["dist", "node_modules"],
+	"compilerOptions": {
+		"target": "ES2022",
+		"jsx": "react-jsx",
+		"module": "ESNext",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"types": ["vite/client"],
+		"paths": {
+			"@/*": ["../../shared/*"],
+			"~/convex/*": ["../../convex/*"]
+		},
+
+		/* Bundler mode */
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": false,
+		"noEmit": true,
+		"incremental": true,
+		"tsBuildInfoFile": "../../node_modules/.cache/sites/alpha.tsbuildinfo",
+
+		/* Linting */
+		"skipLibCheck": true,
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true
+	}
+}

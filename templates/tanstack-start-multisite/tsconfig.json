@@ -1,0 +1,9 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"files": [],
+	"references": [
+		{ "path": "./sites/alpha" },
+		{ "path": "./sites/beta" },
+		{ "path": "./convex" }
+	]
+}

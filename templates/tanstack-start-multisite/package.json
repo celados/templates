@@ -1,0 +1,208 @@
+{
+	"name": "template-tanstack-start-multisite",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"prepare": "bun scripts/install-skills.mjs",
+		"dev": "wireit",
+		"dev:alpha": "wireit",
+		"dev:beta": "wireit",
+		"convex:dev": "wireit",
+		"auth:jwks": "convex run auth:getLatestJwks | convex env set JWKS",
+		"codegen": "wireit",
+		"codegen:alpha": "wireit",
+		"codegen:beta": "wireit",
+		"routegen:alpha": "wireit",
+		"routegen:beta": "wireit",
+		"build": "wireit",
+		"build:alpha": "wireit",
+		"build:beta": "wireit",
+		"preview:alpha": "vp preview sites/alpha",
+		"preview:beta": "vp preview sites/beta",
+		"check": "bun run codegen && vp check && tsc -p sites/alpha/tsconfig.json --noEmit && tsc -p sites/beta/tsconfig.json --noEmit && convex typecheck && bun run cf-typegen:check",
+		"deploy:alpha": "bun run build:alpha && wrangler deploy --cwd sites/alpha",
+		"deploy:beta": "bun run build:beta && wrangler deploy --cwd sites/beta",
+		"deploy:temporary:alpha": "bun run build:alpha && wrangler deploy --cwd sites/alpha --temporary",
+		"deploy:temporary:beta": "bun run build:beta && wrangler deploy --cwd sites/beta --temporary",
+		"cf-typegen:alpha": "wireit",
+		"cf-typegen:beta": "wireit",
+		"cf-typegen:check": "wrangler types --cwd sites/alpha src/worker-configuration.d.ts --check && wrangler types --cwd sites/beta src/worker-configuration.d.ts --check"
+	},
+	"wireit": {
+		"dev": {
+			"dependencies": [
+				"dev:alpha",
+				"dev:beta"
+			]
+		},
+		"dev:alpha": {
+			"command": "vp dev sites/alpha --port 3000 --strictPort",
+			"service": true,
+			"dependencies": [
+				{
+					"script": "convex:dev",
+					"cascade": false
+				},
+				"codegen:alpha"
+			]
+		},
+		"dev:beta": {
+			"command": "vp dev sites/beta --port 3001 --strictPort",
+			"service": true,
+			"dependencies": [
+				{
+					"script": "convex:dev",
+					"cascade": false
+				},
+				"codegen:beta"
+			]
+		},
+		"convex:dev": {
+			"command": "convex dev --typecheck-components",
+			"service": {
+				"readyWhen": {
+					"lineMatches": "Convex functions ready!"
+				}
+			}
+		},
+		"codegen": {
+			"dependencies": [
+				"codegen:alpha",
+				"codegen:beta"
+			]
+		},
+		"codegen:alpha": {
+			"dependencies": [
+				"routegen:alpha",
+				"cf-typegen:alpha"
+			]
+		},
+		"codegen:beta": {
+			"dependencies": [
+				"routegen:beta",
+				"cf-typegen:beta"
+			]
+		},
+		"routegen:alpha": {
+			"command": "bun scripts/generate-route-tree.ts alpha",
+			"files": [
+				"bun.lock",
+				"package.json",
+				"scripts/generate-route-tree.ts",
+				"sites/alpha/src/routes/**/*"
+			],
+			"output": [
+				"sites/alpha/src/route-tree.gen.ts"
+			]
+		},
+		"routegen:beta": {
+			"command": "bun scripts/generate-route-tree.ts beta",
+			"files": [
+				"bun.lock",
+				"package.json",
+				"scripts/generate-route-tree.ts",
+				"sites/beta/src/routes/**/*"
+			],
+			"output": [
+				"sites/beta/src/route-tree.gen.ts"
+			]
+		},
+		"cf-typegen:alpha": {
+			"command": "wrangler types --cwd sites/alpha src/worker-configuration.d.ts",
+			"files": [
+				"bun.lock",
+				"package.json",
+				"sites/alpha/wrangler.jsonc"
+			],
+			"output": [
+				"sites/alpha/src/worker-configuration.d.ts"
+			]
+		},
+		"cf-typegen:beta": {
+			"command": "wrangler types --cwd sites/beta src/worker-configuration.d.ts",
+			"files": [
+				"bun.lock",
+				"package.json",
+				"sites/beta/wrangler.jsonc"
+			],
+			"output": [
+				"sites/beta/src/worker-configuration.d.ts"
+			]
+		},
+		"build": {
+			"dependencies": [
+				"build:alpha",
+				"build:beta"
+			]
+		},
+		"build:alpha": {
+			"command": "vp build sites/alpha",
+			"dependencies": [
+				"codegen:alpha"
+			]
+		},
+		"build:beta": {
+			"command": "vp build sites/beta",
+			"dependencies": [
+				"codegen:beta"
+			]
+		}
+	},
+	"dependencies": {
+		"@base-ui/react": "^1.6.0",
+		"@convex-dev/better-auth": "^0.12.5",
+		"@convex-dev/react-query": "^0.1.0",
+		"@convex-dev/stripe": "^0.1.6",
+		"@fontsource-variable/inter": "^5.3.0",
+		"@tailwindcss/vite": "^4.3.3",
+		"@tanstack/react-query": "^5.101.4",
+		"@tanstack/react-router": "^1.170.18",
+		"@tanstack/react-router-ssr-query": "^1.167.1",
+		"@tanstack/react-start": "^1.168.34",
+		"@tanstack/router-plugin": "^1.168.23",
+		"better-auth": "^1.6.25",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"convex": "^1.43.0",
+		"lucide-react": "^1.28.0",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
+		"shadcn": "^4.16.1",
+		"tailwind-merge": "^3.6.0",
+		"tailwindcss": "^4.3.3",
+		"tw-animate-css": "^1.4.0",
+		"valibot": "^1.4.2"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "^1.50.0",
+		"@tanstack/devtools-vite": "^0.8.3",
+		"@tanstack/react-devtools": "^0.10.9",
+		"@tanstack/react-router-devtools": "^1.167.0",
+		"@tanstack/router-generator": "^1.167.21",
+		"@testing-library/dom": "^10.4.1",
+		"@testing-library/react": "^16.3.2",
+		"@types/node": "^26.1.2",
+		"@types/react": "^19.2.18",
+		"@types/react-dom": "^19.2.4",
+		"@vitejs/plugin-react": "^6.0.5",
+		"jsdom": "^30.0.1",
+		"skill": "github:ethan-huo/skill#v0.1.30",
+		"typescript": "^7.0.2",
+		"vite": "npm:@voidzero-dev/vite-plus-core@0.2.7",
+		"vite-plus": "0.2.7",
+		"vitest": "4.1.10",
+		"wireit": "^0.14.13",
+		"wrangler": "^4.118.0"
+	},
+	"overrides": {
+		"vite": "npm:@voidzero-dev/vite-plus-core@0.2.7",
+		"vitest": "4.1.10"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "bun",
+			"version": "1.3.14",
+			"onFail": "download"
+		}
+	}
+}

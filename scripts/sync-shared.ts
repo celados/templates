@@ -26,12 +26,18 @@ const mappings = [
       "templates/ripple-ts-browser-extension/scripts/install-skills.mjs",
       "templates/ripple-ts/scripts/install-skills.mjs",
       "templates/tanstack-start/scripts/install-skills.mjs",
+      "templates/tanstack-start-multisite/scripts/install-skills.mjs",
     ],
   },
   {
     appendTextSources: ["shared/agent/tanstack-start.md"],
     source: "shared/agent/AGENTS.md",
     targets: ["templates/tanstack-start/AGENTS.md"],
+  },
+  {
+    appendTextSources: ["shared/agent/tanstack-start-multisite.md"],
+    source: "shared/agent/AGENTS.md",
+    targets: ["templates/tanstack-start-multisite/AGENTS.md"],
   },
   {
     appendTextSources: ["shared/agent/cloudflare-worker.md"],
@@ -54,6 +60,7 @@ const mappings = [
       "templates/astro/.vscode/extensions.json",
       "templates/cloudflare-worker/.vscode/extensions.json",
       "templates/tanstack-start/.vscode/extensions.json",
+      "templates/tanstack-start-multisite/.vscode/extensions.json",
     ],
   },
   {
@@ -64,6 +71,7 @@ const mappings = [
       "templates/ripple-ts-browser-extension/.vscode/settings.json",
       "templates/ripple-ts/.vscode/settings.json",
       "templates/tanstack-start/.vscode/settings.json",
+      "templates/tanstack-start-multisite/.vscode/settings.json",
     ],
   },
   {
@@ -83,7 +91,10 @@ const mappings = [
   },
   {
     source: "shared/skills/tanstack-start/manifest.json",
-    targets: ["templates/tanstack-start/.agents/skills/manifest.json"],
+    targets: [
+      "templates/tanstack-start/.agents/skills/manifest.json",
+      "templates/tanstack-start-multisite/.agents/skills/manifest.json",
+    ],
   },
   {
     source: "shared/github/workflows/ci.yml",
@@ -92,17 +103,23 @@ const mappings = [
       "templates/cloudflare-worker/.github/workflows/ci.yml",
       "templates/ripple-ts/.github/workflows/ci.yml",
       "templates/tanstack-start/.github/workflows/ci.yml",
+      "templates/tanstack-start-multisite/.github/workflows/ci.yml",
     ],
   },
   {
     source: "shared/template/lib/utils.ts",
-    targets: ["templates/astro/src/lib/utils.ts", "templates/tanstack-start/web/src/lib/utils.ts"],
+    targets: [
+      "templates/astro/src/lib/utils.ts",
+      "templates/tanstack-start/web/src/lib/utils.ts",
+      "templates/tanstack-start-multisite/shared/lib/utils.ts",
+    ],
   },
   {
     source: "shared/template/styles/global.css",
     targets: [
       "templates/astro/src/styles/global.css",
       "templates/tanstack-start/web/src/styles.css",
+      "templates/tanstack-start-multisite/shared/styles.css",
     ],
   },
   {
@@ -113,6 +130,7 @@ const mappings = [
       "templates/ripple-ts-browser-extension/tooling/oxfmt.ts",
       "templates/ripple-ts/tooling/oxfmt.ts",
       "templates/tanstack-start/tooling/oxfmt.ts",
+      "templates/tanstack-start-multisite/tooling/oxfmt.ts",
     ],
   },
 ] satisfies readonly Mapping[];

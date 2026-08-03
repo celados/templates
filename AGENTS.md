@@ -53,6 +53,8 @@ framework-specific values such as its Tailwind stylesheet path.
   reusable component package.
 - `templates/tanstack-start/`: standalone TanStack Start template and its
   Cloudflare Workers SSR configuration.
+- `templates/tanstack-start-multisite/`: one-product, multi-site TanStack Start
+  template with isolated site runtimes and a shared Convex backend.
 - `shared/agent/`: agent instructions materialized into every template.
 - `shared/editor/`: common editor configuration.
 - `shared/github/`: common template-level GitHub workflows.
