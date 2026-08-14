@@ -30,14 +30,28 @@ const mappings = [
     ],
   },
   {
-    appendTextSources: ["shared/agent/tanstack-start.md"],
+    appendTextSources: ["shared/agent/tanstack-start.md", "shared/agent/convex.md"],
     source: "shared/agent/AGENTS.md",
     targets: ["templates/tanstack-start/AGENTS.md"],
   },
   {
-    appendTextSources: ["shared/agent/tanstack-start-multisite.md"],
+    appendTextSources: ["shared/agent/tanstack-start-multisite.md", "shared/agent/convex.md"],
     source: "shared/agent/AGENTS.md",
     targets: ["templates/tanstack-start-multisite/AGENTS.md"],
+  },
+  {
+    source: "shared/agent/convex-directory.md",
+    targets: [
+      "templates/tanstack-start/convex/AGENTS.md",
+      "templates/tanstack-start-multisite/convex/AGENTS.md",
+    ],
+  },
+  {
+    source: "shared/agent/convex-guidelines.md",
+    targets: [
+      "templates/tanstack-start/convex/_generated/ai/guidelines.md",
+      "templates/tanstack-start-multisite/convex/_generated/ai/guidelines.md",
+    ],
   },
   {
     appendTextSources: ["shared/agent/cloudflare-worker.md"],

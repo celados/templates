@@ -68,3 +68,17 @@ The focused `/auth/sign-in` UI intentionally follows Better Auth UI's
 integration model without vendoring its full registry. Keep Google and magic
 link as the passwordless defaults; add the registry only when the product
 actually needs its broader auth-view system.
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->

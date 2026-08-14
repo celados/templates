@@ -9,8 +9,8 @@ import type { ActionCtx, MutationCtx, QueryCtx } from './_generated/server'
 
 import { components } from './_generated/api'
 import { internalAction, query } from './_generated/server'
-import { sendMagicLinkEmail } from './auth-email'
 import authConfig from './auth.config'
+import { sendMagicLinkEmail } from './auth_email'
 
 export const authComponent = createClient<DataModel>(components.betterAuth)
 
