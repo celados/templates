@@ -28,7 +28,7 @@
       "name": "@app/ui",
       "version": "0.0.0",
       "peerDependencies": {
-        "ripple": "^0.3.110",
+        "ripple": "^0.3.120",
       },
     },
   },
