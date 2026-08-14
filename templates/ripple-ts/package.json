@@ -16,12 +16,12 @@
 		"pack:check": "bun run --cwd packages/ui pack:check"
 	},
 	"devDependencies": {
-		"@ripple-ts/language-server": "^0.3.110",
-		"@ripple-ts/vite-plugin": "^0.3.110",
-		"@tsrx/typescript-plugin": "^0.3.110",
+		"@ripple-ts/language-server": "^0.3.120",
+		"@ripple-ts/vite-plugin": "^0.3.120",
+		"@tsrx/typescript-plugin": "^0.3.120",
 		"skill": "github:ethan-huo/skill#v0.1.30",
 		"typescript": "^5.9.3",
 		"vite": "npm:@voidzero-dev/vite-plus-core",
-		"vite-plus": "^0.2.6"
+		"vite-plus": "^0.2.9"
 	}
 }
