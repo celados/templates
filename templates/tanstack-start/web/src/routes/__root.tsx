@@ -10,7 +10,8 @@ import {
 	createRootRouteWithContext,
 	useRouteContext,
 } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
+import { createMiddleware, createServerFn } from '@tanstack/react-start'
+import { evlogErrorHandler } from 'evlog/nitro/v3'
 import { lazy, Suspense, useEffect, useState } from 'react'
 
 import { DefaultError } from '@/components/default-error'
@@ -32,12 +33,23 @@ const LazyAppDevtools = import.meta.env.DEV
 		)
 	: null
 
+const LazyDesignEntry = import.meta.env.DEV
+	? lazy(() =>
+			import('@/components/designer').then((module) => ({
+				default: module.DesignEntry,
+			})),
+		)
+	: null
+
 type RouterContext = {
 	convexQueryClient: ConvexQueryClient
 	queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+	server: {
+		middleware: [createMiddleware().server(evlogErrorHandler)],
+	},
 	head: () => ({
 		meta: [
 			{
@@ -97,6 +109,11 @@ function RootComponent() {
 			initialToken={context.token}
 		>
 			<Outlet />
+			{LazyDesignEntry ? (
+				<Suspense fallback={null}>
+					<LazyDesignEntry />
+				</Suspense>
+			) : null}
 		</ConvexBetterAuthProvider>
 	)
 }

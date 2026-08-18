@@ -6,14 +6,14 @@ repository does not maintain versioned template releases.
 
 ## Templates
 
-| Template                    | Source directory                        | Runtime                                               |
-| --------------------------- | --------------------------------------- | ----------------------------------------------------- |
-| Astro                       | `templates/astro`                       | Astro 7, Keystatic, React 19 islands, Tailwind CSS v4 |
-| Cloudflare Worker           | `templates/cloudflare-worker`           | Hono, oRPC, Better Auth, Hyperdrive, Drizzle          |
-| Ripple TS                   | `templates/ripple-ts`                   | Ripple, TSRX, Vite+, Bun workspace                    |
-| Ripple TS Browser Extension | `templates/ripple-ts-browser-extension` | Ripple, WXT, Manifest V3, Bun workspace               |
-| TanStack Start              | `templates/tanstack-start`              | TanStack Start, React 19, Tailwind CSS v4             |
-| TanStack Start Multi-site   | `templates/tanstack-start-multisite`    | Two Start sites, shared Convex product core           |
+| Template                    | Source directory                        | Runtime                                                      |
+| --------------------------- | --------------------------------------- | ------------------------------------------------------------ |
+| Astro                       | `templates/astro`                       | Astro 7, Keystatic, React 19 islands, Tailwind CSS v4        |
+| Cloudflare Worker           | `templates/cloudflare-worker`           | Hono, oRPC, Better Auth, Hyperdrive, Drizzle                 |
+| Ripple TS                   | `templates/ripple-ts`                   | Ripple, TSRX, Vite+, Bun workspace                           |
+| Ripple TS Browser Extension | `templates/ripple-ts-browser-extension` | Ripple, WXT, Manifest V3, Bun workspace                      |
+| TanStack Start              | `templates/tanstack-start`              | TanStack Start, React 19, Tailwind CSS v4, `/_design` canvas |
+| TanStack Start Multi-site   | `templates/tanstack-start-multisite`    | Two Start sites, shared Convex product core                  |
 
 Create an Astro project:
 

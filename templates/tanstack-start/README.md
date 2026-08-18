@@ -17,6 +17,55 @@ There is still one root `package.json` and lockfile. Add other root modules such
 as `core/` when the application needs them; create a package only when code must
 be independently consumed and published.
 
+## Design canvas
+
+The designer runtime lives in `web/src/components/designer/`. Project pages live
+in `web/src/design/` and are mounted explicitly from the file route
+`web/src/routes/[_]design.tsx` (`[_]` escapes the leading underscore so the URL
+is `/_design`). During `bun run dev`, open `http://localhost:3000/_design` or
+the floating ◈ Design button. Production DCE drops the designer module graph:
+the route files only lazy-import it behind `import.meta.env.DEV`.
+
+```tsx
+// web/src/design/layout.tsx
+import { Designer } from '@/components/designer'
+import Page1 from '@/design/page1'
+
+export default function DesignLayout() {
+	return <Designer pages={[{ name: 'page1', component: <Page1 /> }]} />
+}
+```
+
+A page with one `component` renders one desktop artboard. Tailwind `md:`
+breakpoints follow the browser, not the frame — extra widths or different
+trees need explicit `variants` (see hero and dashboard in
+`web/src/design/layout.tsx`).
+
+Surface map: `/_design` gallery, `/_design/wall` for every page on one stage,
+`/_design/c/<name>` per page. Camera lives in the URL (`?x&y&z`, `?view=`).
+Keyboard: ⌘K palette, ⌘0 fit, ⌘1 actual size, `[`/`]` switch page, `C`
+annotate. Paste an image onto a stage to pin a reference screenshot.
+
+Annotator: press `C`, click an element, write a comment. TanStack devtools
+injects `data-tsd-source`, so Copy Markdown leads with
+`web/src/...:line:column` and falls back to a selector plus artboard-relative
+position. Demo pages under `web/src/design/` can be deleted in a real project.
+
+## Request logging
+
+The template includes [evlog](https://www.evlog.dev/integrate/frameworks/tanstack-start)
+through the Nitro v3 module. Requests are emitted as structured wide events, and
+`evlogErrorHandler` keeps structured `createError()` responses intact. The
+default service name is `tanstack-start`; configure drains and enrichers in
+Nitro plugins when the application has a production logging destination.
+
+The template deploys to Cloudflare Workers. The automatic request integration
+is enabled there, but `useRequest().context.log` is an async-context API that
+evlog documents for Node.js and Bun; do not use it in Worker-only code without
+first validating the generated Worker runtime. For Worker-native request
+logging, use evlog's [`evlog/workers`](https://www.evlog.dev/integrate/frameworks/cloudflare-workers)
+adapter at the Worker entry boundary.
+
 ## Create a project
 
 The default branch is the only template source. The template does not publish or
