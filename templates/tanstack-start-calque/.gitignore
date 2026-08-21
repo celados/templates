@@ -1,0 +1,21 @@
+node_modules
+.agents/skills/.gitignore
+.DS_Store
+dist
+dist-ssr
+playwright-report
+test-results
+*.local
+.env*
+!.env
+!.env.example
+.tanstack
+.wireit
+.wrangler
+.output
+.vinxi
+__unconfig*
+todos.json
+
+# TypeScript
+*.tsbuildinfo

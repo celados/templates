@@ -1,0 +1,22 @@
+@reference './styles.css';
+
+@layer components {
+	.prose-content > :where(h2, h3) {
+		@apply mt-10 mb-4 font-semibold tracking-tight;
+	}
+	.prose-content > h2 {
+		@apply text-2xl;
+	}
+	.prose-content > :where(p, ul, ol) {
+		@apply my-5 leading-7 text-foreground/85;
+	}
+	.prose-content > :where(ul, ol) {
+		@apply pl-6;
+	}
+	.prose-content > ul {
+		@apply list-disc;
+	}
+	.prose-content a {
+		@apply underline underline-offset-4;
+	}
+}

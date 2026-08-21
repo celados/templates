@@ -13,6 +13,7 @@ repository does not maintain versioned template releases.
 | Ripple TS                   | `templates/ripple-ts`                   | Ripple, TSRX, Vite+, Bun workspace                           |
 | Ripple TS Browser Extension | `templates/ripple-ts-browser-extension` | Ripple, WXT, Manifest V3, Bun workspace                      |
 | TanStack Start              | `templates/tanstack-start`              | TanStack Start, React 19, Tailwind CSS v4, `/_design` canvas |
+| TanStack Start Calque       | `templates/tanstack-start-calque`       | Thin clone UI, Cloudflare Workers, Calque workflow           |
 | TanStack Start Multi-site   | `templates/tanstack-start-multisite`    | Two Start sites, shared Convex product core                  |
 
 Create an Astro project:
@@ -71,6 +72,19 @@ Create a TanStack Start project:
 
 ```bash
 vp create github:celados/templates/templates/tanstack-start \
+  --package-manager bun \
+  --no-agent \
+  --editor vscode \
+  --hooks \
+  --git \
+  --no-interactive \
+  -- <project-directory>
+```
+
+Create a Calque-ready TanStack Start project:
+
+```bash
+vp create github:celados/templates/templates/tanstack-start-calque \
   --package-manager bun \
   --no-agent \
   --editor vscode \
