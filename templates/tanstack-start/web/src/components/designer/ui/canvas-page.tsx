@@ -11,6 +11,7 @@ import {
 } from '../nav'
 import { artboardKey, layoutViews } from '../stage/layout'
 import { Stage } from '../stage/stage'
+import { DeviceSwitcher } from './device-switcher'
 
 function readCamera(search: Record<string, unknown>): Camera | undefined {
 	const { x, y, z } = search
@@ -49,10 +50,13 @@ export function CanvasPage() {
 	const items = useMemo(() => (canvas ? layoutViews(canvas) : []), [canvas])
 
 	// Camera deep link: written back debounced so a copied URL reproduces the
-	// exact framing for review.
+	// exact framing for review. The focused view rides along — dropping it
+	// here would let any camera motion erase a device-pill selection.
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(
 		undefined,
 	)
+	const onViewRef = useRef(search.view)
+	onViewRef.current = typeof search.view === 'string' ? search.view : undefined
 	const onCameraMove = useCallback(
 		(camera: Camera) => {
 			if (!canvasId) return
@@ -63,6 +67,7 @@ export function CanvasPage() {
 						x: Math.round(camera.x),
 						y: Math.round(camera.y),
 						z: Math.round(camera.zoom * 1000) / 1000,
+						...(onViewRef.current ? { view: onViewRef.current } : {}),
 					},
 					replace: true,
 				})
@@ -78,6 +83,18 @@ export function CanvasPage() {
 				? artboardKey(canvas.id, search.view)
 				: undefined
 			: undefined
+
+	// Device pills reuse the `?view=` deep link; clearing it refits the stage.
+	const onSelectView = useCallback(
+		(viewId: string | undefined) => {
+			if (!canvasId) return
+			navigate(`/_design/c/${canvasId}`, {
+				search: viewId ? { view: viewId } : {},
+				replace: true,
+			})
+		},
+		[canvasId, navigate],
+	)
 
 	// [ / ] step through canvases in registry order.
 	useEffect(() => {
@@ -122,15 +139,27 @@ export function CanvasPage() {
 	}
 
 	return (
-		<Stage
-			items={items}
-			measured={measured}
-			onMeasure={onMeasure}
-			initialCamera={readCamera(search)}
-			focusKey={focusKey}
-			fitKey={canvas.id}
-			onCameraMove={onCameraMove}
-			canvas={canvas}
-		/>
+		<div className="dc-canvas-page">
+			<Stage
+				items={items}
+				measured={measured}
+				onMeasure={onMeasure}
+				initialCamera={readCamera(search)}
+				focusKey={focusKey}
+				fitKey={canvas.id}
+				onCameraMove={onCameraMove}
+				canvas={canvas}
+			/>
+			<DeviceSwitcher
+				canvas={canvas}
+				activeViewId={
+					typeof search.view === 'string' &&
+					canvas.views.some((view) => view.id === search.view)
+						? search.view
+						: undefined
+				}
+				onSelect={onSelectView}
+			/>
+		</div>
 	)
 }

@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import type { PlacedArtboard } from './layout'
 
 import { viewport } from '../api'
+import { ArtboardErrorBoundary } from './artboard-error-boundary'
 import { useStageZoom } from './stage'
 
 const presetName = (width: number): string | null => {
@@ -134,7 +135,9 @@ export const Artboard = memo(function Artboard(props: {
 					color: surface === 'dark' ? '#fafafa' : '#09090b',
 				}}
 			>
-				{item.view.render()}
+				<ArtboardErrorBoundary label={title}>
+					{item.view.render()}
+				</ArtboardErrorBoundary>
 			</div>
 		</div>
 	)

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useDesignPathname } from '../nav'
 import { Navigator } from './navigator'
 import { CommandPalette } from './palette'
+import { ShortcutsOverlay } from './shortcuts'
 
 import '../design.css'
 
@@ -38,6 +39,7 @@ export function DesignShell() {
 			</div>
 			<Navigator open={navOpen === true} onToggle={toggleNav} />
 			<CommandPalette />
+			<ShortcutsOverlay />
 		</div>
 	)
 }

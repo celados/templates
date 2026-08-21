@@ -54,6 +54,8 @@ export function Minimap(props: MinimapProps) {
 	}
 
 	const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+		// Keep the stage's pan handler out of minimap drags.
+		event.stopPropagation()
 		event.currentTarget.setPointerCapture(event.pointerId)
 		dragging.current = true
 		jump(event)
@@ -71,6 +73,7 @@ export function Minimap(props: MinimapProps) {
 	return (
 		<div
 			className="dc-minimap"
+			data-dc-chrome
 			style={{ width: MAP_WIDTH, height: MAP_HEIGHT }}
 			onPointerDown={onPointerDown}
 			onPointerMove={onPointerMove}

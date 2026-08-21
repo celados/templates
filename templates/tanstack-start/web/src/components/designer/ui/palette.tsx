@@ -20,7 +20,7 @@ type PaletteItem = {
 }
 
 /** Subsequence match with a bonus for consecutive runs; 0 = no match. */
-function fuzzyScore(query: string, text: string): number {
+export function fuzzyScore(query: string, text: string): number {
 	if (!query) return 1
 	let score = 0
 	let run = 0

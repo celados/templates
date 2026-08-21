@@ -28,20 +28,39 @@ export type Annotation = {
 const storageKey = (canvasId: string) =>
 	`design-canvas:annotations:v1:${canvasId}`
 
+/** Structural validation shared by localStorage loads and file imports. */
+export function parseAnnotations(raw: unknown): Annotation[] {
+	if (!Array.isArray(raw)) return []
+	return raw.filter(
+		(entry): entry is Annotation =>
+			typeof entry === 'object' &&
+			entry !== null &&
+			typeof (entry as Annotation).id === 'string' &&
+			typeof (entry as Annotation).comment === 'string' &&
+			typeof (entry as Annotation).target === 'object',
+	)
+}
+
+/** Union by id; on collision the newer comment wins so re-imports update. */
+export function mergeAnnotations(
+	current: Annotation[],
+	incoming: Annotation[],
+): Annotation[] {
+	const byId = new Map(current.map((annotation) => [annotation.id, annotation]))
+	for (const annotation of incoming) {
+		const existing = byId.get(annotation.id)
+		if (!existing || annotation.createdAt > existing.createdAt) {
+			byId.set(annotation.id, annotation)
+		}
+	}
+	return [...byId.values()].sort((a, b) => a.createdAt - b.createdAt)
+}
+
 export function loadAnnotations(canvasId: string): Annotation[] {
 	try {
 		const raw = localStorage.getItem(storageKey(canvasId))
 		if (!raw) return []
-		const parsed: unknown = JSON.parse(raw)
-		if (!Array.isArray(parsed)) return []
-		return parsed.filter(
-			(entry): entry is Annotation =>
-				typeof entry === 'object' &&
-				entry !== null &&
-				typeof (entry as Annotation).id === 'string' &&
-				typeof (entry as Annotation).comment === 'string' &&
-				typeof (entry as Annotation).target === 'object',
-		)
+		return parseAnnotations(JSON.parse(raw))
 	} catch {
 		return []
 	}

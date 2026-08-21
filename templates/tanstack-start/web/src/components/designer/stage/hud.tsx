@@ -25,7 +25,7 @@ export function Hud(props: HudProps) {
 	}, [])
 
 	return (
-		<div className="dc-hud">
+		<div className="dc-hud" data-dc-chrome>
 			<button
 				type="button"
 				className="dc-hud-button"

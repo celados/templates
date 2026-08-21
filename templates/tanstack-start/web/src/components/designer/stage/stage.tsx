@@ -79,11 +79,14 @@ export function Stage(props: StageProps) {
 	)
 	const [size, setSize] = useState<Size | null>(null)
 	const [panning, setPanning] = useState(false)
+	// Mirrored to state only for the cursor affordance; the hot paths keep
+	// reading the ref so keydown never re-renders the stage.
+	const [spaceHeld, setSpaceHeld] = useState(false)
 
 	const cameraRef = useRef(camera)
 	cameraRef.current = camera
 	const frameRef = useRef(0)
-	const spaceHeld = useRef(false)
+	const spaceDown = useRef(false)
 	const drag = useRef<{
 		pointerId: number
 		lastX: number
@@ -158,6 +161,7 @@ export function Stage(props: StageProps) {
 	// Fit before paint. Same Stage stays mounted across page switches; rAF
 	// here would show the previous camera (or 0,0) for a frame.
 	const prevFitKey = useRef<string | undefined>(undefined)
+	const prevFocusKey = useRef<string | undefined>(undefined)
 	useLayoutEffect(() => {
 		const viewport =
 			size ??
@@ -170,9 +174,11 @@ export function Stage(props: StageProps) {
 		if (!viewport || viewport.width === 0 || viewport.height === 0) return
 
 		const keyChanged = prevFitKey.current !== props.fitKey
+		const focusChanged = prevFocusKey.current !== props.focusKey
 		const first = !didInitCamera.current
-		if (!first && !keyChanged) return
+		if (!first && !keyChanged && !focusChanged) return
 		prevFitKey.current = props.fitKey
+		prevFocusKey.current = props.focusKey
 		didInitCamera.current = true
 
 		if (first && props.initialCamera) {
@@ -238,12 +244,21 @@ export function Stage(props: StageProps) {
 	// stage only so artboard content stays interactive.
 	const onPointerDown = useCallback(
 		(event: ReactPointerEvent<HTMLDivElement>) => {
+			// Chrome overlays (HUD, minimap) live inside the stage for coordinate
+			// space; their interactions must never start a pan or lose the click
+			// to the container's pointer capture.
+			if (
+				event.target instanceof Element &&
+				event.target.closest('[data-dc-chrome]')
+			) {
+				return
+			}
 			const onArtboard =
 				event.target instanceof HTMLElement &&
 				event.target.closest('[data-artboard]') !== null
 			const mayPan =
 				event.button === 1 ||
-				spaceHeld.current ||
+				spaceDown.current ||
 				(event.button === 0 && !onArtboard)
 			if (!mayPan) return
 			event.preventDefault()
@@ -280,8 +295,11 @@ export function Stage(props: StageProps) {
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (isEditableTarget(event.target)) return
-			if (event.key === ' ') {
-				spaceHeld.current = true
+			// Match by code too: some layouts and synthetic events don't deliver
+			// key === ' '.
+			if (event.key === ' ' || event.code === 'Space') {
+				spaceDown.current = true
+				setSpaceHeld(true)
 				if (!event.repeat) event.preventDefault()
 				return
 			}
@@ -319,13 +337,23 @@ export function Stage(props: StageProps) {
 			}
 		}
 		const onKeyUp = (event: KeyboardEvent) => {
-			if (event.key === ' ') spaceHeld.current = false
+			if (event.key === ' ' || event.code === 'Space') {
+				spaceDown.current = false
+				setSpaceHeld(false)
+			}
+		}
+		// A focus loss mid-press would leave the flag stuck; reset it.
+		const onBlur = () => {
+			spaceDown.current = false
+			setSpaceHeld(false)
 		}
 		window.addEventListener('keydown', onKeyDown)
 		window.addEventListener('keyup', onKeyUp)
+		window.addEventListener('blur', onBlur)
 		return () => {
 			window.removeEventListener('keydown', onKeyDown)
 			window.removeEventListener('keyup', onKeyUp)
+			window.removeEventListener('blur', onBlur)
 		}
 	}, [fitAll, zoomTo, scheduleCamera])
 
@@ -403,6 +431,7 @@ export function Stage(props: StageProps) {
 						ref={containerRef}
 						className="dc-stage"
 						data-panning={panning || undefined}
+						data-space-pan={spaceHeld || undefined}
 						onPointerDown={onPointerDown}
 						onPointerMove={onPointerMove}
 						onPointerUp={endDrag}

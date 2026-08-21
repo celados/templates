@@ -10,26 +10,44 @@ export const viewport = {
 
 export type ViewportName = keyof typeof viewport
 
+export type DeviceName = 'desktop' | 'tablet' | 'mobile'
+
 export type DesignerPageVariant = {
 	name: string
 	label?: string
 	width?: number
+	/**
+	 * Explicit device class for the canvas switcher; when omitted the class is
+	 * inferred from the width band.
+	 */
+	device?: DeviceName
 	minHeight?: number
 	dark?: boolean
 	component: ReactNode
 }
 
-export type DesignerPage = {
+type DesignerPageBase = {
 	/** Unique kebab-case id; becomes /_design/c/<name>. */
 	name: string
 	title?: string
 	group?: string
 	summary?: string
 	tags?: string[]
-	/** Single tree shown at desktop + mobile unless `variants` is set. */
-	component?: ReactNode
-	variants?: DesignerPageVariant[]
 }
+
+/**
+ * Exactly one of `component` or `variants` — the union makes a page with both
+ * (or neither) a compile error at the definition site instead of a runtime
+ * throw inside the designer.
+ */
+export type DesignerPage =
+	| (DesignerPageBase & {
+			/** Single tree shown at desktop width unless `variants` is set. */
+			component: ReactNode
+	  })
+	| (DesignerPageBase & {
+			variants: DesignerPageVariant[]
+	  })
 
 /** Normalized page used inside the designer runtime. */
 export type CanvasView = {
@@ -37,6 +55,7 @@ export type CanvasView = {
 	label: string
 	summary?: string
 	width: number
+	device?: DeviceName
 	minHeight?: number
 	dark?: boolean
 	render: () => ReactNode
@@ -55,9 +74,13 @@ export function resolveDesignerPages(
 	pages: DesignerPage[],
 ): CanvasDefinition[] {
 	return pages.map((page) => {
+		// The union makes both-or-neither unrepresentable in TS; this runtime
+		// guard only exists for JS callers and empty variant arrays.
 		const variants =
-			page.variants && page.variants.length > 0
-				? page.variants
+			'variants' in page
+				? page.variants.length > 0
+					? page.variants
+					: []
 				: page.component != null
 					? [
 							{
@@ -83,6 +106,7 @@ export function resolveDesignerPages(
 				id: variant.name,
 				label: variant.label ?? variant.name,
 				width: variant.width ?? viewport.desktop,
+				device: variant.device,
 				minHeight: variant.minHeight,
 				dark: variant.dark,
 				render: () => variant.component,

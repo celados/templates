@@ -8,7 +8,12 @@ import type { Annotation, AnnotationTarget } from './model'
 import { useStageApi, useStageCamera } from '../stage'
 import { installSourceCapture } from './capture'
 import { annotationsToMarkdown } from './markdown'
-import { loadAnnotations, saveAnnotations } from './model'
+import {
+	loadAnnotations,
+	mergeAnnotations,
+	parseAnnotations,
+	saveAnnotations,
+} from './model'
 import { captureTarget, resolveTarget } from './resolve'
 
 type Draft = {
@@ -139,6 +144,37 @@ export function Annotator(props: {
 			console.warn('[design] clipboard write failed')
 		}
 	}, [canvas, annotations])
+
+	// Export writes a review artifact that can be committed or shared; import
+	// merges non-destructively so two reviewers' files combine.
+	const exportJson = useCallback(() => {
+		const blob = new Blob([JSON.stringify(annotations, null, '\t')], {
+			type: 'application/json',
+		})
+		const url = URL.createObjectURL(blob)
+		const anchor = document.createElement('a')
+		anchor.href = url
+		anchor.download = `review-${canvas.id}.json`
+		anchor.click()
+		URL.revokeObjectURL(url)
+	}, [canvas.id, annotations])
+
+	const fileInputRef = useRef<HTMLInputElement>(null)
+	// One-shot import feedback; null = nothing to show.
+	const [importedCount, setImportedCount] = useState<number | null>(null)
+	const importJson = useCallback(
+		async (file: File) => {
+			try {
+				const incoming = parseAnnotations(JSON.parse(await file.text()))
+				persist(mergeAnnotations(sorted, incoming))
+				setImportedCount(incoming.length)
+				setTimeout(() => setImportedCount(null), 2500)
+			} catch {
+				console.warn('[design] annotation import failed to parse')
+			}
+		},
+		[sorted, persist],
+	)
 
 	// Global commands: HUD buttons, palette actions, keyboard.
 	useEffect(() => {
@@ -440,6 +476,41 @@ export function Annotator(props: {
 					>
 						{copied ? 'Copied ✓' : 'Copy Markdown'}
 					</button>
+					<div className="mt-1 flex gap-1">
+						<button
+							type="button"
+							className="dc-button flex-1 justify-center"
+							disabled={sorted.length === 0}
+							title="Download annotations as JSON (committable review artifact)"
+							onClick={exportJson}
+						>
+							Export
+						</button>
+						<button
+							type="button"
+							className="dc-button flex-1 justify-center"
+							title="Merge annotations from an exported JSON file"
+							onClick={() => fileInputRef.current?.click()}
+						>
+							Import
+						</button>
+						<input
+							ref={fileInputRef}
+							type="file"
+							accept="application/json,.json"
+							hidden
+							onChange={(event) => {
+								const file = event.target.files?.[0]
+								if (file) void importJson(file)
+								event.target.value = ''
+							}}
+						/>
+					</div>
+					{importedCount !== null ? (
+						<p className="mt-1 text-center text-[11px] text-neutral-500">
+							Merged {importedCount} annotation{importedCount === 1 ? '' : 's'}
+						</p>
+					) : null}
 				</aside>
 			) : null}
 		</>

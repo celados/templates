@@ -51,6 +51,16 @@
 .dc-stage[data-panning] {
 	cursor: grabbing;
 }
+/* Space-held pan affordance must beat artboard content cursors (buttons,
+   text selection) so the hand shows everywhere inside the stage. */
+.dc-stage[data-space-pan],
+.dc-stage[data-space-pan] * {
+	cursor: grab;
+}
+.dc-stage[data-panning],
+.dc-stage[data-panning] * {
+	cursor: grabbing;
+}
 
 .dc-world {
 	position: absolute;
@@ -151,6 +161,37 @@
 
 /* ── HUD ───────────────────────────────────────────────────────────── */
 
+/* Full-size relative anchor so canvas-scoped overlays (device bar) can sit
+   above the absolutely-positioned stage. */
+.dc-canvas-page {
+	position: absolute;
+	inset: 0;
+}
+
+.dc-device-bar {
+	position: absolute;
+	top: 16px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	border-radius: 10px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(20 20 23 / 0.92);
+	padding: 3px;
+	box-shadow: 0 8px 28px rgb(0 0 0 / 0.45);
+	backdrop-filter: blur(10px);
+}
+.dc-device-bar .dc-chip-button {
+	min-width: 64px;
+	justify-content: center;
+}
+.dc-device-bar .dc-chip-button:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
 .dc-hud {
 	position: absolute;
 	bottom: 16px;
@@ -183,6 +224,32 @@
 	width: 1px;
 	height: 16px;
 	background: rgb(255 255 255 / 0.1);
+}
+
+/* ── Shortcuts overlay ─────────────────────────────────────────────── */
+
+.dc-shortcuts-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 60;
+	display: grid;
+	place-items: center;
+	background: rgb(0 0 0 / 0.55);
+	backdrop-filter: blur(2px);
+}
+.dc-shortcuts {
+	width: 320px;
+	border-radius: 12px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(20 20 23 / 0.97);
+	padding: 14px;
+	box-shadow: 0 24px 64px rgb(0 0 0 / 0.5);
+}
+.dc-shortcut-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 3px 4px;
 }
 
 /* ── Minimap ───────────────────────────────────────────────────────── */
@@ -537,7 +604,9 @@
 	color: #a3a3a3;
 	cursor: pointer;
 }
-.dc-chip-button:hover {
+/* Hover must not touch the active pill: its inverted light surface pairs with
+   dark ink, and a blanket hover would paint light-on-light. */
+.dc-chip-button:not(.dc-chip-button-active):hover {
 	color: #e4e4e7;
 	border-color: rgb(255 255 255 / 0.2);
 }
