@@ -10,11 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DesignRouteImport } from './routes/[_]design'
-import { Route as DesignIndexRouteImport } from './routes/[_]design/index'
-import { Route as DesignWallRouteImport } from './routes/[_]design/wall'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
-import { Route as DesignCCanvasIdRouteImport } from './routes/[_]design/c.$canvasId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -22,30 +18,10 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DesignRoute = DesignRouteImport.update({
-  id: '/_design',
-  path: '/_design',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DesignIndexRoute = DesignIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DesignRoute,
-} as any)
-const DesignWallRoute = DesignWallRouteImport.update({
-  id: '/wall',
-  path: '/wall',
-  getParentRoute: () => DesignRoute,
-} as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
   id: '/auth/sign-in',
   path: '/auth/sign-in',
   getParentRoute: () => rootRouteImport,
-} as any)
-const DesignCCanvasIdRoute = DesignCCanvasIdRouteImport.update({
-  id: '/c/$canvasId',
-  path: '/c/$canvasId',
-  getParentRoute: () => DesignRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -55,63 +31,30 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/_design': typeof DesignRouteWithChildren
-  '/_design/wall': typeof DesignWallRoute
   '/auth/sign-in': typeof AuthSignInRoute
-  '/_design/': typeof DesignIndexRoute
-  '/_design/c/$canvasId': typeof DesignCCanvasIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/_design/wall': typeof DesignWallRoute
   '/auth/sign-in': typeof AuthSignInRoute
-  '/_design': typeof DesignIndexRoute
-  '/_design/c/$canvasId': typeof DesignCCanvasIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_design': typeof DesignRouteWithChildren
-  '/_design/wall': typeof DesignWallRoute
   '/auth/sign-in': typeof AuthSignInRoute
-  '/_design/': typeof DesignIndexRoute
-  '/_design/c/$canvasId': typeof DesignCCanvasIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/_design'
-    | '/_design/wall'
-    | '/auth/sign-in'
-    | '/_design/'
-    | '/_design/c/$canvasId'
-    | '/api/auth/$'
+  fullPaths: '/' | '/auth/sign-in' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/_design/wall'
-    | '/auth/sign-in'
-    | '/_design'
-    | '/_design/c/$canvasId'
-    | '/api/auth/$'
-  id:
-    | '__root__'
-    | '/'
-    | '/_design'
-    | '/_design/wall'
-    | '/auth/sign-in'
-    | '/_design/'
-    | '/_design/c/$canvasId'
-    | '/api/auth/$'
+  to: '/' | '/auth/sign-in' | '/api/auth/$'
+  id: '__root__' | '/' | '/auth/sign-in' | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DesignRoute: typeof DesignRouteWithChildren
   AuthSignInRoute: typeof AuthSignInRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -125,40 +68,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_design': {
-      id: '/_design'
-      path: '/_design'
-      fullPath: '/_design'
-      preLoaderRoute: typeof DesignRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_design/': {
-      id: '/_design/'
-      path: '/'
-      fullPath: '/_design/'
-      preLoaderRoute: typeof DesignIndexRouteImport
-      parentRoute: typeof DesignRoute
-    }
-    '/_design/wall': {
-      id: '/_design/wall'
-      path: '/wall'
-      fullPath: '/_design/wall'
-      preLoaderRoute: typeof DesignWallRouteImport
-      parentRoute: typeof DesignRoute
-    }
     '/auth/sign-in': {
       id: '/auth/sign-in'
       path: '/auth/sign-in'
       fullPath: '/auth/sign-in'
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_design/c/$canvasId': {
-      id: '/_design/c/$canvasId'
-      path: '/c/$canvasId'
-      fullPath: '/_design/c/$canvasId'
-      preLoaderRoute: typeof DesignCCanvasIdRouteImport
-      parentRoute: typeof DesignRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -170,36 +85,11 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DesignRouteChildren {
-  DesignWallRoute: typeof DesignWallRoute
-  DesignIndexRoute: typeof DesignIndexRoute
-  DesignCCanvasIdRoute: typeof DesignCCanvasIdRoute
-}
-
-const DesignRouteChildren: DesignRouteChildren = {
-  DesignWallRoute: DesignWallRoute,
-  DesignIndexRoute: DesignIndexRoute,
-  DesignCCanvasIdRoute: DesignCCanvasIdRoute,
-}
-
-const DesignRouteWithChildren =
-  DesignRoute._addFileChildren(DesignRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DesignRoute: DesignRouteWithChildren,
   AuthSignInRoute: AuthSignInRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

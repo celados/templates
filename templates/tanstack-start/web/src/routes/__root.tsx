@@ -33,14 +33,6 @@ const LazyAppDevtools = import.meta.env.DEV
 		)
 	: null
 
-const LazyDesignEntry = import.meta.env.DEV
-	? lazy(() =>
-			import('@/components/designer').then((module) => ({
-				default: module.DesignEntry,
-			})),
-		)
-	: null
-
 type RouterContext = {
 	convexQueryClient: ConvexQueryClient
 	queryClient: QueryClient
@@ -109,11 +101,6 @@ function RootComponent() {
 			initialToken={context.token}
 		>
 			<Outlet />
-			{LazyDesignEntry ? (
-				<Suspense fallback={null}>
-					<LazyDesignEntry />
-				</Suspense>
-			) : null}
 		</ConvexBetterAuthProvider>
 	)
 }

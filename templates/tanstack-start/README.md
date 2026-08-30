@@ -17,39 +17,19 @@ There is still one root `package.json` and lockfile. Add other root modules such
 as `core/` when the application needs them; create a package only when code must
 be independently consumed and published.
 
-## Design canvas
+## Optional Design Canvas
 
-The designer runtime lives in `web/src/components/designer/`. Project pages live
-in `web/src/design/` and are mounted explicitly from the file route
-`web/src/routes/[_]design.tsx` (`[_]` escapes the leading underscore so the URL
-is `/_design`). During `bun run dev`, open `http://localhost:3000/_design` or
-the floating ◈ Design button. Production DCE drops the designer module graph:
-the route files only lazy-import it behind `import.meta.env.DEV`.
+[Design Canvas](https://github.com/celados/design-canvas) is an opt-in external
+source dependency. Install its editable runtime, TanStack Start routes, and
+example pages with:
 
-```tsx
-// web/src/design/layout.tsx
-import { Designer } from '@/components/designer'
-import Page1 from '@/design/page1'
-
-export default function DesignLayout() {
-	return <Designer pages={[{ name: 'page1', component: <Page1 /> }]} />
-}
+```bash
+bun run design-canvas:add
 ```
 
-A page with one `component` renders one desktop artboard. Tailwind `md:`
-breakpoints follow the browser, not the frame — extra widths or different
-trees need explicit `variants` (see hero and dashboard in
-`web/src/design/layout.tsx`).
-
-Surface map: `/_design` gallery, `/_design/wall` for every page on one stage,
-`/_design/c/<name>` per page. Camera lives in the URL (`?x&y&z`, `?view=`).
-Keyboard: ⌘K palette, ⌘0 fit, ⌘1 actual size, `[`/`]` switch page, `C`
-annotate. Paste an image onto a stage to pin a reference screenshot.
-
-Annotator: press `C`, click an element, write a comment. TanStack devtools
-injects `data-tsd-source`, so Copy Markdown leads with
-`web/src/...:line:column` and falls back to a selector plus artboard-relative
-position. Demo pages under `web/src/design/` can be deleted in a real project.
+Then start the app and open `http://localhost:3000/_design`. The installer does
+not modify the product-owned root route; follow the Design Canvas README only
+when the optional floating entry is useful.
 
 ## Request logging
 
