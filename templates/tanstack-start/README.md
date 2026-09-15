@@ -158,7 +158,7 @@ The organization Oxfmt baseline lives in `tooling/oxfmt.ts`; generated Convex,
 TanStack Router, and Cloudflare type files are excluded from formatting.
 
 The Agent Native project contract and guidance are maintained as a shared layer
-with the Astro template.
+with the other organization templates.
 
 Authentication implementation sources:
 

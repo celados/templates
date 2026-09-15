@@ -108,14 +108,14 @@ Use `calque link` during capture and assembly. Generated projection files under
 `src/calque/` and localized assets under `public/calque/` remain read-only. Run
 `calque export` before CI or deployment.
 
-## Boundary with Astro
+## Boundary with content-first static frameworks
 
 This starter closes most content-site infrastructure gaps: static path
 enumeration, schema-checked content, Markdown/MDX, responsive local images,
 SEO/RSS/sitemap/robots, static deployment, and production-output tests. The
 remaining difference is architectural: TanStack Start hydrates the React app;
-it does not provide Astro's zero-JavaScript default, `.astro` component compiler,
-or native islands. Do not describe this template as zero-JS.
+it does not provide a zero-JavaScript default or native islands. Do not describe
+this template as zero-JS.
 
 The narrow extraction candidates for a future Vite plugin are
 `tooling/ssg-content.ts`, the image policy, feed generation, and

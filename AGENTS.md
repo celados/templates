@@ -19,7 +19,7 @@ Shared files use a source-to-materialized-copy model:
 shared/<domain>/<file>
         │
         └── scripts/sync-shared.ts
-                ├── templates/astro/<target>
+                ├── templates/cloudflare-worker/<target>
                 └── templates/tanstack-start/<target>
 ```
 
@@ -42,8 +42,6 @@ framework-specific values such as its Tailwind stylesheet path.
 
 ## Layout
 
-- `templates/astro/`: standalone Astro template and Astro-specific runtime,
-  build, and Cloudflare static-assets configuration.
 - `templates/cloudflare-worker/`: backend-only Cloudflare Worker template with
   oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle.
 - `templates/ripple-ts/`: standalone Ripple TS small-app workspace with a
@@ -103,22 +101,14 @@ Change mappings and consumers together.
 - Oxfmt options belong in the Vite+ `fmt` block, not a competing
   `.oxfmtrc.jsonc`. Keep the common options in `shared/tooling/oxfmt.ts` and
   compose them from each template's `vite.config.ts`.
-- Astro remains static by default and deploys `dist/` as Cloudflare Worker
-  static assets. Do not add the Cloudflare adapter until on-demand rendering or
-  another Worker runtime feature is actually required.
-- Astro's Keystatic integration uses local filesystem storage for authoring.
-  Production builds set `SKIP_KEYSTATIC=true`, omit the server-only Admin/API
-  routes, and render committed Markdoc content statically. Do not claim a
-  deployed `/keystatic` CMS without moving to a Keystatic-supported Node.js
-  host and GitHub or Cloud storage.
 - TanStack Start uses the Cloudflare Vite plugin for its SSR environment. Do
-  not copy that plugin into the static Astro template for symmetry.
+  not copy that plugin into backend-only or static-output templates for symmetry.
 - Cloudflare Worker exposes the oRPC RPC protocol only. Its absence of OpenAPI
   dependencies, handlers, specifications, and reference UI is intentional.
 
 ## Generated and Ignored Artifacts
 
-- Do not commit `node_modules/`, `dist/`, `.astro/`, or `.wrangler/` output.
+- Do not commit `node_modules/`, `dist/`, or `.wrangler/` output.
 - TanStack Router may regenerate `src/route-tree.gen.ts`. Do not hand-format
   it; the template intentionally excludes it from formatter drift.
 - `bun run cf-typegen` owns
@@ -151,9 +141,8 @@ After changing a shared source, run `bun run shared:sync` before validation.
 `bun run build` builds every template.
 
 For a framework-local investigation, run scripts from that template directory
-or through `bun run --cwd templates/<name> <script>`. Astro lifecycle commands
-must go through its package scripts (`vp run <script>`), while TanStack Start's
-Vite lifecycle may use `vp dev`, `vp check`, and `vp build` directly.
+or through `bun run --cwd templates/<name> <script>`. TanStack Start's Vite
+lifecycle may use `vp dev`, `vp check`, and `vp build` directly.
 
 After changing template extraction, dependencies, editor/agent setup, hooks, or
 shared materialization, smoke-test the published GitHub subdirectory with the
@@ -176,5 +165,4 @@ Use current official documentation for tool behavior that can drift:
 - Vite+ create: https://viteplus.dev/guide/create
 - Vite+ format: https://viteplus.dev/guide/fmt
 - Vite+ hooks: https://viteplus.dev/guide/commit-hooks
-- Astro on Cloudflare: https://docs.astro.build/en/guides/deploy/cloudflare/
 - Cloudflare Vite plugin: https://developers.cloudflare.com/workers/vite-plugin/

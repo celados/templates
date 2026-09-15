@@ -15,13 +15,8 @@ const root = resolve(import.meta.dir, "..");
 const checkOnly = process.argv.includes("--check");
 const mappings = [
   {
-    source: "shared/agent/AGENTS.md",
-    targets: ["templates/astro/AGENTS.md"],
-  },
-  {
     source: "shared/agent/install-skills.mjs",
     targets: [
-      "templates/astro/scripts/install-skills.mjs",
       "templates/cloudflare-worker/scripts/install-skills.mjs",
       "templates/ripple-ts-browser-extension/scripts/install-skills.mjs",
       "templates/ripple-ts/scripts/install-skills.mjs",
@@ -77,7 +72,6 @@ const mappings = [
   {
     source: "shared/editor/vscode/extensions.json",
     targets: [
-      "templates/astro/.vscode/extensions.json",
       "templates/cloudflare-worker/.vscode/extensions.json",
       "templates/tanstack-start/.vscode/extensions.json",
       "templates/tanstack-start-calque/.vscode/extensions.json",
@@ -87,7 +81,6 @@ const mappings = [
   {
     source: "shared/editor/vscode/settings.json",
     targets: [
-      "templates/astro/.vscode/settings.json",
       "templates/cloudflare-worker/.vscode/settings.json",
       "templates/ripple-ts-browser-extension/.vscode/settings.json",
       "templates/ripple-ts/.vscode/settings.json",
@@ -108,10 +101,6 @@ const mappings = [
     ],
   },
   {
-    source: "shared/skills/sigil/manifest.json",
-    targets: ["templates/astro/.agents/skills/manifest.json"],
-  },
-  {
     source: "shared/skills/tanstack-start/manifest.json",
     targets: [
       "templates/tanstack-start/.agents/skills/manifest.json",
@@ -122,7 +111,6 @@ const mappings = [
   {
     source: "shared/github/workflows/ci.yml",
     targets: [
-      "templates/astro/.github/workflows/ci.yml",
       "templates/cloudflare-worker/.github/workflows/ci.yml",
       "templates/ripple-ts/.github/workflows/ci.yml",
       "templates/tanstack-start-calque/.github/workflows/ci.yml",
@@ -133,7 +121,6 @@ const mappings = [
   {
     source: "shared/template/lib/utils.ts",
     targets: [
-      "templates/astro/src/lib/utils.ts",
       "templates/tanstack-start-calque/src/lib/utils.ts",
       "templates/tanstack-start/web/src/lib/utils.ts",
       "templates/tanstack-start-multisite/shared/lib/utils.ts",
@@ -142,7 +129,6 @@ const mappings = [
   {
     source: "shared/template/styles/global.css",
     targets: [
-      "templates/astro/src/styles/global.css",
       "templates/tanstack-start-calque/src/styles.css",
       "templates/tanstack-start/web/src/styles.css",
       "templates/tanstack-start-multisite/shared/styles.css",
@@ -151,7 +137,6 @@ const mappings = [
   {
     source: "shared/tooling/oxfmt.ts",
     targets: [
-      "templates/astro/tooling/oxfmt.ts",
       "templates/cloudflare-worker/tooling/oxfmt.ts",
       "templates/ripple-ts-browser-extension/tooling/oxfmt.ts",
       "templates/ripple-ts/tooling/oxfmt.ts",

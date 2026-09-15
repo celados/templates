@@ -45,11 +45,11 @@ releasable runtime as a **deployment target**.
 
 The initial target set is:
 
-| Target | Kind | Runtime owner |
-| --- | --- | --- |
-| `site:alpha` | Site | `sites/alpha/` |
-| `site:beta` | Site | `sites/beta/` |
-| `backend` | Shared service | `convex/` |
+| Target       | Kind           | Runtime owner  |
+| ------------ | -------------- | -------------- |
+| `site:alpha` | Site           | `sites/alpha/` |
+| `site:beta`  | Site           | `sites/beta/`  |
+| `backend`    | Shared service | `convex/`      |
 
 Delivery behavior comes from three explicit contracts:
 
@@ -67,16 +67,16 @@ that source instead of maintaining separate path lists in YAML.
 
 The starting input graph should classify changes as follows:
 
-| Changed input | Validate | Candidate deployments |
-| --- | --- | --- |
-| `sites/alpha/**` | Alpha | Alpha |
-| `sites/beta/**` | Beta | Beta |
-| `shared/**` | Every consuming site | Every consuming site |
-| `convex/**` | Backend and consumer compatibility | Backend |
-| Root dependencies and shared build tooling | All targets | Targets whose fingerprints changed |
-| Target-specific Wrangler configuration | Owning site | Owning site |
-| Documentation and agent instructions | Documentation policy only | None |
-| Delivery graph or detector | All targets | None unless product inputs also changed |
+| Changed input                              | Validate                           | Candidate deployments                   |
+| ------------------------------------------ | ---------------------------------- | --------------------------------------- |
+| `sites/alpha/**`                           | Alpha                              | Alpha                                   |
+| `sites/beta/**`                            | Beta                               | Beta                                    |
+| `shared/**`                                | Every consuming site               | Every consuming site                    |
+| `convex/**`                                | Backend and consumer compatibility | Backend                                 |
+| Root dependencies and shared build tooling | All targets                        | Targets whose fingerprints changed      |
+| Target-specific Wrangler configuration     | Owning site                        | Owning site                             |
+| Documentation and agent instructions       | Documentation policy only          | None                                    |
+| Delivery graph or detector                 | All targets                        | None unless product inputs also changed |
 
 Validation and deployment are deliberately different sets. A backend contract
 change may require every consumer to typecheck without changing any site
@@ -235,8 +235,8 @@ The detector should emit machine-readable data rather than shell booleans:
 
 ```json
 {
-  "validate": ["backend", "site:alpha", "site:beta"],
-  "deploy": ["backend", "site:alpha", "site:beta"]
+	"validate": ["backend", "site:alpha", "site:beta"],
+	"deploy": ["backend", "site:alpha", "site:beta"]
 }
 ```
 

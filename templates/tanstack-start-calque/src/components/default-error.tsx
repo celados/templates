@@ -18,10 +18,14 @@ export function DefaultError(props: ErrorComponentProps) {
 			</h1>
 			<p className="text-muted-foreground">
 				{import.meta.env.DEV
-					? error.message
+					? getErrorMessage(error)
 					: 'Try again. If the problem continues, contact support.'}
 			</p>
 			<Button onClick={() => void router.invalidate()}>Try again</Button>
 		</main>
 	)
+}
+
+function getErrorMessage(error: unknown) {
+	return error instanceof Error ? error.message : 'Unknown error'
 }
