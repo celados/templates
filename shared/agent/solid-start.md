@@ -74,3 +74,6 @@ on domain units, module integration, and runtime smokes; add a browser test
 only for a named interaction or regression risk. Verify SSR and hydration on
 `vp dev` with a quiet console before trusting a production bundle: Solid 2
 diagnostics exist only in dev builds.
+
+`better-auth` is held at `~1.6` because `@convex-dev/better-auth` declares a
+`<1.7` peer range; widen it only after the component does.

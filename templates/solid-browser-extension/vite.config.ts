@@ -1,22 +1,25 @@
-import solidV2 from 'eslint-plugin-solid/configs/v2'
+import solid from 'eslint-plugin-solid/configs/v2'
 import { defineConfig } from 'vite-plus'
 
+import { frameworkLintBase } from './tooling/lint'
 import { oxfmtConfig } from './tooling/oxfmt'
 
 export default defineConfig({
-	// `vp check` skips lint (template contract); `bun run lint` runs only the
-	// Solid 2 reactivity rules that TypeScript cannot see.
-	check: {
-		lint: false,
-	},
-	lint: {
-		jsPlugins: ['eslint-plugin-solid'],
-		ignorePatterns: ['.output', '.wxt'],
-		settings: solidV2.settings,
-		rules: solidV2.rules,
-	},
 	staged: {
 		'*': 'vp check --fix',
+	},
+	lint: {
+		...frameworkLintBase,
+		jsPlugins: ['eslint-plugin-solid'],
+		ignorePatterns: ['.output', '.wxt'],
+		settings: solid.settings,
+		rules: {
+			...solid.rules,
+			// Formatting preferences, not reactivity rules.
+			'solid/self-closing-comp': 'off',
+			'solid/style-prop': 'off',
+			'solid/prefer-structured-class': 'off',
+		},
 	},
 	fmt: {
 		...oxfmtConfig,

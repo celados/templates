@@ -139,6 +139,16 @@ const mappings = [
     ],
   },
   {
+    source: "shared/tooling/lint.ts",
+    targets: [
+      "templates/solid-browser-extension/tooling/lint.ts",
+      "templates/solid-start/tooling/lint.ts",
+      "templates/tanstack-start-calque/tooling/lint.ts",
+      "templates/tanstack-start/tooling/lint.ts",
+      "templates/tanstack-start-multisite/tooling/lint.ts",
+    ],
+  },
+  {
     source: "shared/tooling/oxfmt.ts",
     targets: [
       "templates/cloudflare-worker/tooling/oxfmt.ts",

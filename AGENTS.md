@@ -95,13 +95,21 @@ Change mappings and consumers together.
   non-interactive execution. Keep the exact user-facing commands in the root
   and template READMEs.
 - Vite+ owns package management, formatting, staged checks, and the aggregate
-  task runner. Every template sets `check.lint: false`; formatting, type
-  checking, framework checks, and tests are the acceptance signal.
+  task runner. Formatting, type checking, framework lint, and tests are the
+  acceptance signal.
+- Lint is framework-only. Every template's `lint` block spreads
+  `shared/tooling/lint.ts`, which turns off Oxlint's default plugins and
+  `correctness` category, then enables only the rules its frameworks define
+  (Solid, React hooks, Convex, StyleX). Do not add general-purpose or
+  style-preference presets. A template without framework rules keeps
+  `check.lint: false`. When adding a rule set, prove it fires on a known-bad
+  sample before relying on a silent pass.
 - Oxfmt options belong in the Vite+ `fmt` block, not a competing
   `.oxfmtrc.jsonc`. Keep the common options in `shared/tooling/oxfmt.ts` and
   compose them from each template's `vite.config.ts`.
 - TanStack Start and Solid Start use the Cloudflare Vite plugin for their SSR
-  environment. Do not copy that plugin into backend-only or static-output templates for symmetry.
+  environment. Do not copy that plugin into backend-only or static-output
+  templates for symmetry.
 - Cloudflare Worker exposes the oRPC RPC protocol only. Its absence of OpenAPI
   dependencies, handlers, specifications, and reference UI is intentional.
 

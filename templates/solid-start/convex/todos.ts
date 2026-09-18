@@ -42,12 +42,12 @@ export const toggle = mutation({
 	},
 	handler: async (ctx, args) => {
 		const identity = await requireIdentity(ctx)
-		const todo = await ctx.db.get(args.id)
+		const todo = await ctx.db.get('todos', args.id)
 		if (!todo || todo.ownerId !== identity.subject) {
 			throw new ConvexError('Todo not found')
 		}
 
-		await ctx.db.patch(todo._id, {
+		await ctx.db.patch('todos', todo._id, {
 			completed: !todo.completed,
 		})
 	},
@@ -59,11 +59,11 @@ export const remove = mutation({
 	},
 	handler: async (ctx, args) => {
 		const identity = await requireIdentity(ctx)
-		const todo = await ctx.db.get(args.id)
+		const todo = await ctx.db.get('todos', args.id)
 		if (!todo || todo.ownerId !== identity.subject) {
 			throw new ConvexError('Todo not found')
 		}
 
-		await ctx.db.delete(todo._id)
+		await ctx.db.delete('todos', todo._id)
 	},
 })

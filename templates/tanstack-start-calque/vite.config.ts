@@ -13,6 +13,7 @@ import { searchForWorkspaceRoot } from 'vite'
 import { imagetools } from 'vite-imagetools'
 import { defineConfig, lazyPlugins, loadEnv } from 'vite-plus'
 
+import { frameworkLintBase } from './tooling/lint'
 import { oxfmtConfig } from './tooling/oxfmt'
 import { createContentPages } from './tooling/ssg-content'
 
@@ -44,8 +45,16 @@ const config = defineConfig((configEnv) => {
 	const contentPages = createContentPages(process.cwd(), buildDate)
 
 	return {
-		check: {
-			lint: false,
+		lint: {
+			...frameworkLintBase,
+			plugins: ['react'],
+			ignorePatterns: ['**/*.gen.ts', 'dist'],
+			rules: {
+				// React's own correctness rules; built into Oxlint, no extra dependency.
+				'react/rules-of-hooks': 'error',
+				'react/exhaustive-deps': 'error',
+				'react/jsx-key': 'error',
+			},
 		},
 		staged: {
 			'*': 'vp check --fix',

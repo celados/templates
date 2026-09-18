@@ -67,11 +67,11 @@
 		"@base-ui/react": "^1.8.0",
 		"@fontsource-variable/inter": "^5.3.0",
 		"@tailwindcss/vite": "^4.3.3",
-		"@tanstack/react-router": "^1.170.36",
-		"@tanstack/react-start": "^1.168.54",
+		"@tanstack/react-router": "^1.170.38",
+		"@tanstack/react-start": "^1.168.56",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-react": "^1.46.0",
+		"lucide-react": "^1.47.0",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
 		"shadcn": "^4.21.0",
@@ -81,13 +81,13 @@
 		"valibot": "^1.5.0"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "^1.54.9",
+		"@cloudflare/vite-plugin": "^1.56.0",
 		"@mdx-js/rollup": "^3.1.1",
 		"@playwright/test": "^1.63.0",
 		"@tanstack/devtools-vite": "^0.8.5",
-		"@tanstack/router-cli": "^1.167.36",
+		"@tanstack/router-cli": "^1.167.38",
 		"@types/bun": "^1.4.2",
-		"@types/node": "^26.5.1",
+		"@types/node": "^26.6.1",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
 		"@vitejs/plugin-react": "^6.1.1",
@@ -96,14 +96,14 @@
 		"remark-gfm": "^4.0.1",
 		"remark-mdx-frontmatter": "^5.2.0",
 		"typescript": "^7.0.2",
-		"vite": "npm:@voidzero-dev/vite-plus-core@^0.3.2",
+		"vite": "npm:@voidzero-dev/vite-plus-core@^0.3.3",
 		"vite-imagetools": "^12.0.1",
-		"vite-plus": "^0.3.2",
+		"vite-plus": "^0.3.3",
 		"wireit": "^0.14.13",
-		"wrangler": "^4.131.2"
+		"wrangler": "^4.135.0"
 	},
 	"overrides": {
-		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.2"
+		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.3"
 	},
 	"devEngines": {
 		"packageManager": {

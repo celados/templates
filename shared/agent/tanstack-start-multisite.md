@@ -53,3 +53,6 @@ the codegen/build/deploy task graph together.
 Static JWKS is an explicit deployment setup step: after configuring auth
 secrets, run `bun run auth:jwks` once per Convex deployment and refresh it after
 signing-key rotation. Do not copy a JWKS value between environments.
+
+`better-auth` is held at `~1.6` because `@convex-dev/better-auth` declares a
+`<1.7` peer range; widen it only after the component does.

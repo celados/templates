@@ -69,6 +69,9 @@ integration model without vendoring its full registry. Keep Google and magic
 link as the passwordless defaults; add the registry only when the product
 actually needs its broader auth-view system.
 
+`better-auth` is held at `~1.6` because `@convex-dev/better-auth` declares a
+`<1.7` peer range; widen it only after the component does.
+
 <!-- convex-ai-start -->
 
 This project uses [Convex](https://convex.dev) as its backend.
