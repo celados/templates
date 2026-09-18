@@ -95,5 +95,7 @@ bun run deploy
 
 `check` runs formatting, the Solid lint rules, Web and Convex type checks, and
 tests. The production build must see the deployment's `VITE_CONVEX_URL` and
-`VITE_CONVEX_SITE_URL`; `convex deploy --cmd` supplies the first.
+`VITE_CONVEX_SITE_URL`; `convex deploy --cmd` supplies the first. Export the
+second (`https://<deployment>.convex.site`) in the build environment yourself:
+without it the `/api/auth/*` proxy answers 500.
 `bun run deploy:temporary` publishes a short-lived preview Worker.

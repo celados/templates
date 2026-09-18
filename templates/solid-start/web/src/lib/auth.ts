@@ -55,8 +55,8 @@ export function createAuth(client: ConvexClient) {
 	})
 	async function signOut() {
 		unwrap(await authClient.signOut())
-		// Re-arming the fetcher drops the cached JWT, so live queries re-run as
-		// anonymous instead of waiting for the old token to expire.
+		// The Convex client keeps its last JWT until it expires; re-arming the
+		// fetcher makes it ask again now, and the ended session yields no token.
 		attachAuth(client)
 	}
 	return { user$, signOut }
