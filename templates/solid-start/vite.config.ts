@@ -30,8 +30,8 @@ export default defineConfig({
 			'@convex-dev/no-top-of-hour-crons': 'error',
 			'@convex-dev/no-schema-import-cycle': 'error',
 			'@convex-dev/no-duplicate-indexes': 'error',
-			'@stylexjs/valid-styles': 'error',
-			'@stylexjs/valid-shorthands': 'error',
+			// valid-styles and valid-shorthands stay off: their 0.19 value tables reject
+			// styles the compiler accepts (`flex: 1`, `scrollSnapType: 'y proximity'`).
 			'@stylexjs/enforce-extension': 'error',
 			'@stylexjs/no-unused': 'error',
 			'@stylexjs/no-conflicting-props': 'error',
