@@ -1,14 +1,26 @@
 {
-  "version": 2,
+  "version": 3,
   "items": [
     {
       "type": "skills",
       "repo": "celados/agents",
       "skills": [
-        "fullstack",
-        "gh-action",
-        "publish-package",
-        "typescript"
+        {
+          "id": "fullstack",
+          "source": "skills/fullstack"
+        },
+        {
+          "id": "gh-action",
+          "source": "skills/gh-action"
+        },
+        {
+          "id": "publish-package",
+          "source": "skills/publish-package"
+        },
+        {
+          "id": "typescript",
+          "source": "skills/typescript"
+        }
       ]
     }
   ]

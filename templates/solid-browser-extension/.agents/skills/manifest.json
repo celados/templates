@@ -1,19 +1,28 @@
 {
-  "version": 2,
+  "version": 3,
   "items": [
     {
       "type": "skills",
       "repo": "celados/agents",
       "skills": [
-        "solid-migration",
-        "stylex-authoring"
+        {
+          "id": "solid-migration",
+          "source": "skills/solid-migration"
+        },
+        {
+          "id": "stylex-authoring",
+          "source": "skills/stylex-authoring"
+        }
       ]
     },
     {
       "type": "skills",
       "repo": "celados/sigil",
       "skills": [
-        "sigil"
+        {
+          "id": "sigil",
+          "source": "skills/sigil"
+        }
       ]
     }
   ]

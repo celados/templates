@@ -1,18 +1,24 @@
 {
-  "version": 2,
+  "version": 3,
   "items": [
     {
       "type": "skills",
       "repo": "celados/sigil",
       "skills": [
-        "sigil"
+        {
+          "id": "sigil",
+          "source": "skills/sigil"
+        }
       ]
     },
     {
       "type": "skills",
       "repo": "shadcn-ui/ui",
       "skills": [
-        "migrate-radix-to-base"
+        {
+          "id": "migrate-radix-to-base",
+          "source": "skills/migrate-radix-to-base"
+        }
       ]
     }
   ]
