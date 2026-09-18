@@ -30,7 +30,7 @@ const config = defineConfig({
 		...oxfmtConfig,
 		sortTailwindcss: {
 			stylesheet: 'web/src/styles.css',
-			functions: ['cn', 'cx', 'clsx', 'cva'],
+			functions: ['cn', 'cx', 'cva'],
 		},
 	},
 })
