@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "items": [
+    {
+      "type": "skills",
+      "repo": "celados/agents",
+      "skills": [
+        "solid-migration",
+        "stylex-authoring"
+      ]
+    },
+    {
+      "type": "skills",
+      "repo": "celados/sigil",
+      "skills": [
+        "sigil"
+      ]
+    }
+  ]
+}

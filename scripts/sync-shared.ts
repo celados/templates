@@ -18,11 +18,17 @@ const mappings = [
     source: "shared/agent/install-skills.mjs",
     targets: [
       "templates/cloudflare-worker/scripts/install-skills.mjs",
+      "templates/solid-browser-extension/scripts/install-skills.mjs",
       "templates/solid-start/scripts/install-skills.mjs",
       "templates/tanstack-start/scripts/install-skills.mjs",
       "templates/tanstack-start-calque/scripts/install-skills.mjs",
       "templates/tanstack-start-multisite/scripts/install-skills.mjs",
     ],
+  },
+  {
+    appendTextSources: ["shared/agent/solid-browser-extension.md"],
+    source: "shared/agent/AGENTS.md",
+    targets: ["templates/solid-browser-extension/AGENTS.md"],
   },
   {
     appendTextSources: ["shared/agent/solid-start.md", "shared/agent/convex.md"],
@@ -69,6 +75,7 @@ const mappings = [
     source: "shared/editor/vscode/extensions.json",
     targets: [
       "templates/cloudflare-worker/.vscode/extensions.json",
+      "templates/solid-browser-extension/.vscode/extensions.json",
       "templates/solid-start/.vscode/extensions.json",
       "templates/tanstack-start/.vscode/extensions.json",
       "templates/tanstack-start-calque/.vscode/extensions.json",
@@ -79,6 +86,7 @@ const mappings = [
     source: "shared/editor/vscode/settings.json",
     targets: [
       "templates/cloudflare-worker/.vscode/settings.json",
+      "templates/solid-browser-extension/.vscode/settings.json",
       "templates/solid-start/.vscode/settings.json",
       "templates/tanstack-start-calque/.vscode/settings.json",
       "templates/tanstack-start/.vscode/settings.json",
@@ -91,7 +99,10 @@ const mappings = [
   },
   {
     source: "shared/skills/solid-start/manifest.json",
-    targets: ["templates/solid-start/.agents/skills/manifest.json"],
+    targets: [
+      "templates/solid-browser-extension/.agents/skills/manifest.json",
+      "templates/solid-start/.agents/skills/manifest.json",
+    ],
   },
   {
     source: "shared/skills/tanstack-start/manifest.json",
@@ -131,6 +142,7 @@ const mappings = [
     source: "shared/tooling/oxfmt.ts",
     targets: [
       "templates/cloudflare-worker/tooling/oxfmt.ts",
+      "templates/solid-browser-extension/tooling/oxfmt.ts",
       "templates/solid-start/tooling/oxfmt.ts",
       "templates/tanstack-start-calque/tooling/oxfmt.ts",
       "templates/tanstack-start/tooling/oxfmt.ts",

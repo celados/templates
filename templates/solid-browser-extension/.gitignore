@@ -1,0 +1,9 @@
+node_modules
+.agents/skills/.gitignore
+.output
+.wxt
+.chrome-profile
+*.local
+.env*
+*.tsbuildinfo
+test-results

@@ -26,6 +26,19 @@ vp create github:celados/templates/templates/cloudflare-worker \
   -- <project-directory>
 ```
 
+Create a Solid 2 browser extension:
+
+```bash
+vp create github:celados/templates/templates/solid-browser-extension \
+  --package-manager bun \
+  --no-agent \
+  --editor vscode \
+  --hooks \
+  --git \
+  --no-interactive \
+  -- <project-directory>
+```
+
 Create a Solid 2 full-stack project:
 
 ```bash
