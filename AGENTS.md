@@ -44,11 +44,6 @@ framework-specific values such as its Tailwind stylesheet path.
 
 - `templates/cloudflare-worker/`: backend-only Cloudflare Worker template with
   oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle.
-- `templates/ripple-ts/`: standalone Ripple TS small-app workspace with a
-  source-first reusable component package.
-- `templates/ripple-ts-browser-extension/`: standalone Manifest V3 extension
-  template with Ripple UI, WXT entrypoints, typed messaging, and a source-first
-  reusable component package.
 - `templates/tanstack-start/`: standalone TanStack Start template and its
   Cloudflare Workers SSR configuration.
 - `templates/tanstack-start-multisite/`: one-product, multi-site TanStack Start

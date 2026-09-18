@@ -1,8 +1,0 @@
-node_modules
-.agents/skills/.gitignore
-dist
-dist-ssr
-*.local
-.env*
-*.tgz
-*.tsbuildinfo

@@ -18,8 +18,6 @@ const mappings = [
     source: "shared/agent/install-skills.mjs",
     targets: [
       "templates/cloudflare-worker/scripts/install-skills.mjs",
-      "templates/ripple-ts-browser-extension/scripts/install-skills.mjs",
-      "templates/ripple-ts/scripts/install-skills.mjs",
       "templates/tanstack-start/scripts/install-skills.mjs",
       "templates/tanstack-start-calque/scripts/install-skills.mjs",
       "templates/tanstack-start-multisite/scripts/install-skills.mjs",
@@ -60,16 +58,6 @@ const mappings = [
     targets: ["templates/cloudflare-worker/AGENTS.md"],
   },
   {
-    appendTextSources: ["shared/agent/ripple-ts.md"],
-    source: "shared/agent/AGENTS.md",
-    targets: ["templates/ripple-ts/AGENTS.md"],
-  },
-  {
-    appendTextSources: ["shared/agent/ripple-ts.md", "shared/agent/ripple-ts-browser-extension.md"],
-    source: "shared/agent/AGENTS.md",
-    targets: ["templates/ripple-ts-browser-extension/AGENTS.md"],
-  },
-  {
     source: "shared/editor/vscode/extensions.json",
     targets: [
       "templates/cloudflare-worker/.vscode/extensions.json",
@@ -82,8 +70,6 @@ const mappings = [
     source: "shared/editor/vscode/settings.json",
     targets: [
       "templates/cloudflare-worker/.vscode/settings.json",
-      "templates/ripple-ts-browser-extension/.vscode/settings.json",
-      "templates/ripple-ts/.vscode/settings.json",
       "templates/tanstack-start-calque/.vscode/settings.json",
       "templates/tanstack-start/.vscode/settings.json",
       "templates/tanstack-start-multisite/.vscode/settings.json",
@@ -92,13 +78,6 @@ const mappings = [
   {
     source: "shared/skills/cloudflare-worker/manifest.json",
     targets: ["templates/cloudflare-worker/.agents/skills/manifest.json"],
-  },
-  {
-    source: "shared/skills/publish-package/manifest.json",
-    targets: [
-      "templates/ripple-ts-browser-extension/.agents/skills/manifest.json",
-      "templates/ripple-ts/.agents/skills/manifest.json",
-    ],
   },
   {
     source: "shared/skills/tanstack-start/manifest.json",
@@ -112,7 +91,6 @@ const mappings = [
     source: "shared/github/workflows/ci.yml",
     targets: [
       "templates/cloudflare-worker/.github/workflows/ci.yml",
-      "templates/ripple-ts/.github/workflows/ci.yml",
       "templates/tanstack-start-calque/.github/workflows/ci.yml",
       "templates/tanstack-start/.github/workflows/ci.yml",
       "templates/tanstack-start-multisite/.github/workflows/ci.yml",
@@ -138,8 +116,6 @@ const mappings = [
     source: "shared/tooling/oxfmt.ts",
     targets: [
       "templates/cloudflare-worker/tooling/oxfmt.ts",
-      "templates/ripple-ts-browser-extension/tooling/oxfmt.ts",
-      "templates/ripple-ts/tooling/oxfmt.ts",
       "templates/tanstack-start-calque/tooling/oxfmt.ts",
       "templates/tanstack-start/tooling/oxfmt.ts",
       "templates/tanstack-start-multisite/tooling/oxfmt.ts",

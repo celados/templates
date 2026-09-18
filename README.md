@@ -6,45 +6,17 @@ repository does not maintain versioned template releases.
 
 ## Templates
 
-| Template                    | Source directory                        | Runtime                                            |
-| --------------------------- | --------------------------------------- | -------------------------------------------------- |
-| Cloudflare Worker           | `templates/cloudflare-worker`           | Hono, oRPC, Better Auth, Hyperdrive, Drizzle       |
-| Ripple TS                   | `templates/ripple-ts`                   | Ripple, TSRX, Vite+, Bun workspace                 |
-| Ripple TS Browser Extension | `templates/ripple-ts-browser-extension` | Ripple, WXT, Manifest V3, Bun workspace            |
-| TanStack Start              | `templates/tanstack-start`              | TanStack Start, React 19, Tailwind CSS v4          |
-| TanStack Start Calque       | `templates/tanstack-start-calque`       | Thin clone UI, Cloudflare Workers, Calque workflow |
-| TanStack Start Multi-site   | `templates/tanstack-start-multisite`    | Two Start sites, shared Convex product core        |
+| Template                  | Source directory                     | Runtime                                            |
+| ------------------------- | ------------------------------------ | -------------------------------------------------- |
+| Cloudflare Worker         | `templates/cloudflare-worker`        | Hono, oRPC, Better Auth, Hyperdrive, Drizzle       |
+| TanStack Start            | `templates/tanstack-start`           | TanStack Start, React 19, Tailwind CSS v4          |
+| TanStack Start Calque     | `templates/tanstack-start-calque`    | Thin clone UI, Cloudflare Workers, Calque workflow |
+| TanStack Start Multi-site | `templates/tanstack-start-multisite` | Two Start sites, shared Convex product core        |
 
 Create a Cloudflare Worker backend:
 
 ```bash
 vp create github:celados/templates/templates/cloudflare-worker \
-  --package-manager bun \
-  --no-agent \
-  --editor vscode \
-  --hooks \
-  --git \
-  --no-interactive \
-  -- <project-directory>
-```
-
-Create a Ripple TS project:
-
-```bash
-vp create github:celados/templates/templates/ripple-ts \
-  --package-manager bun \
-  --no-agent \
-  --editor vscode \
-  --hooks \
-  --git \
-  --no-interactive \
-  -- <project-directory>
-```
-
-Create a Ripple TS browser extension:
-
-```bash
-vp create github:celados/templates/templates/ripple-ts-browser-extension \
   --package-manager bun \
   --no-agent \
   --editor vscode \
