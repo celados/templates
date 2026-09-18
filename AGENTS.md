@@ -44,6 +44,8 @@ framework-specific values such as its Tailwind stylesheet path.
 
 - `templates/cloudflare-worker/`: backend-only Cloudflare Worker template with
   oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle.
+- `templates/solid-start/`: standalone Solid 2 start-mode SSR template with
+  Convex, Better Auth, Stripe, StyleX, and Cloudflare Workers.
 - `templates/tanstack-start/`: standalone TanStack Start template and its
   Cloudflare Workers SSR configuration.
 - `templates/tanstack-start-multisite/`: one-product, multi-site TanStack Start
@@ -96,14 +98,16 @@ Change mappings and consumers together.
 - Oxfmt options belong in the Vite+ `fmt` block, not a competing
   `.oxfmtrc.jsonc`. Keep the common options in `shared/tooling/oxfmt.ts` and
   compose them from each template's `vite.config.ts`.
-- TanStack Start uses the Cloudflare Vite plugin for its SSR environment. Do
-  not copy that plugin into backend-only or static-output templates for symmetry.
+- TanStack Start and Solid Start use the Cloudflare Vite plugin for their SSR
+  environment. Do not copy that plugin into backend-only or static-output templates for symmetry.
 - Cloudflare Worker exposes the oRPC RPC protocol only. Its absence of OpenAPI
   dependencies, handlers, specifications, and reference UI is intentional.
 
 ## Generated and Ignored Artifacts
 
 - Do not commit `node_modules/`, `dist/`, or `.wrangler/` output.
+- Solid start mode regenerates `web/file-routes.d.ts` and `web/solid-env.d.ts`
+  on every dev and build start; commit them and never hand-edit them.
 - TanStack Router may regenerate `src/route-tree.gen.ts`. Do not hand-format
   it; the template intentionally excludes it from formatter drift.
 - `bun run cf-typegen` owns

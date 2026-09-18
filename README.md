@@ -26,6 +26,19 @@ vp create github:celados/templates/templates/cloudflare-worker \
   -- <project-directory>
 ```
 
+Create a Solid 2 full-stack project:
+
+```bash
+vp create github:celados/templates/templates/solid-start \
+  --package-manager bun \
+  --no-agent \
+  --editor vscode \
+  --hooks \
+  --git \
+  --no-interactive \
+  -- <project-directory>
+```
+
 Create a TanStack Start project:
 
 ```bash

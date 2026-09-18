@@ -1,0 +1,89 @@
+{
+	"name": "template-solid-start",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"prepare": "bun scripts/install-skills.mjs",
+		"dev": "wireit",
+		"web:dev": "wireit",
+		"convex:dev": "wireit",
+		"auth:jwks": "convex run auth:getLatestJwks | convex env set JWKS",
+		"build": "vp build web",
+		"preview": "vp preview web",
+		"test": "vp test --root web",
+		"lint": "oxlint --config web/oxlint.config.ts web/src",
+		"typecheck": "tsc -p web/tsconfig.json --noEmit && convex typecheck",
+		"check": "vp check && bun run lint && bun run typecheck && bun run test",
+		"deploy": "bun run build && wrangler deploy --cwd web",
+		"deploy:temporary": "bun run build && wrangler deploy --cwd web --temporary"
+	},
+	"wireit": {
+		"dev": {
+			"dependencies": [
+				"web:dev"
+			]
+		},
+		"web:dev": {
+			"command": "vp dev web --port 3000 --strictPort",
+			"service": true,
+			"dependencies": [
+				{
+					"script": "convex:dev",
+					"cascade": false
+				}
+			]
+		},
+		"convex:dev": {
+			"command": "convex dev --typecheck-components",
+			"service": {
+				"readyWhen": {
+					"lineMatches": "Convex functions ready!"
+				}
+			}
+		}
+	},
+	"dependencies": {
+		"@convex-dev/better-auth": "^0.12.5",
+		"@convex-dev/stripe": "^0.1.6",
+		"@solidjs/meta": "1.0.0-next.2",
+		"@solidjs/router": "2.0.0-next.26",
+		"@solidjs/web": "2.0.0-rc.9",
+		"@stylexjs/stylex": "^0.19.1",
+		"better-auth": "~1.6.33",
+		"convex": "^1.46.0",
+		"solid-js": "2.0.0-rc.9",
+		"valibot": "^1.5.0"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "^1.56.0",
+		"@solidjs/testing-library": "1.0.0-beta.3",
+		"@solidjs/vite-plugin": "3.0.0-next.44",
+		"@stylexjs/unplugin": "^0.19.1",
+		"@testing-library/jest-dom": "^7.0.1",
+		"@types/node": "^26.6.1",
+		"eslint-plugin-solid": "^0.18.0",
+		"filesystem-routing": "^0.3.1",
+		"jsdom": "^30.1.0",
+		"oxlint": "^1.83.0",
+		"skill": "github:ethan-huo/skill#v0.1.30",
+		"typescript": "^7.0.2",
+		"vite": "npm:@voidzero-dev/vite-plus-core@^0.3.2",
+		"vite-plus": "^0.3.3",
+		"wireit": "^0.14.13",
+		"wrangler": "^4.135.0"
+	},
+	"overrides": {
+		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.3"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "bun",
+			"version": "1.4.2",
+			"onFail": "download"
+		}
+	},
+	"trustedDependencies": [
+		"esbuild",
+		"workerd"
+	]
+}

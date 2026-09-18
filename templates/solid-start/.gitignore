@@ -1,0 +1,13 @@
+node_modules
+.agents/skills/.gitignore
+.DS_Store
+dist
+*.local
+.env*
+!.env.example
+.convex
+.wireit
+.wrangler
+
+# typescript
+*.tsbuildinfo

@@ -1,0 +1,28 @@
+/* Layer order comes from useCSSLayers in vite.config.ts. The file also gives
+   the production build a CSS asset for StyleX to append its rules to. */
+@layer reset {
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	body,
+	h1,
+	h2,
+	p,
+	ul {
+		margin: 0;
+	}
+
+	ul {
+		padding: 0;
+		list-style: none;
+	}
+
+	button,
+	input {
+		font: inherit;
+		color: inherit;
+	}
+}
