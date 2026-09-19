@@ -58,10 +58,20 @@ upgrade them together after checking peer ranges, and keep a single
   Keep Convex function selection typed through `convex/_generated/api`.
   Queries start after hydration (`ssrSource: 'client'`) and must sit under a
   `<Loading>` unless they declare a `loadingValue`. `extension/` bundles this
-  module too, so keep it free of router, SSR, and Cloudflare imports.
+  module too, so keep it free of router, SSR, and Cloudflare imports. A live
+  source must not subscribe before its first pull: hydrating a server-rendered
+  read, Solid traces the compute and pulls once under a mock `Promise`
+  (`queryStream` subscribes inside the first `next()` executor for that reason).
 - `web/src/lib/auth.ts` owns Better Auth. Auth HTTP traffic is proxied
   same-origin through `web/src/routes/api/auth/[...all].ts` to the Convex site,
-  so cookies stay first-party.
+  so cookies stay first-party. The server renders the visitor's identity:
+  `web/src/middleware.ts` hangs a per-request reader on `locals.convex`
+  (`web/src/lib/convex-server.ts`), `user$` answers through it
+  (`ssrSource: 'hybrid'`), and the browser continues it live. A `user$` read
+  outside `<Loading>` holds the document for a signed-in visitor's token and
+  query round trips; inside one it streams behind the shell. Anonymous
+  visitors cost nothing. The browser client calls `setAuth` at construction,
+  before any subscription, so no query answers anonymously first.
 - Styling is StyleX. Tokens live in `web/src/styles/*.stylex.ts`; read the
   `stylex-authoring` skill before adding themes or variables.
 - Errors Solid handles (boundary fallbacks, rejected `Loading` fragments) reach

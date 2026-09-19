@@ -15,7 +15,12 @@ import {
 } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
 
-import { ConvexProvider, createConvexQuery, useConvexClient } from './convex'
+import {
+	ConvexProvider,
+	createConvexQuery,
+	queryStream,
+	useConvexClient,
+} from './convex'
 
 const query = makeFunctionReference<'query', { id: string }, string>(
 	'test:value',
@@ -159,6 +164,30 @@ describe('Convex live queries in Solid 2', () => {
 		failure.reject(new Error('Rejected'))
 		await rejected
 		await waitFor(() => expect(view.getByText('B')).toBeDefined())
+	})
+})
+
+describe('Convex live queries under SSR hydration', () => {
+	it('opens no subscription when hydration traces the stream', () => {
+		const feed = transport()
+		// Hydrating a server-rendered read, Solid's subFetch swaps the global
+		// Promise for one that never runs executors and pulls the traced
+		// iterable once; nothing would ever close a subscription opened there.
+		const RealPromise = globalThis.Promise
+		class TracePromise {
+			then() {
+				return new TracePromise()
+			}
+		}
+		globalThis.Promise = TracePromise as unknown as PromiseConstructor
+		try {
+			void queryStream(feed.client, query, { id: 'a' })
+				[Symbol.asyncIterator]()
+				.next()
+		} finally {
+			globalThis.Promise = RealPromise
+		}
+		expect(feed.subscriptions).toHaveLength(0)
 	})
 })
 

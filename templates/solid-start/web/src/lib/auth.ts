@@ -2,12 +2,13 @@ import type { ConvexClient } from 'convex/browser'
 import type { FunctionReturnType } from 'convex/server'
 
 import { convexClient } from '@convex-dev/better-auth/client/plugins'
+import { getRequestEvent, isServer } from '@solidjs/web'
 import { createAuthClient } from 'better-auth/client'
 import { magicLinkClient } from 'better-auth/client/plugins'
-import { createContext } from 'solid-js'
+import { createContext, createMemo } from 'solid-js'
 
 import { api } from '../../../convex/_generated/api'
-import { createQuery } from './convex'
+import { queryStream } from './convex'
 
 export type User = NonNullable<FunctionReturnType<typeof api.auth.currentUser>>
 
@@ -45,14 +46,33 @@ export async function sendMagicLink(email: string, callbackURL: string) {
 	unwrap(await authClient.signIn.magicLink({ email, callbackURL }))
 }
 
-/** Auth is provisional so restoring a session never blocks public rendering. */
+/**
+ * The server renders the visitor's identity; the browser seeds from that answer
+ * and continues it live (`ssrSource: 'hybrid'`), so there is no unknown state
+ * to render. null is an authoritative signed-out answer.
+ */
 export function createAuth(client: ConvexClient) {
-	// Undefined is unknown; null is an authoritative signed-out answer. Never
-	// collapse them: only the latter may redirect to sign-in. loadingValue makes
-	// the first flight quiet, so read the value's meaning instead of isPending.
-	const user$ = createQuery(client, api.auth.currentUser, () => ({}), {
-		loadingValue: undefined,
-	})
+	// Captured during setup: the request scope is only reliable synchronously.
+	const server = getRequestEvent()?.locals.convex
+	// A disabled client never answers, so without the middleware the stream
+	// would hang instead of failing.
+	if (isServer && !server) {
+		throw new Error(
+			'locals.convex is missing; see serverConvex in middleware.ts',
+		)
+	}
+	const user$ = createMemo(
+		() => {
+			if (!server) return queryStream(client, api.auth.currentUser, {})
+			// Without a session the answer is known; asking Convex would hold
+			// every anonymous render for a round trip. Async so it serializes.
+			if (server.anonymous) return Promise.resolve(null)
+			return server.query(api.auth.currentUser, {})
+		},
+		// Reads outside a <Loading> hold the document for the answer; reads
+		// inside one stream it in behind the shell.
+		{ ssrSource: 'hybrid' },
+	)
 	async function signOut() {
 		unwrap(await authClient.signOut())
 		// The Convex client keeps its last JWT until it expires; re-arming the

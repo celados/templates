@@ -22,44 +22,38 @@ export function AuthStatus() {
 	return (
 		<article {...stylex.attrs(ui.card)}>
 			<p {...stylex.attrs(ui.eyebrow)}>Better Auth</p>
-			{/* user$ declares a quiet first paint: undefined means "not known yet". */}
 			<Show
-				when={auth.user$() !== undefined}
-				fallback={<p {...stylex.attrs(ui.muted)}>Checking the session…</p>}
+				when={auth.user$()}
+				fallback={
+					<>
+						<h2 {...stylex.attrs(ui.heading)}>Passwordless sign-in</h2>
+						<p {...stylex.attrs(ui.muted)}>
+							Google OAuth and short-lived magic links are ready to configure.
+						</p>
+						<a href="/sign-in" {...stylex.attrs(ui.button)}>
+							Sign in
+						</a>
+					</>
+				}
 			>
-				<Show
-					when={auth.user$()}
-					fallback={
-						<>
-							<h2 {...stylex.attrs(ui.heading)}>Passwordless sign-in</h2>
-							<p {...stylex.attrs(ui.muted)}>
-								Google OAuth and short-lived magic links are ready to configure.
-							</p>
-							<a href="/sign-in" {...stylex.attrs(ui.button)}>
-								Sign in
-							</a>
-						</>
-					}
-				>
-					{(user) => (
-						<>
-							<h2 {...stylex.attrs(ui.heading)}>Signed in</h2>
-							<p>{user().name}</p>
-							<p {...stylex.attrs(ui.muted)}>{user().email}</p>
-							<button
-								type="button"
-								{...stylex.attrs(ui.button, ui.outline)}
-								disabled={signingOut()}
-								onClick={() => {
-									setError(undefined)
-									signOut().catch((cause: Error) => setError(cause.message))
-								}}
-							>
-								{signingOut() ? 'Signing out…' : 'Sign out'}
-							</button>
-						</>
-					)}
-				</Show>
+				{(user) => (
+					<>
+						<h2 {...stylex.attrs(ui.heading)}>Signed in</h2>
+						<p>{user().name}</p>
+						<p {...stylex.attrs(ui.muted)}>{user().email}</p>
+						<button
+							type="button"
+							{...stylex.attrs(ui.button, ui.outline)}
+							disabled={signingOut()}
+							onClick={() => {
+								setError(undefined)
+								signOut().catch((cause: Error) => setError(cause.message))
+							}}
+						>
+							{signingOut() ? 'Signing out…' : 'Sign out'}
+						</button>
+					</>
+				)}
 			</Show>
 			<Show when={error()}>
 				{(message) => (

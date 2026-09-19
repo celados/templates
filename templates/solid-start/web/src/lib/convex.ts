@@ -29,35 +29,41 @@ function queryStream<Query extends FunctionReference<'query'>>(
 	type Value = FunctionReturnType<Query>
 	return {
 		[Symbol.asyncIterator]() {
+			let subscription: (() => void) | undefined
 			let closed = false
 			let buffered: IteratorResult<Value> | undefined
 			let failure: Error | undefined
 			let waiting:
-				| ReturnType<typeof Promise.withResolvers<IteratorResult<Value>>>
+				| {
+						resolve: (result: IteratorResult<Value>) => void
+						reject: (error: Error) => void
+				  }
 				| undefined
-			const subscription = client.onUpdate(
-				query,
-				args,
-				(value) => {
-					if (closed) return
-					const result: IteratorResult<Value> = { done: false, value }
-					if (waiting) {
-						waiting.resolve(result)
+			function subscribe() {
+				subscription = client.onUpdate(
+					query,
+					args,
+					(value) => {
+						if (closed) return
+						const result: IteratorResult<Value> = { done: false, value }
+						if (waiting) {
+							waiting.resolve(result)
+							waiting = undefined
+						} else buffered = result
+					},
+					(error) => {
+						if (closed) return
+						failure = error
+						waiting?.reject(error)
 						waiting = undefined
-					} else buffered = result
-				},
-				(error) => {
-					if (closed) return
-					failure = error
-					waiting?.reject(error)
-					waiting = undefined
-					close()
-				},
-			)
+						close()
+					},
+				)
+			}
 			function close() {
 				if (!closed) {
 					closed = true
-					subscription()
+					subscription?.()
 					buffered = undefined
 					waiting?.resolve({ done: true, value: undefined })
 					waiting = undefined
@@ -73,8 +79,14 @@ function queryStream<Query extends FunctionReference<'query'>>(
 						buffered = undefined
 						return Promise.resolve(result)
 					}
-					waiting = Promise.withResolvers<IteratorResult<Value>>()
-					return waiting.promise
+					// The first pull subscribes, inside the executor: hydrating a
+					// server-rendered read, Solid traces the compute and pulls once
+					// with a mock Promise that never runs executors, so the trace
+					// opens no subscription that nothing would ever close.
+					return new Promise<IteratorResult<Value>>((resolve, reject) => {
+						waiting = { resolve, reject }
+						if (!subscription) subscribe()
+					})
 				},
 				return() {
 					close()
