@@ -22,6 +22,9 @@
   directly by the UI, never proxied through the worker. Give every procedure
   that takes input a valibot `.input()` schema, because content scripts are
   untrusted callers. Extension messaging cannot carry binary data.
+- Worker calls that need the click's user gesture (e.g. `sidePanel.open()`)
+  must use `runtime.sendMessage`, not oRPC: port messages drop the gesture
+  (verified in Chrome 153). Keep that one command outside the router.
 - User-visible strings, including manifest `name`/`description`, live in
   `locales/*.yml` and are read through `i18n.t()` from `#i18n`
   (`@wxt-dev/i18n`, typed from the default locale). Reference:
