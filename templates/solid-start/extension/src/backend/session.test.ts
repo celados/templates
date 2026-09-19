@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 
+import { browser, type Browser } from '#imports'
+
 import { reportError } from '../extension/client'
-import { fetchConvexToken } from './session'
+import { fetchConvexToken, watchSession } from './session'
 
 vi.mock('../extension/client', () => ({ reportError: vi.fn() }))
 
@@ -64,5 +66,44 @@ describe('Convex token from the web app session', () => {
 		expect(await result).toBeNull()
 		await vi.runAllTimersAsync()
 		expect(fetchMock).toHaveBeenCalledTimes(1)
+	})
+})
+
+describe('web app session cookie', () => {
+	type Change = Browser.cookies.CookieChangeInfo
+	function watch() {
+		let listener!: (change: Change) => void
+		vi.spyOn(browser.cookies.onChanged, 'addListener').mockImplementation(
+			(callback) => void (listener = callback),
+		)
+		const onChange = vi.fn<(signedOut: boolean) => void>()
+		watchSession(onChange)
+		const fire = (
+			name: string,
+			removed: boolean,
+			cause: Change['cause'],
+			domain = 'localhost',
+		) =>
+			listener({ cookie: { name, domain } as Change['cookie'], removed, cause })
+		return { onChange, fire }
+	}
+
+	it('signals a sign-out only for a removal, not for a refresh', () => {
+		const { onChange, fire } = watch()
+		// Better Auth refreshing the session overwrites the cookie: Chrome fires
+		// the removal of the old value, then the new one.
+		fire('better-auth.session_token', true, 'overwrite')
+		fire('better-auth.session_token', false, 'explicit')
+		expect(onChange.mock.calls).toEqual([[false]])
+
+		fire('__Secure-better-auth.session_token', true, 'expired_overwrite')
+		expect(onChange).toHaveBeenLastCalledWith(true)
+	})
+
+	it('ignores the JWT cookie a token request sets, and other hosts', () => {
+		const { onChange, fire } = watch()
+		fire('better-auth.convex_jwt', false, 'explicit')
+		fire('better-auth.session_token', false, 'explicit', 'example.com')
+		expect(onChange).not.toHaveBeenCalled()
 	})
 })

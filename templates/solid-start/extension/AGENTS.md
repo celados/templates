@@ -37,7 +37,10 @@ A project that does not ship an extension deletes, in one change:
   JWT from the web app's Better Auth session cookie (`GET
 /api/auth/convex/token`, which Better Auth does not origin-check), so people
   sign in and out on the web app. A change to that cookie re-arms `setAuth` in
-  every open page and aborts the previous fetcher. Only a 401 means signed
+  every open page and aborts the previous fetcher; a removal first calls
+  `client.client.clearAuth()`, because Convex drops the unauthenticate that a
+  re-arm sends while the socket is paused, as `web/src/lib/auth.ts` does on
+  sign-out. A refresh overwrite is not a sign-out. Only a 401 means signed
   out; other failures retry, and are reported once when online. The only host permission is the web app's host, without a
   port, because the cookies API checks access against port-less cookie URLs.
 - Content scripts never hold a Convex client or token: they run in the host
