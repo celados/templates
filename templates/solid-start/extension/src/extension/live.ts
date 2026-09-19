@@ -1,17 +1,22 @@
-import type { WxtStorageItem } from '#imports'
-
-type WatchableItem<T> = Pick<
-	WxtStorageItem<T, Record<string, unknown>>,
-	'getValue' | 'watch'
->
+/**
+ * A value that can be read now and watched for changes. WXT storage items
+ * satisfy it structurally, as would any store with the same two methods, so
+ * `live` does not depend on WXT.
+ */
+export type Watchable<T> = {
+	getValue(): Promise<T>
+	/** Returns the unwatch. */
+	watch(callback: (value: T) => void): () => void
+}
 
 /**
- * An extension storage item as a Solid 2 async source: the stored value first,
- * then every change from any context (another page, a content script, the
- * worker). `createMemo(() => live(item))` reads it like any async value, and a
- * `<Loading>` above covers the first read. Snapshots replace each other, so a
- * slow reader only needs the newest one. Solid calls return() on owner
- * disposal. The Convex counterpart is `liveStream` in `web/src/lib/convex.ts`.
+ * A watchable value as a Solid 2 async source: the current value first, then
+ * every change. For an extension storage item, changes arrive from any context
+ * (another page, a content script, the worker). `createMemo(() => live(item))`
+ * reads it like any async value, and a `<Loading>` above covers the first read.
+ * Snapshots replace each other, so a slow reader only needs the newest one.
+ * Solid calls return() on owner disposal. The Convex counterpart is
+ * `liveStream` in `web/src/lib/convex.ts`.
  *
  * Hand-written rather than an async generator: a generator's return() queues
  * behind a pending next(), so disposing a reader that is waiting for a change
@@ -21,7 +26,7 @@ type WatchableItem<T> = Pick<
  * snapshot over to a live source during hydration, and extension pages render
  * client-only.
  */
-export function live<T>(item: WatchableItem<T>): AsyncIterable<T> {
+export function live<T>(item: Watchable<T>): AsyncIterable<T> {
 	return {
 		[Symbol.asyncIterator]() {
 			// Boxed: stored values may legitimately be null or undefined.
