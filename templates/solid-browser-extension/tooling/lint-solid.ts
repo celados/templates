@@ -11,5 +11,7 @@ export const solidLint = {
 		'solid/self-closing-comp': 'off',
 		'solid/style-prop': 'off',
 		'solid/prefer-structured-class': 'off',
+		// The plugin predates rc.9's dynamic(); its source is a tracked accessor.
+		'solid/reactivity': ['warn', { customReactiveFunctions: ['dynamic'] }],
 	},
 } as const
