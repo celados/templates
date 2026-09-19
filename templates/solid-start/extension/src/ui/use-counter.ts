@@ -1,7 +1,8 @@
 import { action, createMemo, createOptimistic } from 'solid-js'
 
 import { background, reportError } from '../extension/client'
-import { counterStream } from '../extension/counter-source'
+import { counterItem } from '../extension/counter-store'
+import { live } from '../extension/live'
 
 /**
  * One counter view per UI root. Storage is the authority: mutations run in the
@@ -9,7 +10,7 @@ import { counterStream } from '../extension/counter-source'
  * every open context, so there is no local copy to reconcile.
  */
 export function createCounter() {
-	const count$ = createMemo(() => counterStream())
+	const count$ = createMemo(() => live(counterItem))
 	const [pending, setPending] = createOptimistic(false)
 	const send = action(function* (mutation: 'increment' | 'reset') {
 		setPending(true)

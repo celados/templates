@@ -132,5 +132,6 @@ A project that does not ship an extension deletes, in one change:
   pre-release versions that share one runtime; upgrade them together.
 - Extension storage is the authority for extension-local shared state (the
   counter example); product data belongs to Convex. UI roots read storage as a
-  Solid async source (`src/extension/counter-source.ts`) and send mutations to
-  the background through `action`s; they do not keep a second local copy.
+  Solid async source through `live(item)` (`src/extension/live.ts`) and send
+  mutations to the background through `action`s; they do not keep a second local
+  copy.
