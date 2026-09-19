@@ -38,6 +38,9 @@ const chrome = Bun.spawn({
 		`--user-data-dir=${profileDirectory}`,
 		'--no-first-run',
 		'--no-default-browser-check',
+		// Automated runs must not open windows that steal focus. New headless
+		// is the real browser engine and supports extensions.
+		...(process.env.CHROME_HEADLESS === '1' ? ['--headless'] : []),
 		'https://example.com',
 	],
 	stdout: 'inherit',

@@ -34,14 +34,16 @@ to the user.
 - Content-script UI uses a Shadow Root with event isolation. Preserve explicit
   mount and disposal behavior, use the WXT context lifecycle helpers, and avoid
   `rem` units because the host page controls the root font size.
-- UI roots call the background only through the proxy service in
-  `src/extension/background-service.ts` (`@webext-core/proxy-service`); its
-  types come from the implementation, so there is no separate protocol file.
+- UI roots call the background only through the oRPC client in
+  `src/extension/client.ts`; procedures live in `src/extension/router.ts` and
+  are served over `runtime.connect` ports (https://orpc.dev/docs/adapters/browser).
+  The client reopens its port after the worker is terminated; keep that
+  behavior, and do not auto-retry calls, since mutations are not idempotent.
   Expose only privileged or serialized work there: storage and backend data
   (e.g. a Convex client authenticated with a Better Auth token) are read
-  directly by the UI, never proxied through the worker. Keep every exposed
-  level wrapped in `exposed()` and validate method arguments at runtime,
-  because content scripts are untrusted callers.
+  directly by the UI, never proxied through the worker. Give every procedure
+  that takes input a valibot `.input()` schema, because content scripts are
+  untrusted callers. Extension messaging cannot carry binary data.
 - User-visible strings, including manifest `name`/`description`, live in
   `locales/*.yml` and are read through `i18n.t()` from `#i18n`
   (`@wxt-dev/i18n`, typed from the default locale). Reference:

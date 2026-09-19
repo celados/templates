@@ -1,25 +1,23 @@
-import {
-	createProxyService,
-	type ProxyService,
-} from '@webext-core/proxy-service'
+import { createRouterClient } from '@orpc/server'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { fakeBrowser } from 'wxt/testing/fake-browser'
 
-import {
-	type BackgroundService,
-	registerBackgroundService,
-} from './background-service'
 import { counterItem } from './counter-store'
-import { BACKGROUND_SERVICE_KEY } from './services'
+import { createRouter } from './router'
 
-describe('background service', () => {
+describe('background router', () => {
 	const errors = vi.fn()
-	let background: ProxyService<BackgroundService>
+	let background: ReturnType<typeof client>
+
+	function client() {
+		return createRouterClient(createRouter(errors), {
+			context: { sender: undefined },
+		})
+	}
 
 	beforeEach(() => {
 		fakeBrowser.reset()
-		registerBackgroundService(errors)
-		background = createProxyService(BACKGROUND_SERVICE_KEY)
+		background = client()
 	})
 
 	it('persists counter mutations outside the worker lifetime', async () => {
@@ -39,26 +37,15 @@ describe('background service', () => {
 		expect(await counterItem.getValue()).toBe(2)
 	})
 
-	it('exposes only declared methods to untrusted senders', async () => {
-		// Without a null prototype this path resolves to Object.assign.
-		const escape = background.counter as unknown as {
-			constructor: { assign: (...args: object[]) => Promise<unknown> }
-		}
-
-		await expect(
-			escape.constructor.assign({}, { leaked: true }),
-		).resolves.not.toEqual({
-			leaked: true,
-		})
-	})
-
 	it('validates error reports before capturing them', async () => {
 		await background.diagnostics.report({
 			context: 'content-script',
 			message: 'boom',
 			name: 'TypeError',
 		})
-		await background.diagnostics.report({ message: 42 } as never)
+		await expect(
+			background.diagnostics.report({ message: 42 } as never),
+		).rejects.toMatchObject({ code: 'BAD_REQUEST' })
 
 		expect(errors).toHaveBeenCalledOnce()
 		const [error, context] = errors.mock.calls[0] ?? []

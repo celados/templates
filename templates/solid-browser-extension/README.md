@@ -24,11 +24,11 @@ vp create github:celados/templates/templates/solid-browser-extension \
   background service before any `await`.
 - `entrypoints/content/`: isolated Shadow DOM UI injected on `example.com`.
 - `entrypoints/sidepanel/`: a separate Solid root for the Chrome side panel.
-- `src/extension/`: the background service exposed through
-  `@webext-core/proxy-service`, storage, the storage-backed Solid async
+- `src/extension/`: the background oRPC router (`router.ts`) and its
+  reconnecting client (`client.ts`), storage, the storage-backed Solid async
   source, and error reporting.
 - `src/ui/`: Solid components shared by both roots, with no browser API
-  dependency beyond the typed `background` proxy.
+  dependency beyond the typed `background` client.
 - `locales/`: typed messages for UI and manifest strings (`@wxt-dev/i18n`).
 
 The example counter is deliberately end-to-end: both UIs read versioned
@@ -107,8 +107,10 @@ Then, in another terminal:
 bun run test:e2e
 ```
 
-The E2E connects to system Chrome over CDP and verifies the content UI, side
-panel, background messages, and shared persisted state. If port `9222` is
+`bun run chrome` starts Chrome headless so automated runs never open windows or
+take focus; `chrome:dev` stays headed for interactive work. The E2E connects
+over CDP and verifies the content UI, side panel, shared persisted state, and
+that the oRPC client reconnects after Chrome stops the service worker. If port `9222` is
 occupied, use the same alternate port for both commands:
 
 ```bash

@@ -45,8 +45,8 @@ framework-specific values such as its Tailwind stylesheet path.
 - `templates/cloudflare-worker/`: backend-only Cloudflare Worker template with
   oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle.
 - `templates/solid-browser-extension/`: standalone Manifest V3 extension
-  template with Solid 2 UI, WXT entrypoints, a typed background proxy
-  service, i18n, opt-in Sentry, and Chrome Web Store release automation.
+  template with Solid 2 UI, WXT entrypoints, an oRPC background
+  router, i18n, opt-in Sentry, and Chrome Web Store release automation.
 - `templates/solid-start/`: standalone Solid 2 start-mode SSR template with
   Convex, Better Auth, Stripe, StyleX, and Cloudflare Workers.
 - `templates/tanstack-start/`: standalone TanStack Start template and its

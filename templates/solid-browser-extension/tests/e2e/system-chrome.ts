@@ -38,8 +38,20 @@ try {
 
 	await sidePanel.getByTestId('reset').click()
 	await expectText(counter, '0')
+
+	// Chrome terminates idle MV3 workers and disconnects their ports; the next
+	// call must reconnect instead of failing on the dead port.
+	const cdp = await context.newCDPSession(sidePanel)
+	await cdp.send('ServiceWorker.enable')
+	await cdp.send('ServiceWorker.stopAllWorkers')
+	await waitForWorkerExit(browser, extensionId)
+	// The side panel's port carried the reset above, so this call exercises
+	// the reconnect path.
+	await sidePanel.getByTestId('increment').click()
+	await expectText(sidePanel.getByTestId('counter-value'), '1')
+	await expectText(counter, '1')
 	console.log(
-		'Verified content UI, side panel, background service, and persisted storage in system Chrome',
+		'Verified content UI, side panel, oRPC reconnect after worker shutdown, and persisted storage in system Chrome',
 	)
 } finally {
 	await browser.close()
@@ -75,6 +87,28 @@ async function findExtensionId(context: BrowserContext): Promise<string> {
 	}
 
 	return extensionId
+}
+
+async function waitForWorkerExit(
+	connectedBrowser: Browser,
+	extensionId: string,
+): Promise<void> {
+	// Playwright's serviceWorkers() list lags behind worker shutdown; ask CDP.
+	const cdp = await connectedBrowser.newBrowserCDPSession()
+	const url = `chrome-extension://${extensionId}/background.js`
+	const deadline = Date.now() + 5_000
+
+	while (
+		(await cdp.send('Target.getTargets')).targetInfos.some(
+			(target) => target.type === 'service_worker' && target.url === url,
+		)
+	) {
+		if (Date.now() > deadline) {
+			throw new Error('The extension service worker did not stop')
+		}
+		await new Promise((resolve) => setTimeout(resolve, 50))
+	}
+	await cdp.detach()
 }
 
 async function expectText(locator: Locator, expected: string): Promise<void> {

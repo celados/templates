@@ -1,14 +1,14 @@
 import { defineBackground } from '#imports'
 
-import { registerBackgroundService } from '../src/extension/background-service'
+import { serveRouter } from '../src/extension/router'
 import { createErrorSink } from '../src/extension/telemetry'
 
 export default defineBackground(() => {
 	const errors = createErrorSink()
 
-	// A message that wakes the worker is dispatched right after startup, so the
+	// A connection that wakes the worker is dispatched right after startup, so the
 	// listener must be registered synchronously, before any await.
-	registerBackgroundService(errors)
+	serveRouter(errors)
 
 	// The worker global belongs to the extension, so global handlers are safe
 	// here, unlike in content scripts, where they would see host-page errors.
