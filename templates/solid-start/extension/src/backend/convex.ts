@@ -47,7 +47,15 @@ export function createBackend() {
 		client.setAuth(() => fetchConvexToken(signal))
 	}
 	arm()
-	const unwatch = watchSession(arm)
+	const unwatch = watchSession((signedOut) => {
+		// Re-arming alone never reaches the server on a sign-out: setAuth pauses
+		// the socket and Convex drops the unauthenticate sent while paused, so
+		// the old identity would stay until its JWT expired. Clearing first
+		// sends it on the live socket; a refresh must not, or it would flash
+		// signed-out answers.
+		if (signedOut) client.client.clearAuth()
+		arm()
+	})
 	// Extension pages share one localStorage origin and read it synchronously,
 	// which is what lets the first frame render stored data.
 	const snapshots = createSnapshots<User>(

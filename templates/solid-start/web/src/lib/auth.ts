@@ -62,9 +62,11 @@ export function createAuth(client: ConvexClient) {
 	)
 	async function signOut() {
 		unwrap(await authClient.signOut())
-		// The Convex client keeps its last JWT until it expires; re-arming the
-		// fetcher makes it ask again now, and the ended session yields no token.
-		attachAuth(client)
+		// Tell the socket the identity is gone. Re-arming setAuth would not: it
+		// pauses the socket first, Convex drops the unauthenticate it sends
+		// while paused and never resends it, and the server keeps acting as
+		// this user until the JWT expires.
+		client.client.clearAuth()
 	}
 	return { user$, signOut }
 }

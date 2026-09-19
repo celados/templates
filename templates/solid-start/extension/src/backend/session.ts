@@ -69,8 +69,11 @@ function sleep(ms: number, signal: AbortSignal): Promise<void> {
 /**
  * Call `onChange` when the site's session cookie is set or removed, i.e. when
  * the person signs in or out on the web app while this UI stays open.
+ * `signedOut` is true only for a removal; a refresh overwrites the cookie.
  */
-export function watchSession(onChange: () => void): () => void {
+export function watchSession(
+	onChange: (signedOut: boolean) => void,
+): () => void {
 	const listener = ({
 		cookie,
 		removed,
@@ -82,7 +85,7 @@ export function watchSession(onChange: () => void): () => void {
 		// session cookie by name keeps that from re-triggering a token fetch.
 		if (!cookie.name.endsWith(SESSION_COOKIE)) return
 		if (cookie.domain.replace(/^\./u, '') !== SITE_URL.hostname) return
-		onChange()
+		onChange(removed)
 	}
 	browser.cookies.onChanged.addListener(listener)
 	return () => browser.cookies.onChanged.removeListener(listener)
