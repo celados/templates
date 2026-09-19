@@ -57,7 +57,8 @@ upgrade them together after checking peer ranges, and keep a single
 - `web/src/lib/convex.ts` is the only browser entry to Convex live queries.
   Keep Convex function selection typed through `convex/_generated/api`.
   Queries start after hydration (`ssrSource: 'client'`) and must sit under a
-  `<Loading>` unless they declare a `loadingValue`.
+  `<Loading>` unless they declare a `loadingValue`. `extension/` bundles this
+  module too, so keep it free of router, SSR, and Cloudflare imports.
 - `web/src/lib/auth.ts` owns Better Auth. Auth HTTP traffic is proxied
   same-origin through `web/src/routes/api/auth/[...all].ts` to the Convex site,
   so cookies stay first-party.

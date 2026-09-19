@@ -3,7 +3,9 @@ import {
 	type Browser,
 	type BrowserContext,
 	type Locator,
+	type Page,
 } from '@playwright/test'
+import { readFile } from 'node:fs/promises'
 
 const endpoint =
 	process.env.CHROME_CDP_ENDPOINT ??
@@ -21,6 +23,16 @@ try {
 
 try {
 	const context = getContext(browser)
+	// Offline for the backend: the snapshot phase below must prove what renders
+	// before any live answer. Routes have to exist before the worker restart.
+	const site = await siteHost()
+	await context.route(
+		(url) => url.hostname === site,
+		(route) => route.abort(),
+	)
+	await context.routeWebSocket(/\.convex\.cloud/u, () => {
+		// Accept and never answer, like a socket still waiting for a token.
+	})
 	const page = await context.newPage()
 	await page.goto('https://example.com')
 
@@ -50,11 +62,86 @@ try {
 	await sidePanel.getByTestId('increment').click()
 	await expectText(sidePanel.getByTestId('counter-value'), '1')
 	await expectText(counter, '1')
+
+	await verifySnapshotFirstPaint(sidePanel)
 	console.log(
-		'Verified content UI, side panel, oRPC reconnect after worker shutdown, and persisted storage in system Chrome',
+		'Verified content UI, side panel, oRPC reconnect after worker shutdown, persisted storage, and snapshot first paint in system Chrome',
 	)
 } finally {
 	await browser.close()
+}
+
+/**
+ * Cold open of the Convex-backed account panel with the backend unreachable.
+ * Control: with nothing stored, its Loading fallback shows, so a snapshot pass
+ * cannot come from a live answer sneaking through.
+ */
+async function verifySnapshotFirstPaint(sidePanel: Page): Promise<void> {
+	await sidePanel.evaluate(() => localStorage.clear())
+	await sidePanel.reload({ waitUntil: 'domcontentloaded' })
+	await failOnPanelError(sidePanel)
+	await sidePanel.getByTestId('account-loading').waitFor()
+
+	const version = await sidePanel.evaluate(
+		() => chrome.runtime.getManifest().version,
+	)
+	await sidePanel.evaluate(
+		(stored) => localStorage.setItem('convex-snapshots', stored),
+		JSON.stringify({
+			version,
+			user: { id: 'user-1', email: 'ada@example.com', name: 'Ada' },
+			queries: {
+				'todos:list:{}': [
+					{
+						_id: 'todo-1',
+						_creationTime: 1,
+						ownerId: 'user-1',
+						text: 'Stored todo',
+						completed: false,
+					},
+				],
+			},
+		}),
+	)
+	await sidePanel.reload({ waitUntil: 'domcontentloaded' })
+	// The root renders synchronously during module evaluation, which finishes
+	// before DOMContentLoaded: this reads the first frame, without waiting.
+	const firstFrame = await sidePanel.evaluate(() => ({
+		user: document.querySelector('[data-testid="account-user"]')?.textContent,
+		todos: document.querySelector('[data-testid="todos"]')?.textContent,
+		loading: document.querySelector(
+			'[data-testid="account-loading"], [data-testid="todos-loading"]',
+		),
+	}))
+	if (
+		firstFrame.user !== 'ada@example.com' ||
+		firstFrame.todos !== 'Stored todo' ||
+		firstFrame.loading !== null
+	) {
+		throw new Error(
+			`Expected the stored snapshot in the first frame, got ${JSON.stringify(firstFrame)}`,
+		)
+	}
+}
+
+async function failOnPanelError(sidePanel: Page): Promise<void> {
+	const error = sidePanel.getByTestId('account-error')
+	if (await error.count()) {
+		throw new Error(
+			`Account panel failed: ${await error.textContent()}. Build with VITE_CONVEX_URL set; any deployment works, the test blocks it.`,
+		)
+	}
+}
+
+// The web app host the build was made for: its only host permission.
+async function siteHost(): Promise<string> {
+	const manifest = JSON.parse(
+		await readFile(
+			new URL('../../.output/chrome-mv3/manifest.json', import.meta.url),
+			'utf8',
+		),
+	) as { host_permissions: [string] }
+	return new URL(manifest.host_permissions[0].replace('/*', '/')).hostname
 }
 
 function getContext(connectedBrowser: Browser): BrowserContext {

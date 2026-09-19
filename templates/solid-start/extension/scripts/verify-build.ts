@@ -37,8 +37,8 @@ assert(
 	'Expected the example.com content script',
 )
 assert(
-	sameMembers(manifest.permissions ?? [], ['sidePanel', 'storage']),
-	'Expected only storage and sidePanel permissions',
+	sameMembers(manifest.permissions ?? [], ['cookies', 'sidePanel', 'storage']),
+	'Expected only cookies, storage, and sidePanel permissions',
 )
 assert(
 	manifest.default_locale !== undefined &&
@@ -52,9 +52,14 @@ assert(
 		).exists()),
 	'Expected compiled messages for the default locale',
 )
+// Exactly the web app's host, whose session cookie mints Convex tokens; no
+// wildcard host or scheme, and no port (see siteMatchPattern in wxt.config.ts).
+const [site, ...otherHosts] = manifest.host_permissions ?? []
 assert(
-	(manifest.host_permissions?.length ?? 0) === 0,
-	'Host permissions must stay empty until a feature requires them',
+	site !== undefined &&
+		otherHosts.length === 0 &&
+		/^https?:\/\/[^*/:]+\/\*$/u.test(site),
+	'Host permissions must be only the web app host',
 )
 
 console.log(

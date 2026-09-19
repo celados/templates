@@ -1,8 +1,10 @@
 import { render } from '@solidjs/web'
+import { Errored } from 'solid-js'
 
 import { i18n } from '#i18n'
 
 import { reportError } from '../../src/extension/client'
+import { AccountPanel } from '../../src/ui/account-panel'
 import { CounterPanel } from '../../src/ui/counter-panel'
 
 import './style.css'
@@ -26,6 +28,15 @@ const dispose = render(
 				title={i18n.t('sidepanel.title')}
 				description={i18n.t('sidepanel.description')}
 			/>
+			<Errored
+				fallback={(error) => (
+					<p class="hint" data-testid="account-error">
+						{String(error())}
+					</p>
+				)}
+			>
+				<AccountPanel />
+			</Errored>
 			<p class="hint">
 				<a href="https://example.com" target="_blank">
 					{i18n.t('sidepanel.hint')}

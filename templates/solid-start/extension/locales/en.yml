@@ -13,3 +13,7 @@ sidepanel:
   title: Solid Extension
   description: The side panel and page widget share a typed background service and versioned local storage.
   hint: Try the isolated page UI on example.com
+account:
+  eyebrow: Convex · your todos
+  signIn: Sign in on the web app
+  empty: No todos yet

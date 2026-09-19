@@ -7,7 +7,10 @@ from the root `vite.config.ts`. Run its scripts through the root
 `extension:*` aliases or `bun run --cwd extension <script>`.
 
 Dependencies point one way: `extension/` may import `convex/_generated` and
-`web/src/lib/`; `web/` and `convex/` never import `extension/`.
+`web/src/lib/`; `web/` and `convex/` never import `extension/`. `convex` is
+deliberately not in this `package.json`: imports resolve to the root copy, so
+`ConvexClient` has one declaration. Solid is in both; keep the exact pins
+equal, since `web/src/lib/convex.ts` is bundled here against this copy.
 
 ## Removing the extension
 
@@ -18,7 +21,41 @@ A project that does not ship an extension deletes, in one change:
 3. the root `package.json` `postinstall` and `extension:*` scripts, and the
    `extension:*` steps in `check` and `build`
 4. `extensionGenerated` in the root `vite.config.ts`
-5. the extension section of the root `AGENTS.md` and `README.md`
+5. `WXT_SITE_URL` in the root `.env.example`, and the extension section of
+   the root `AGENTS.md` and `README.md`
+
+## Convex and auth
+
+- Extension pages (side panel, popup, options) read Convex directly: one
+  client per page from `createBackend()` in `src/backend/convex.ts`, live
+  queries through `createPersistedQuery` (or `createQuery` from
+  `web/src/lib/convex.ts` when a stored first paint is not wanted), and
+  mutations through `backend.client.mutation`. The background never proxies
+  queries or caches product data; a proxy re-implements subscriptions,
+  reconnects, and consistency by hand.
+- The extension holds no credentials. `src/backend/session.ts` mints a Convex
+  JWT from the web app's Better Auth session cookie (`GET
+/api/auth/convex/token`, which Better Auth does not origin-check), so people
+  sign in and out on the web app. A change to that cookie re-arms `setAuth` in
+  every open page. The only host permission is the web app's host, without a
+  port, because the cookies API checks access against port-less cookie URLs.
+- Content scripts never hold a Convex client or token: they run in the host
+  page's renderer and fetch with its origin. Product data they need goes
+  through a background procedure that mints a token the same way and uses a
+  one-shot `ConvexHttpClient`, holding no subscription or cache.
+- Stored answers (`src/backend/snapshots.ts`, the page's `localStorage`) are
+  provisional first paint, never authority: do not gate behavior on them, and
+  write them only from live answers. They belong to the user the live
+  `currentUser` confirmed, and a different user, a sign-out, or a new extension
+  version drops them. Known boundary: until the socket confirms, the stored
+  user is shown, e.g. after signing out on the web app while the extension was
+  closed; offline, that lasts until the network returns.
+- Create sources above the `<Loading>` that reads them; the arguments of a
+  persisted query must not read a pending source, since its snapshot is looked
+  up from the initial arguments.
+- `VITE_CONVEX_URL` comes from the root `.env.local` that `convex dev` writes;
+  `WXT_SITE_URL` is the web app origin and defaults to `http://localhost:3000`.
+  Release builds set both.
 
 ## Contract
 
@@ -39,9 +76,8 @@ A project that does not ship an extension deletes, in one change:
   are served over `runtime.connect` ports (https://orpc.dev/docs/adapters/browser).
   The client reopens its port after the worker is terminated; keep that
   behavior, and do not auto-retry calls, since mutations are not idempotent.
-  Expose only privileged or serialized work there: storage and backend data
-  (e.g. a Convex client authenticated with a Better Auth token) are read
-  directly by the UI, never proxied through the worker. Give every procedure
+  Expose only privileged or serialized work there: extension storage and
+  Convex are read directly by the UI (see Convex and auth). Give every procedure
   that takes input a valibot `.input()` schema, because content scripts are
   untrusted callers. Extension messaging cannot carry binary data.
 - Worker calls that need the click's user gesture (e.g. `sidePanel.open()`)
@@ -72,6 +108,7 @@ A project that does not ship an extension deletes, in one change:
   `node_modules/solid-js/CHEATSHEET.md` before editing components, and use the
   `solid-migration` skill for state design. Solid packages are pinned to exact
   pre-release versions that share one runtime; upgrade them together.
-- Extension storage is the authority for shared state. UI roots read it as a
+- Extension storage is the authority for extension-local shared state (the
+  counter example); product data belongs to Convex. UI roots read storage as a
   Solid async source (`src/extension/counter-source.ts`) and send mutations to
   the background through `action`s; they do not keep a second local copy.

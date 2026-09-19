@@ -42,6 +42,8 @@ jobs:
       - name: Build and package extension
         run: bun run zip
         env:
+          VITE_CONVEX_URL: ${{ vars.VITE_CONVEX_URL }}
+          WXT_SITE_URL: ${{ vars.WXT_SITE_URL }}
           WXT_SENTRY_DSN: ${{ vars.WXT_SENTRY_DSN }}
 
       # Chrome Web Store API v2 with a service account; v1.1 refresh-token

@@ -13,3 +13,7 @@ sidepanel:
   title: Solid 扩展
   description: 侧边栏与页面组件共享类型化的后台服务和带版本的本地存储。
   hint: 在 example.com 体验隔离的页面 UI
+account:
+  eyebrow: Convex · 你的待办
+  signIn: 在网页端登录
+  empty: 还没有待办
