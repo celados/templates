@@ -9,11 +9,14 @@ The project deliberately has one package and one dependency graph:
 ```text
 web/       Solid 2 start mode and Cloudflare Workers runtime
 convex/    application-scoped backend, auth, data, and billing
+extension/ removable companion browser extension (own package.json for WXT)
 tooling/   project-wide tooling configuration
 ```
 
-`web/` and `convex/` are runtime/module boundaries, not workspace packages.
-There is one root `package.json` and lockfile.
+`web/` and `convex/` are runtime/module boundaries, not workspace packages;
+they share the root `package.json` and lockfile. `extension/` keeps its own so
+WXT resolves its own Vite; see `extension/README.md`, and its `AGENTS.md` for
+removing it.
 
 This is not SolidStart: released SolidStart runs on Solid 1. Solid 2 apps use
 `@solidjs/vite-plugin` start mode, which owns the generated client, server, and

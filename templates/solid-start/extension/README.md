@@ -1,22 +1,9 @@
-# Solid Browser Extension Template
+# Companion Browser Extension
 
-A production-shaped Manifest V3 browser extension template built with Solid 2,
-WXT, Vite+, and Bun.
-
-## Create a project
-
-The default branch is the only template source.
-
-```bash
-vp create github:celados/templates/templates/solid-browser-extension \
-  --package-manager bun \
-  --no-agent \
-  --editor vscode \
-  --hooks \
-  --git \
-  --no-interactive \
-  -- <project-directory>
-```
+A Manifest V3 extension built with Solid 2, WXT, and Bun, living next to the
+web app and sharing its Convex backend. It has its own `package.json`; root
+`bun install` installs it, and root `check`/`build` cover it. Delete it with
+the checklist in `AGENTS.md` when the product has no extension.
 
 ## Architecture
 
@@ -46,8 +33,9 @@ without start mode, and each root mounts with `render()` from `@solidjs/web`.
 
 ## Develop with system Chrome
 
+Commands in this file run inside `extension/` after a root `bun install`.
+
 ```bash
-vp install
 bun run dev
 ```
 
@@ -72,7 +60,7 @@ bun run build
 bun run zip
 ```
 
-`check` covers formatting, Solid lint rules, TypeScript, and fake-browser
+`check` covers TypeScript and fake-browser
 storage tests. `build` also verifies MV3 entrypoints, compiled locales, and
 least-privilege permissions. `zip` produces the Chrome submission artifact in `.output/`.
 

@@ -4,6 +4,14 @@ import { frameworkLintBase } from './tooling/lint'
 import { solidLint } from './tooling/lint-solid'
 import { oxfmtConfig } from './tooling/oxfmt'
 
+// The extension has its own package.json for WXT, but one lint and format
+// policy covers the whole project; only its build output is excluded.
+const extensionGenerated = [
+	'extension/.output',
+	'extension/.wxt',
+	'extension/.chrome-profile',
+]
+
 export default defineConfig({
 	staged: {
 		'*': 'vp check --fix',
@@ -15,7 +23,12 @@ export default defineConfig({
 			'@convex-dev/eslint-plugin',
 			'@stylexjs/eslint-plugin',
 		],
-		ignorePatterns: ['dist', 'convex/_generated', '*.d.ts'],
+		ignorePatterns: [
+			'dist',
+			'convex/_generated',
+			'*.d.ts',
+			...extensionGenerated,
+		],
 		settings: solidLint.settings,
 		rules: {
 			...solidLint.rules,
@@ -42,6 +55,7 @@ export default defineConfig({
 			...oxfmtConfig.ignorePatterns,
 			'web/file-routes.d.ts',
 			'web/solid-env.d.ts',
+			...extensionGenerated,
 		],
 	},
 })

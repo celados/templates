@@ -4,17 +4,23 @@
 	"type": "module",
 	"scripts": {
 		"prepare": "bun scripts/install-skills.mjs",
+		"postinstall": "bun install --cwd extension --frozen-lockfile",
 		"dev": "wireit",
 		"web:dev": "wireit",
 		"convex:dev": "wireit",
 		"auth:jwks": "convex run auth:getLatestJwks | convex env set JWKS",
-		"build": "vp build web",
+		"build": "bun run build:web && bun run extension:build",
+		"build:web": "vp build web",
 		"preview": "vp preview web",
 		"test": "vp test --root web",
 		"typecheck": "tsc -p web/tsconfig.json --noEmit && convex typecheck",
-		"check": "vp check && bun run typecheck && bun run test",
-		"deploy": "bun run build && wrangler deploy --cwd web",
-		"deploy:temporary": "bun run build && wrangler deploy --cwd web --temporary"
+		"check": "vp check && bun run typecheck && bun run test && bun run extension:check",
+		"deploy": "bun run build:web && wrangler deploy --cwd web",
+		"deploy:temporary": "bun run build:web && wrangler deploy --cwd web --temporary",
+		"extension:dev": "bun run --cwd extension dev",
+		"extension:check": "bun run --cwd extension check",
+		"extension:build": "bun run --cwd extension build",
+		"extension:zip": "bun run --cwd extension zip"
 	},
 	"wireit": {
 		"dev": {

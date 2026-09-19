@@ -3,7 +3,9 @@
 This is one full-stack application with one root `package.json`. `web/` owns
 the Solid 2 start-mode runtime (SSR on Cloudflare Workers); `convex/` is a
 peer, application-scoped backend module. Neither is a separate package or
-workspace. The runtime set is `solid-js`, `@solidjs/web`,
+workspace. `extension/` is the removable companion browser extension; it keeps
+its own `package.json` for WXT, and its `AGENTS.md` owns its contract and the
+removal checklist. The runtime set is `solid-js`, `@solidjs/web`,
 `@solidjs/vite-plugin`, `@solidjs/router`, and `@solidjs/meta`; never introduce
 `@solidjs/start`, Vinxi, or Nitro — released SolidStart runs on Solid 1.
 

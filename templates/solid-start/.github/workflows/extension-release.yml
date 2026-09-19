@@ -1,7 +1,7 @@
-name: Release
+name: Extension Release
 
 # Manual: a Chrome Web Store submission is an outward, review-gated action.
-# Bump package.json version first; WXT stamps it into the manifest.
+# Bump extension/package.json version first; WXT stamps it into the manifest.
 on:
   workflow_dispatch:
     inputs:
@@ -14,12 +14,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: release
+  group: extension-release
   cancel-in-progress: false
 
 jobs:
   submit:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: extension
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -27,11 +30,14 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
+      # The root install also installs extension/ through its postinstall.
       - name: Install dependencies
         run: bun install --frozen-lockfile
+        working-directory: .
 
       - name: Check
         run: bun run check
+        working-directory: .
 
       - name: Build and package extension
         run: bun run zip

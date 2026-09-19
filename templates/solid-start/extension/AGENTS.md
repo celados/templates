@@ -1,26 +1,26 @@
-<!--VITE PLUS START-->
+# Companion browser extension
 
-# Using Vite+, the Unified Toolchain for the Web
+A Manifest V3 extension for the same product as `web/`, sharing its Convex
+backend. It has its own `package.json` so WXT keeps its own Vite resolution
+instead of the root's Vite+ core override; lint and format policy still come
+from the root `vite.config.ts`. Run its scripts through the root
+`extension:*` aliases or `bun run --cwd extension <script>`.
 
-This project is using Vite+, a unified toolchain built on top of Vite, Rolldown, Vitest, tsdown, Oxlint, Oxfmt, and Vite Task. Vite+ wraps runtime management, package management, and frontend tooling in a single global CLI called `vp`. Vite+ is distinct from Vite, and it invokes Vite through `vp dev` and `vp build`. Run `vp help` to print a list of commands and `vp <command> --help` for information about a specific command.
+Dependencies point one way: `extension/` may import `convex/_generated` and
+`web/src/lib/`; `web/` and `convex/` never import `extension/`.
 
-Docs are local at `node_modules/vite-plus/docs` or online at https://viteplus.dev/guide/.
+## Removing the extension
 
-## Review Checklist
+A project that does not ship an extension deletes, in one change:
 
-- [ ] Run `vp install` after pulling remote changes and before getting started.
-- [ ] Run `vp check` and `vp test` to format, type check and test changes.
-- [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
-- [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
+1. `extension/`
+2. `.github/workflows/extension-release.yml`
+3. the root `package.json` `postinstall` and `extension:*` scripts, and the
+   `extension:*` steps in `check` and `build`
+4. `extensionGenerated` in the root `vite.config.ts`
+5. the extension section of the root `AGENTS.md` and `README.md`
 
-After completing a meaningful development stage, if the project defines
-`deploy:temporary`, use it when an online preview would help verify or share the
-result. Return the deployment URL and the time-sensitive Cloudflare claim URL
-to the user.
-
-<!--VITE PLUS END-->
-
-## Solid browser extension contract
+## Contract
 
 - Before changing WXT configuration, entrypoints, storage, messaging, or browser
   lifecycle behavior, read https://wxt.dev/llms.txt and the relevant linked
@@ -59,8 +59,9 @@ to the user.
   passes `{ onError: reportError }` to `render()`: errors an `Errored` boundary
   catches reach only that root hook, and it is scoped to our tree, so it is the
   content-script-safe way to hear them.
-- Releases go through the manual `Release` workflow (`wxt submit`, Chrome Web
-  Store API v2). Bump the `package.json` version first.
+- Releases go through the manual `Extension Release` workflow
+  (`.github/workflows/extension-release.yml`: `wxt submit`, Chrome Web Store
+  API v2). Bump this directory's `package.json` version first.
 - System Google Chrome no longer accepts command-line extension sideloading.
   Do not download Playwright Chromium as a fallback. Use the repository Chrome
   launcher, which loads the unpacked output through the official experimental

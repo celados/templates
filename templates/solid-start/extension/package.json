@@ -1,15 +1,14 @@
 {
-	"name": "template-solid-browser-extension",
+	"name": "template-solid-start-extension",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"prepare": "bun scripts/install-skills.mjs",
 		"postinstall": "wxt prepare",
 		"dev": "wxt --browser chrome",
 		"build": "wxt build --browser chrome && bun scripts/verify-build.ts",
 		"zip": "wxt zip --browser chrome && bun scripts/verify-build.ts",
-		"check": "vp check && tsc --noEmit && bun run test",
+		"check": "tsc --noEmit && bun run test",
 		"test": "vp test --run",
 		"test:e2e": "node tests/e2e/system-chrome.ts",
 		"chrome": "CHROME_HEADLESS=1 bun scripts/system-chrome.ts .output/chrome-mv3",
@@ -31,16 +30,8 @@
 		"@types/bun": "^1.4.2",
 		"@types/chrome": "^0.3.0",
 		"@wxt-dev/auto-icons": "^1.1.2",
-		"eslint-plugin-solid": "^0.18.0",
 		"typescript": "^7.0.2",
 		"vite-plus": "^0.3.3",
 		"wxt": "^0.21.4"
-	},
-	"devEngines": {
-		"packageManager": {
-			"name": "bun",
-			"version": "1.4.2",
-			"onFail": "download"
-		}
 	}
 }

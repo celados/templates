@@ -44,11 +44,11 @@ framework-specific values such as its Tailwind stylesheet path.
 
 - `templates/cloudflare-worker/`: backend-only Cloudflare Worker template with
   oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle.
-- `templates/solid-browser-extension/`: standalone Manifest V3 extension
-  template with Solid 2 UI, WXT entrypoints, an oRPC background
-  router, i18n, opt-in Sentry, and Chrome Web Store release automation.
 - `templates/solid-start/`: standalone Solid 2 start-mode SSR template with
-  Convex, Better Auth, Stripe, StyleX, and Cloudflare Workers.
+  Convex, Better Auth, Stripe, StyleX, and Cloudflare Workers. Its
+  `extension/` is a removable companion Manifest V3 extension (WXT, oRPC
+  background, live Convex reads) with its own `package.json`, so WXT keeps its
+  own Vite resolution instead of the web app's Vite+ core override.
 - `templates/tanstack-start/`: standalone TanStack Start template and its
   Cloudflare Workers SSR configuration.
 - `templates/tanstack-start-multisite/`: one-product, multi-site TanStack Start
