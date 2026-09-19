@@ -1,0 +1,54 @@
+name: Release
+
+# Manual: a Chrome Web Store submission is an outward, review-gated action.
+# Bump package.json version first; WXT stamps it into the manifest.
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Authenticate only; do not upload or submit
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check
+        run: bun run check
+
+      - name: Build and package extension
+        run: bun run zip
+        env:
+          WXT_SENTRY_DSN: ${{ vars.WXT_SENTRY_DSN }}
+
+      # Chrome Web Store API v2 with a service account; v1.1 refresh-token
+      # auth is deprecated. `bunx wxt submit init` walks through the values.
+      # https://wxt.dev/guide/essentials/publishing.html
+      - name: Submit to Chrome Web Store
+        run: >-
+          bunx wxt submit
+          --dry-run ${{ inputs.dry-run }}
+          --chrome-zip .output/*-chrome.zip
+        env:
+          CHROME_API_VERSION: v2
+          CHROME_EXTENSION_ID: ${{ vars.CHROME_EXTENSION_ID }}
+          CHROME_PUBLISHER_ID: ${{ vars.CHROME_PUBLISHER_ID }}
+          CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+          CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}

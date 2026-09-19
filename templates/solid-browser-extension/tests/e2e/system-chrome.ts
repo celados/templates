@@ -39,7 +39,7 @@ try {
 	await sidePanel.getByTestId('reset').click()
 	await expectText(counter, '0')
 	console.log(
-		'Verified content UI, side panel, typed messaging, and persisted storage in system Chrome',
+		'Verified content UI, side panel, background service, and persisted storage in system Chrome',
 	)
 } finally {
 	await browser.close()

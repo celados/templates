@@ -20,18 +20,26 @@ vp create github:celados/templates/templates/solid-browser-extension \
 
 ## Architecture
 
-- `entrypoints/background.ts`: ephemeral MV3 service worker registration.
+- `entrypoints/background.ts`: ephemeral MV3 service worker; registers the
+  background service before any `await`.
 - `entrypoints/content/`: isolated Shadow DOM UI injected on `example.com`.
 - `entrypoints/sidepanel/`: a separate Solid root for the Chrome side panel.
-- `src/extension/`: runtime-validated messages, storage, the background
-  service, and the storage-backed Solid async source.
+- `src/extension/`: the background service exposed through
+  `@webext-core/proxy-service`, storage, the storage-backed Solid async
+  source, and error reporting.
 - `src/ui/`: Solid components shared by both roots, with no browser API
-  dependency beyond the typed client.
+  dependency beyond the typed `background` proxy.
+- `locales/`: typed messages for UI and manifest strings (`@wxt-dev/i18n`).
 
 The example counter is deliberately end-to-end: both UIs read versioned
-`chrome.storage.local` as a live Solid source, send mutations to the
-background through Solid `action`s, and stay in sync across contexts and
-service-worker restarts.
+`chrome.storage.local` as a live Solid source, call
+`background.counter.increment()` through Solid `action`s, and stay in sync
+across contexts and service-worker restarts.
+
+The background service is for privileged or serialized work only. With a
+Convex + Better Auth backend, UI roots hold their own Convex client and read
+data directly; routing data through the worker turns it into a hand-written
+cache and sync layer.
 
 Solid is used client-only: `@solidjs/vite-plugin` runs inside WXT's Vite build
 without start mode, and each root mounts with `render()` from `@solidjs/web`.
@@ -51,7 +59,10 @@ bun run chrome:dev
 
 The launcher installs `.output/chrome-mv3-dev` through Chrome's official
 `Extensions.loadUnpacked` CDP command and prints the extension ID and endpoint.
-WXT intentionally does not open or download a browser itself.
+WXT intentionally does not open or download a browser itself. Each launch
+clears the profile's service-worker registrations, because Chrome otherwise
+keeps running the previous build's background script while the manifest
+version is unchanged; extension storage is kept.
 
 ## Validate and package
 
@@ -62,8 +73,26 @@ bun run zip
 ```
 
 `check` covers formatting, Solid lint rules, TypeScript, and fake-browser
-storage tests. `build` also verifies MV3 entrypoints and least-privilege
-permissions. `zip` produces the Chrome submission artifact in `.output/`.
+storage tests. `build` also verifies MV3 entrypoints, compiled locales, and
+least-privilege permissions. `zip` produces the Chrome submission artifact in `.output/`.
+
+## Error reporting
+
+Set `WXT_SENTRY_DSN` at build time to enable Sentry; without it the SDK is
+tree-shaken out and errors go to the console. Only the background worker owns
+a client, created per Sentry's
+[shared-environment guidance](https://docs.sentry.io/platforms/javascript/best-practices/shared-environments/);
+other contexts forward errors with `reportError()`. In Sentry, disable the
+inbound filter for browser-extension errors.
+
+## Release
+
+The manual `Release` workflow checks, zips, and runs `wxt submit` against the
+Chrome Web Store API v2. It defaults to a dry run. Configure repository
+variables `CHROME_EXTENSION_ID`, `CHROME_PUBLISHER_ID`, and optional
+`WXT_SENTRY_DSN`, plus secrets `CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL` and
+`CHROME_SERVICE_ACCOUNT_PRIVATE_KEY`. `bunx wxt submit init` walks through
+obtaining them. The first store listing is still created by hand.
 
 ## Run system Chrome E2E
 

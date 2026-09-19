@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises'
+import { mkdir, rm } from 'node:fs/promises'
 import { isAbsolute, resolve } from 'node:path'
 
 const requestedOutput = process.argv[2] ?? '.output/chrome-mv3'
@@ -17,6 +17,14 @@ if (!(await manifest.exists())) {
 
 const profileDirectory = resolve(process.cwd(), '.chrome-profile')
 await mkdir(profileDirectory, { recursive: true })
+// Chrome keeps serving an extension's previously registered service-worker
+// script while the manifest version is unchanged, even after loadUnpacked
+// and a rebuild. Drop the profile's worker registrations so every launch runs
+// the current build; extension storage lives elsewhere and survives.
+await rm(resolve(profileDirectory, 'Default/Service Worker'), {
+	force: true,
+	recursive: true,
+})
 
 const chromeBinary = await findSystemChrome()
 

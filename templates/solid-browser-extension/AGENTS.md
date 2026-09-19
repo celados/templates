@@ -34,9 +34,25 @@ to the user.
 - Content-script UI uses a Shadow Root with event isolation. Preserve explicit
   mount and disposal behavior, use the WXT context lifecycle helpers, and avoid
   `rem` units because the host page controls the root font size.
-- Keep cross-context communication behind the typed protocol in
-  `src/extension/`. Validate messages at runtime because webpage and extension
-  boundaries are not trustworthy TypeScript callers.
+- UI roots call the background only through the proxy service in
+  `src/extension/background-service.ts` (`@webext-core/proxy-service`); its
+  types come from the implementation, so there is no separate protocol file.
+  Expose only privileged or serialized work there: storage and backend data
+  (e.g. a Convex client authenticated with a Better Auth token) are read
+  directly by the UI, never proxied through the worker. Keep every exposed
+  level wrapped in `exposed()` and validate method arguments at runtime,
+  because content scripts are untrusted callers.
+- User-visible strings, including manifest `name`/`description`, live in
+  `locales/*.yml` and are read through `i18n.t()` from `#i18n`
+  (`@wxt-dev/i18n`, typed from the default locale). Reference:
+  https://wxt.dev/i18n.html
+- Error reporting: only the background owns a Sentry client, configured from
+  `WXT_SENTRY_DSN` with no global integrations, per Sentry's
+  shared-environment guidance. Other contexts call `reportError()` from
+  `src/extension/client.ts`. Never install global error handlers in content
+  scripts, where they would capture the host page's errors.
+- Releases go through the manual `Release` workflow (`wxt submit`, Chrome Web
+  Store API v2). Bump the `package.json` version first.
 - System Google Chrome no longer accepts command-line extension sideloading.
   Do not download Playwright Chromium as a fallback. Use the repository Chrome
   launcher, which loads the unpacked output through the official experimental

@@ -1,0 +1,15 @@
+extName: Solid 扩展
+extDescription: 基于 Solid 2 与 WXT 的生产级 MV3 扩展模板。
+actionTitle: 打开 Solid 扩展
+counter:
+  eyebrow: Solid 2 · MV3
+  label: 持久化计数
+  increment: 加一
+  reset: 重置
+content:
+  title: 页面中的 Solid
+  description: Shadow DOM 隔离此 UI，状态由后台 worker 持有。
+sidepanel:
+  title: Solid 扩展
+  description: 侧边栏与页面组件共享类型化的后台服务和带版本的本地存储。
+  hint: 在 example.com 体验隔离的页面 UI

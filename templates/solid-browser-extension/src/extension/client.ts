@@ -1,30 +1,20 @@
-import { browser } from '#imports'
+import { createProxyService } from '@webext-core/proxy-service'
 
-import type { CounterCommand, CounterState } from './protocol'
+import { toErrorReport } from './error-report'
+import { BACKGROUND_SERVICE_KEY } from './services'
 
-import { counterItem } from './counter-store'
+export const background = createProxyService(BACKGROUND_SERVICE_KEY)
 
-export async function sendCounterCommand(
-	command: CounterCommand,
-): Promise<CounterState> {
-	const response: unknown = await browser.runtime.sendMessage(command)
+// Extension pages report their path; content scripts never report the host
+// page URL, which may be private to the user.
+const context =
+	location.protocol === 'chrome-extension:'
+		? location.pathname
+		: 'content-script'
 
-	if (
-		typeof response !== 'object' ||
-		response === null ||
-		!('type' in response) ||
-		response.type !== 'counter:state' ||
-		!('count' in response) ||
-		typeof response.count !== 'number'
-	) {
-		throw new Error('Background returned an invalid counter response')
-	}
-
-	return response as CounterState
-}
-
-export function watchCounter(listener: (count: number) => void): () => void {
-	return counterItem.watch((count) => {
-		listener(count)
-	})
+/** Forward an error to the background's reporter. Never throws. */
+export function reportError(error: unknown): void {
+	void background.diagnostics
+		.report(toErrorReport(error, context))
+		.catch((cause: unknown) => console.error(error, cause))
 }

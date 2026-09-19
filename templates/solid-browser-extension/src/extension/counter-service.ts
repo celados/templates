@@ -1,41 +1,36 @@
-import type { CounterCommand, CounterState } from './protocol'
+import { counterItem } from './counter-store'
 
-import { getCounter, incrementCounter, resetCounter } from './counter-store'
+export type CounterService = ReturnType<typeof createCounterService>
 
-let operation = Promise.resolve()
+/**
+ * Background-owned counter mutations. Callers receive the new count, but UI
+ * renders the storage watch, so the return value is a confirmation only.
+ */
+export function createCounterService() {
+	let operation = Promise.resolve()
 
-export function handleCounterCommand(
-	command: CounterCommand,
-): Promise<CounterState> {
-	// storage.local has no atomic increment primitive. Serialize commands inside
+	// storage.local has no atomic increment primitive. Serialize writes inside
 	// one worker lifetime so concurrent UI events cannot overwrite each other.
-	const result = operation.then(() => executeCounterCommand(command))
-	operation = result.then(
-		() => undefined,
-		() => undefined,
-	)
-	return result
-}
-
-async function executeCounterCommand(
-	command: CounterCommand,
-): Promise<CounterState> {
-	let count: number
-
-	switch (command.type) {
-		case 'counter:get':
-			count = await getCounter()
-			break
-		case 'counter:increment':
-			count = await incrementCounter()
-			break
-		case 'counter:reset':
-			count = await resetCounter()
-			break
+	function serialize(write: () => Promise<number>): Promise<number> {
+		const result = operation.then(write)
+		operation = result.then(
+			() => undefined,
+			() => undefined,
+		)
+		return result
 	}
 
 	return {
-		count,
-		type: 'counter:state',
+		increment: () =>
+			serialize(async () => {
+				const count = (await counterItem.getValue()) + 1
+				await counterItem.setValue(count)
+				return count
+			}),
+		reset: () =>
+			serialize(async () => {
+				await counterItem.setValue(0)
+				return 0
+			}),
 	}
 }

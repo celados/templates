@@ -1,8 +1,17 @@
 import { render } from '@solidjs/web'
 
+import { i18n } from '#i18n'
+
+import { reportError } from '../../src/extension/client'
 import { CounterPanel } from '../../src/ui/counter-panel'
 
 import './style.css'
+
+// Extension pages own their global, so page-wide handlers only see our errors.
+window.addEventListener('error', (event) => reportError(event.error))
+window.addEventListener('unhandledrejection', (event) =>
+	reportError(event.reason),
+)
 
 const target = document.querySelector<HTMLElement>('#app')
 
@@ -14,15 +23,13 @@ const dispose = render(
 	() => (
 		<main>
 			<CounterPanel
-				title="Solid Extension"
-				description="The side panel and page widget share typed messages and versioned local storage."
+				title={i18n.t('sidepanel.title')}
+				description={i18n.t('sidepanel.description')}
 			/>
 			<p class="hint">
-				Open{' '}
 				<a href="https://example.com" target="_blank">
-					example.com
-				</a>{' '}
-				to exercise the isolated content-script UI.
+					{i18n.t('sidepanel.hint')}
+				</a>
 			</p>
 		</main>
 	),

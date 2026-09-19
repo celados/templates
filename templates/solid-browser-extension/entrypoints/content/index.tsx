@@ -1,5 +1,6 @@
 import { render } from '@solidjs/web'
 
+import { i18n } from '#i18n'
 import { createShadowRootUi, defineContentScript } from '#imports'
 
 import { CounterPanel } from '../../src/ui/counter-panel'
@@ -20,8 +21,8 @@ export default defineContentScript({
 					() => (
 						<div class="extension-widget">
 							<CounterPanel
-								title="Solid on this page"
-								description="Shadow DOM isolates this UI while the background worker owns state."
+								title={i18n.t('content.title')}
+								description={i18n.t('content.description')}
 							/>
 						</div>
 					),

@@ -1,0 +1,15 @@
+extName: Solid Extension
+extDescription: A production-shaped MV3 extension template built with Solid 2 and WXT.
+actionTitle: Open Solid Extension
+counter:
+  eyebrow: Solid 2 · MV3
+  label: Persistent count
+  increment: Increment
+  reset: Reset
+content:
+  title: Solid on this page
+  description: Shadow DOM isolates this UI while the background worker owns state.
+sidepanel:
+  title: Solid Extension
+  description: The side panel and page widget share a typed background service and versioned local storage.
+  hint: Try the isolated page UI on example.com

@@ -8,6 +8,7 @@ type Manifest = {
 	content_scripts?: Array<{
 		matches?: string[]
 	}>
+	default_locale?: string
 	host_permissions?: string[]
 	manifest_version?: number
 	permissions?: string[]
@@ -40,12 +41,24 @@ assert(
 	'Expected only storage and sidePanel permissions',
 )
 assert(
+	manifest.default_locale !== undefined &&
+		(await Bun.file(
+			resolve(
+				outputDirectory,
+				'_locales',
+				manifest.default_locale,
+				'messages.json',
+			),
+		).exists()),
+	'Expected compiled messages for the default locale',
+)
+assert(
 	(manifest.host_permissions?.length ?? 0) === 0,
 	'Host permissions must stay empty until a feature requires them',
 )
 
 console.log(
-	'Verified MV3 manifest, entrypoints, and least-privilege permissions',
+	'Verified MV3 manifest, entrypoints, locales, and least-privilege permissions',
 )
 
 function assert(condition: boolean, message: string): asserts condition {

@@ -2,17 +2,19 @@ import solid from '@solidjs/vite-plugin'
 import { defineConfig } from 'wxt'
 
 export default defineConfig({
-	modules: ['@wxt-dev/auto-icons'],
+	modules: ['@wxt-dev/auto-icons', '@wxt-dev/i18n/module'],
 	autoIcons: {
 		baseIconPath: 'assets/icon.svg',
 	},
 	manifest: {
-		name: 'Solid Extension',
-		description:
-			'A production-shaped MV3 extension template built with Solid 2 and WXT.',
+		// Resolved by Chrome from locales/*.yml, which @wxt-dev/i18n compiles
+		// into _locales/<lang>/messages.json.
+		default_locale: 'en',
+		name: '__MSG_extName__',
+		description: '__MSG_extDescription__',
 		permissions: ['storage'],
 		action: {
-			default_title: 'Open Solid Extension',
+			default_title: '__MSG_actionTitle__',
 		},
 	},
 	// Branded Chrome removed command-line extension sideloading. WXT still owns
