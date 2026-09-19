@@ -77,10 +77,30 @@ try {
  * cannot come from a live answer sneaking through.
  */
 async function verifySnapshotFirstPaint(sidePanel: Page): Promise<void> {
+	// Records whether a Loading fallback is ever inserted during a load. The
+	// control run below must see one, which proves the recorder works.
+	await sidePanel.addInitScript(() => {
+		const record = window as unknown as { fallbackSeen: boolean }
+		record.fallbackSeen = false
+		new MutationObserver(() => {
+			record.fallbackSeen ||=
+				document.querySelector(
+					'[data-testid="account-loading"], [data-testid="todos-loading"]',
+				) !== null
+		}).observe(document, { childList: true, subtree: true })
+	})
+	const fallbackSeen = () =>
+		sidePanel.evaluate(
+			() => (window as unknown as { fallbackSeen?: boolean }).fallbackSeen,
+		)
+
 	await sidePanel.evaluate(() => localStorage.clear())
 	await sidePanel.reload({ waitUntil: 'domcontentloaded' })
 	await failOnPanelError(sidePanel)
 	await sidePanel.getByTestId('account-loading').waitFor()
+	if ((await fallbackSeen()) !== true) {
+		throw new Error('The Loading recorder did not see the control fallback')
+	}
 
 	const version = await sidePanel.evaluate(
 		() => chrome.runtime.getManifest().version,
@@ -116,7 +136,8 @@ async function verifySnapshotFirstPaint(sidePanel: Page): Promise<void> {
 	if (
 		firstFrame.user !== 'ada@example.com' ||
 		firstFrame.todos !== 'Stored todo' ||
-		firstFrame.loading !== null
+		firstFrame.loading !== null ||
+		(await fallbackSeen()) !== false
 	) {
 		throw new Error(
 			`Expected the stored snapshot in the first frame, got ${JSON.stringify(firstFrame)}`,

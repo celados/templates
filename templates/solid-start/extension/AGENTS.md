@@ -37,7 +37,8 @@ A project that does not ship an extension deletes, in one change:
   JWT from the web app's Better Auth session cookie (`GET
 /api/auth/convex/token`, which Better Auth does not origin-check), so people
   sign in and out on the web app. A change to that cookie re-arms `setAuth` in
-  every open page. The only host permission is the web app's host, without a
+  every open page and aborts the previous fetcher. Only a 401 means signed
+  out; other failures retry, and are reported once when online. The only host permission is the web app's host, without a
   port, because the cookies API checks access against port-less cookie URLs.
 - Content scripts never hold a Convex client or token: they run in the host
   page's renderer and fetch with its origin. Product data they need goes
@@ -52,7 +53,9 @@ A project that does not ship an extension deletes, in one change:
   closed; offline, that lasts until the network returns.
 - Create sources above the `<Loading>` that reads them; the arguments of a
   persisted query must not read a pending source, since its snapshot is looked
-  up from the initial arguments.
+  up from the initial arguments. Give each auth-gated query its own `<Errored>`
+  inside the signed-in branch, so its failure stays local and a sign-out
+  replaces it (`src/ui/account-panel.test.tsx`).
 - `VITE_CONVEX_URL` comes from the root `.env.local` that `convex dev` writes;
   `WXT_SITE_URL` is the web app origin and defaults to `http://localhost:3000`.
   Release builds set both.

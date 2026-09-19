@@ -9,6 +9,9 @@ import type { Backend, User } from './convex'
 import { createPersistedQuery } from './convex'
 import { createSnapshots, snapshotKey } from './snapshots'
 
+// The real client opens a port to the background worker.
+vi.mock('../extension/client', () => ({ reportError: vi.fn() }))
+
 const list = makeFunctionReference<'query', { owner: string }, string[]>(
 	'todos:list',
 )

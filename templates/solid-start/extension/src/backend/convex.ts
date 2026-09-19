@@ -38,8 +38,14 @@ export function createBackend() {
 	const client = new ConvexClient(url)
 	// setAuth pauses the socket until the first token resolves, so no query
 	// runs anonymously first. Re-arming on a session cookie change picks up a
-	// sign-in or sign-out on the web app while this page stays open.
-	const arm = () => client.setAuth(fetchConvexToken)
+	// sign-in or sign-out on the web app while this page stays open; it also
+	// ends the previous fetcher's retries, whose answer Convex would discard.
+	let tokens: AbortController | undefined
+	const arm = () => {
+		tokens?.abort()
+		const { signal } = (tokens = new AbortController())
+		client.setAuth(() => fetchConvexToken(signal))
+	}
 	arm()
 	const unwatch = watchSession(arm)
 	// Extension pages share one localStorage origin and read it synchronously,
@@ -50,8 +56,12 @@ export function createBackend() {
 	)
 	// A raw listener sees only live answers; the Solid source also yields the
 	// stored user as its first value, which must not count as confirmation.
-	const unconfirm = client.onUpdate(api.auth.currentUser, {}, (user) =>
-		snapshots.confirm(user),
+	const unconfirm = client.onUpdate(
+		api.auth.currentUser,
+		{},
+		(user) => snapshots.confirm(user),
+		// The session source reports the same error through its boundary.
+		ignoreError,
 	)
 	return {
 		client,
@@ -59,6 +69,7 @@ export function createBackend() {
 		dispose() {
 			unconfirm()
 			unwatch()
+			tokens?.abort()
 			void client.close()
 		},
 	}
@@ -107,8 +118,13 @@ export function createPersistedQuery<Query extends FunctionReference<'query'>>(
 	createEffect(args, (input) => {
 		if (input === null) return
 		const key = snapshotKey(query, input)
-		return backend.client.onUpdate(query, input, (value: Value) =>
-			backend.snapshots.write(key, convexToJson(value)),
+		return backend.client.onUpdate(
+			query,
+			input,
+			(value: Value) => backend.snapshots.write(key, convexToJson(value)),
+			// Without a handler Convex rethrows as an unhandled rejection; the
+			// query's own source already routes the error to its boundary.
+			ignoreError,
 		)
 	})
 	return createQuery(
@@ -120,3 +136,5 @@ export function createPersistedQuery<Query extends FunctionReference<'query'>>(
 			: { loadingValue: jsonToConvex(stored) as FunctionReturnType<Query> },
 	)
 }
+
+function ignoreError() {}

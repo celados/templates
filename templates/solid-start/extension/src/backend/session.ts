@@ -1,5 +1,7 @@
 import { browser, type Browser } from '#imports'
 
+import { reportError } from '../extension/client'
+
 // wxt.config.ts defaults this to the web app's dev origin.
 const SITE_URL = new URL(import.meta.env.WXT_SITE_URL as string)
 
@@ -16,24 +18,52 @@ const SESSION_COOKIE = 'better-auth.session_token'
  * credentials: people sign in and out on the site, and the host permission lets
  * this request carry the site's cookies.
  *
- * Only a 401 means signed out. An unreachable site is an unknown identity, so
- * the fetch waits for it instead of resolving null: Convex keeps its socket
- * paused meanwhile, and the stored snapshot is not cleared as if the person had
- * signed out.
+ * Only a 401 means signed out. Any other failure is an unknown identity, so the
+ * fetch retries instead of resolving null: Convex keeps its socket paused
+ * meanwhile, and the stored snapshot is not cleared as if the person had signed
+ * out. `signal` ends the retries when auth is re-armed or the page closes; the
+ * result then no longer matters to Convex, so an abort resolves null.
  */
-export async function fetchConvexToken(): Promise<string | null> {
-	for (let delay = 1000; ; delay = Math.min(delay * 2, 30_000)) {
+export async function fetchConvexToken(
+	signal: AbortSignal,
+): Promise<string | null> {
+	let reported = false
+	for (let delay = 1000; !signal.aborted; delay = Math.min(delay * 2, 30_000)) {
 		try {
-			const response = await fetch(TOKEN_URL, { credentials: 'include' })
-			if (response.ok) {
-				return ((await response.json()) as { token: string }).token
-			}
+			const response = await fetch(TOKEN_URL, {
+				credentials: 'include',
+				signal,
+			})
 			if (response.status === 401) return null
-		} catch {
-			// Offline or the site is down; retry below.
+			if (!response.ok) {
+				throw new Error(`Convex token request answered ${response.status}`)
+			}
+			return ((await response.json()) as { token: string }).token
+		} catch (error) {
+			// Offline is expected. Anything else (a wrong WXT_SITE_URL, an auth wall
+			// in front of the site) repeats identically, so surface it once.
+			if (!signal.aborted && !reported && navigator.onLine) {
+				reported = true
+				reportError(error)
+			}
 		}
-		await new Promise((resolve) => setTimeout(resolve, delay))
+		await sleep(delay, signal)
 	}
+	return null
+}
+
+function sleep(ms: number, signal: AbortSignal): Promise<void> {
+	return new Promise((resolve) => {
+		const timer = setTimeout(resolve, ms)
+		signal.addEventListener(
+			'abort',
+			() => {
+				clearTimeout(timer)
+				resolve()
+			},
+			{ once: true },
+		)
+	})
 }
 
 /**

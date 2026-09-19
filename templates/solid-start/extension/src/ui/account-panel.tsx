@@ -1,4 +1,4 @@
-import { For, Loading, onCleanup, Show } from 'solid-js'
+import { Errored, For, Loading, onCleanup, Show } from 'solid-js'
 
 import { i18n } from '#i18n'
 
@@ -48,7 +48,21 @@ export function AccountPanel() {
 								<p class="account-user" data-testid="account-user">
 									{user().email}
 								</p>
-								<Todos />
+								{/* Inside Show: when a sign-out also fails the todos query,
+								    the sign-in fallback replaces this boundary whichever
+								    answer lands first. */}
+								<Errored
+									fallback={(_, reset) => (
+										<p class="empty" data-testid="todos-error">
+											{i18n.t('account.loadFailed')}{' '}
+											<button type="button" class="secondary" onClick={reset}>
+												{i18n.t('account.retry')}
+											</button>
+										</p>
+									)}
+								>
+									<Todos />
+								</Errored>
 							</>
 						)}
 					</Show>

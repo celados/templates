@@ -17,3 +17,5 @@ account:
   eyebrow: Convex · 你的待办
   signIn: 在网页端登录
   empty: 还没有待办
+  loadFailed: 待办加载失败。
+  retry: 重试

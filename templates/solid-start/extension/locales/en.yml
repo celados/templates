@@ -17,3 +17,5 @@ account:
   eyebrow: Convex · your todos
   signIn: Sign in on the web app
   empty: No todos yet
+  loadFailed: Could not load todos.
+  retry: Retry
