@@ -6,8 +6,9 @@ instead of the root's Vite+ core override; lint and format policy still come
 from the root `vite.config.ts`. Run its scripts through the root
 `extension:*` aliases or `bun run --cwd extension <script>`.
 
-Dependencies point one way: `extension/` may import `convex/_generated` and
-`web/src/lib/`; `web/` and `convex/` never import `extension/`. `convex` is
+Dependencies point one way: `extension/` may import `convex/_generated`,
+`web/src/lib/`, and the tokens and reset in `web/src/styles/`; `web/` and
+`convex/` never import `extension/`. `convex` is
 deliberately not in this `package.json`: imports resolve to the root copy, so
 `ConvexClient` has one declaration. Solid is in both; keep the exact pins
 equal, since `web/src/lib/convex.ts` is bundled here against this copy.
@@ -75,8 +76,22 @@ A project that does not ship an extension deletes, in one change:
   Do not add a fixed extension key, broad host permission, remote executable
   code, or a main-world content script without a concrete requirement.
 - Content-script UI uses a Shadow Root with event isolation. Preserve explicit
-  mount and disposal behavior, use the WXT context lifecycle helpers, and avoid
-  `rem` units because the host page controls the root font size.
+  mount and disposal behavior, and use the WXT context lifecycle helpers.
+- Styling is StyleX, compiled with the options in `stylex.config.ts` so the
+  web app's tokens (`web/src/styles/tokens.stylex.ts`) compile to the same
+  variables here. Extension recipes live in `src/ui/ui.ts`, not
+  `web/src/styles/ui.ts`: sizes are px because the host page controls `rem`.
+  Every entrypoint imports `web/src/styles/reset.css`, which gives StyleX the
+  CSS asset it appends to. Content scripts get their CSS only through that
+  import (`cssInjectionMode: 'ui'`): WXT then rewrites `:root` to `:host` so
+  tokens resolve in the Shadow Root, and `expectTokensInShadowRoot` in the
+  e2e test pins it. Extension pages in `wxt dev` load StyleX's CSS through
+  `stylexExtensionPageDev()`, because the stock dev tags are root-relative and
+  resolve against `chrome-extension://`.
+- Rich components (Glaze, Solid Ark) are not installed. Adopt them through
+  `docs/glaze-and-ark.md`, which lists what content scripts additionally need
+  (no `rem`, portals and Zag environment inside the Shadow Root, no document
+  style injection), and copy the constraints you rely on into this file.
 - UI roots call the background only through the oRPC client in
   `src/extension/client.ts`; procedures live in `src/extension/router.ts` and
   are served over `runtime.connect` ports (https://orpc.dev/docs/adapters/browser).

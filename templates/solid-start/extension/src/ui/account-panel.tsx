@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { Errored, For, Loading, onCleanup, Show } from 'solid-js'
 
 import { i18n } from '#i18n'
@@ -11,8 +12,7 @@ import {
 	useBackend,
 } from '../backend/convex'
 import { openSignIn } from '../backend/session'
-
-import './account-panel.css'
+import { ui } from './ui'
 
 /**
  * Product data from the shared Convex backend. With snapshots stored, the first
@@ -28,14 +28,15 @@ export function AccountPanel() {
 	onCleanup(backend.dispose)
 	return (
 		<BackendContext value={backend}>
-			<section class="account-panel" data-testid="account-panel">
-				<p class="eyebrow">{i18n.t('account.eyebrow')}</p>
+			<section {...stylex.attrs(ui.panel)} data-testid="account-panel">
+				<p {...stylex.attrs(ui.eyebrow)}>{i18n.t('account.eyebrow')}</p>
 				<Loading fallback={<p data-testid="account-loading">…</p>}>
 					<Show
 						when={user$()}
 						fallback={
 							<button
 								type="button"
+								{...stylex.attrs(ui.button)}
 								data-testid="sign-in"
 								onClick={() => openSignIn()}
 							>
@@ -45,7 +46,7 @@ export function AccountPanel() {
 					>
 						{(user) => (
 							<>
-								<p class="account-user" data-testid="account-user">
+								<p {...stylex.attrs(ui.muted)} data-testid="account-user">
 									{user().email}
 								</p>
 								{/* Inside Show: when a sign-out also fails the todos query,
@@ -53,9 +54,13 @@ export function AccountPanel() {
 								    answer lands first. */}
 								<Errored
 									fallback={(_, reset) => (
-										<p class="empty" data-testid="todos-error">
+										<p {...stylex.attrs(ui.muted)} data-testid="todos-error">
 											{i18n.t('account.loadFailed')}{' '}
-											<button type="button" class="secondary" onClick={reset}>
+											<button
+												type="button"
+												{...stylex.attrs(ui.button, ui.outline)}
+												onClick={reset}
+											>
 												{i18n.t('account.retry')}
 											</button>
 										</p>
@@ -77,12 +82,16 @@ function Todos() {
 	const todos$ = createPersistedQuery(useBackend(), api.todos.list, () => ({}))
 	return (
 		<Loading fallback={<p data-testid="todos-loading">…</p>}>
-			<ul class="todos" data-testid="todos">
+			<ul {...stylex.attrs(ui.stack)} data-testid="todos">
 				<For
 					each={todos$()}
-					fallback={<li class="empty">{i18n.t('account.empty')}</li>}
+					fallback={
+						<li {...stylex.attrs(ui.muted)}>{i18n.t('account.empty')}</li>
+					}
 				>
-					{(todo) => <li class={{ done: todo.completed }}>{todo.text}</li>}
+					{(todo) => (
+						<li {...stylex.attrs(todo.completed && ui.done)}>{todo.text}</li>
+					)}
 				</For>
 			</ul>
 		</Loading>

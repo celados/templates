@@ -1,31 +1,37 @@
+import * as stylex from '@stylexjs/stylex'
 import { Loading } from 'solid-js'
 
 import { i18n } from '#i18n'
 
+import { colors, radius, space } from '../../../web/src/styles/tokens.stylex'
+import { ui } from './ui'
 import { createCounter } from './use-counter'
-
-import './counter-panel.css'
 
 export function CounterPanel(props: { title: string; description: string }) {
 	const counter = createCounter()
 	return (
-		<section class="counter-panel" data-testid="counter-panel">
-			<div class="copy">
-				<p class="eyebrow">{i18n.t('counter.eyebrow')}</p>
-				<h1>{props.title}</h1>
-				<p class="description">{props.description}</p>
+		<section {...stylex.attrs(ui.panel)} data-testid="counter-panel">
+			<div {...stylex.attrs(ui.stack)}>
+				<p {...stylex.attrs(ui.eyebrow)}>{i18n.t('counter.eyebrow')}</p>
+				<h1 {...stylex.attrs(ui.title)}>{props.title}</h1>
+				<p {...stylex.attrs(ui.muted)}>{props.description}</p>
 			</div>
-			<div class="metric">
-				<span>{i18n.t('counter.label')}</span>
-				<Loading fallback={<output>…</output>}>
-					<output data-testid="counter-value" aria-live="polite">
+			<div {...stylex.attrs(styles.metric)}>
+				<span {...stylex.attrs(ui.muted)}>{i18n.t('counter.label')}</span>
+				<Loading fallback={<output {...stylex.attrs(styles.value)}>…</output>}>
+					<output
+						{...stylex.attrs(styles.value)}
+						data-testid="counter-value"
+						aria-live="polite"
+					>
 						{counter.count$()}
 					</output>
 				</Loading>
 			</div>
-			<div class="actions">
+			<div {...stylex.attrs(styles.actions)}>
 				<button
 					type="button"
+					{...stylex.attrs(ui.button)}
 					disabled={counter.pending()}
 					data-testid="increment"
 					onClick={() => void counter.increment()}
@@ -34,7 +40,7 @@ export function CounterPanel(props: { title: string; description: string }) {
 				</button>
 				<button
 					type="button"
-					class="secondary"
+					{...stylex.attrs(ui.button, ui.outline)}
 					disabled={counter.pending()}
 					data-testid="reset"
 					onClick={() => void counter.reset()}
@@ -45,3 +51,29 @@ export function CounterPanel(props: { title: string; description: string }) {
 		</section>
 	)
 }
+
+const styles = stylex.create({
+	metric: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: space.md,
+		paddingBlock: space.sm,
+		paddingInline: space.md,
+		borderStyle: 'solid',
+		borderWidth: '1px',
+		borderColor: colors.border,
+		borderRadius: radius.control,
+		backgroundColor: colors.canvas,
+	},
+	value: {
+		fontSize: '22px',
+		fontVariantNumeric: 'tabular-nums',
+		fontWeight: 700,
+	},
+	actions: {
+		display: 'grid',
+		gridTemplateColumns: '1fr auto',
+		gap: space.sm,
+	},
+})

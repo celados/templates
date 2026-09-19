@@ -1,13 +1,16 @@
 import { render } from '@solidjs/web'
+import * as stylex from '@stylexjs/stylex'
 import { Errored } from 'solid-js'
 
 import { i18n } from '#i18n'
 
+import { colors, space } from '../../../web/src/styles/tokens.stylex'
 import { reportError } from '../../src/extension/client'
 import { AccountPanel } from '../../src/ui/account-panel'
 import { CounterPanel } from '../../src/ui/counter-panel'
+import { ui } from '../../src/ui/ui'
 
-import './style.css'
+import '../../../web/src/styles/reset.css'
 
 // Extension pages own their global, so page-wide handlers only see our errors.
 window.addEventListener('error', (event) => reportError(event.error))
@@ -23,22 +26,26 @@ if (!target) {
 
 const dispose = render(
 	() => (
-		<main>
+		<main {...stylex.attrs(styles.main)}>
 			<CounterPanel
 				title={i18n.t('sidepanel.title')}
 				description={i18n.t('sidepanel.description')}
 			/>
 			<Errored
 				fallback={(error) => (
-					<p class="hint" data-testid="account-error">
+					<p {...stylex.attrs(ui.muted)} data-testid="account-error">
 						{String(error())}
 					</p>
 				)}
 			>
 				<AccountPanel />
 			</Errored>
-			<p class="hint">
-				<a href="https://example.com" target="_blank">
+			<p {...stylex.attrs(ui.muted)}>
+				<a
+					{...stylex.attrs(styles.link)}
+					href="https://example.com"
+					target="_blank"
+				>
 					{i18n.t('sidepanel.hint')}
 				</a>
 			</p>
@@ -53,3 +60,16 @@ const dispose = render(
 if (import.meta.hot) {
 	import.meta.hot.dispose(dispose)
 }
+
+const styles = stylex.create({
+	main: {
+		display: 'grid',
+		alignContent: 'start',
+		gap: space.md,
+		minWidth: '280px',
+		minHeight: '100vh',
+		padding: space.md,
+		backgroundColor: colors.canvas,
+	},
+	link: { color: colors.accent, textUnderlineOffset: '2px' },
+})

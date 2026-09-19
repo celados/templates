@@ -1,7 +1,10 @@
 import solid from '@solidjs/vite-plugin'
+import stylex from '@stylexjs/unplugin'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'wxt'
+
+import { stylexExtensionPageDev, stylexOptions } from './stylex.config.ts'
 
 // Convex writes VITE_CONVEX_URL to the project root's .env.local, but WXT reads
 // dotenv files only from this directory. Variables already set (CI) win.
@@ -42,13 +45,15 @@ export default defineConfig({
 	// `vp dev --strictPort` needs.
 	dev: { server: { port: 3001 } },
 	vite: () => ({
-		// Client-only renderer: extension pages and content scripts never SSR.
-		plugins: [solid()],
+		// The StyleX compiler must see source before the Solid JSX transform.
+		// Solid runs client-only: extension pages and content scripts never SSR.
+		plugins: [stylex.vite(stylexOptions), stylexExtensionPageDev(), solid()],
 		// Two copies of the Solid runtime break context and ownership lookups.
 		// Modules imported from ../web resolve from the root node_modules, so
 		// this also requires both package.json files to pin the same versions.
 		resolve: { dedupe: ['solid-js', '@solidjs/web'] },
-		// The extension imports ../convex/_generated and ../web/src/lib.
+		// The extension imports ../convex/_generated, ../web/src/lib and
+		// ../web/src/styles.
 		server: { fs: { allow: ['..'] } },
 	}),
 })

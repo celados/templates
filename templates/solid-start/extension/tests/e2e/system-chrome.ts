@@ -47,6 +47,7 @@ try {
 	const sidePanel = await context.newPage()
 	await sidePanel.goto(`chrome-extension://${extensionId}/sidepanel.html`)
 	await expectText(sidePanel.getByTestId('counter-value'), '1')
+	await expectTokensInShadowRoot(page, sidePanel)
 
 	await sidePanel.getByTestId('reset').click()
 	await expectText(counter, '0')
@@ -217,6 +218,29 @@ async function waitForWorkerExit(
 		await new Promise((resolve) => setTimeout(resolve, 50))
 	}
 	await cdp.detach()
+}
+
+// StyleX declares tokens on `:root`, which matches nothing in a Shadow Root.
+// WXT rewrites it to `:host` only for CSS injected through
+// `cssInjectionMode: 'ui'`; any other path leaves the content-script panel
+// transparent while the side panel shows the surface token.
+async function expectTokensInShadowRoot(
+	content: Page,
+	extensionPage: Page,
+): Promise<void> {
+	const surface = (page: Page) =>
+		page
+			.getByTestId('counter-panel')
+			.evaluate((element) => getComputedStyle(element).backgroundColor)
+	const [inShadow, inPage] = await Promise.all([
+		surface(content),
+		surface(extensionPage),
+	])
+	if (inShadow !== inPage || inShadow === 'rgba(0, 0, 0, 0)') {
+		throw new Error(
+			`Content-script panel background is ${inShadow}; the side panel's is ${inPage}`,
+		)
+	}
 }
 
 async function expectText(locator: Locator, expected: string): Promise<void> {
