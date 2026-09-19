@@ -36,8 +36,12 @@ export default defineConfig({
 				app: './src/app.tsx',
 				document: './src/document.tsx',
 				middleware: './src/middleware.ts',
+				instrument: './src/instrument.ts',
 			},
 			ssr: true,
+			// Component labels in error paths and OBSERVE records in production
+			// (~1.5 KB brotli). https://v2.solidjs.com/guides/observability
+			observe: true,
 			extensions: ['.jsx', '.tsx'],
 		}),
 		// Eager routes until lazy hydration is verified for the application.

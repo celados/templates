@@ -7,6 +7,8 @@ import { ConvexProvider } from './lib/convex'
 import { getConvexClient } from './lib/convex-client'
 import { Router } from './router'
 
+import './lib/client-errors'
+
 export default function App() {
 	// Live queries only run in the browser (ssrSource: 'client'); the server
 	// still needs a provider so components mount.

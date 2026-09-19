@@ -61,6 +61,11 @@ upgrade them together after checking peer ranges, and keep a single
   so cookies stay first-party.
 - Styling is StyleX. Tokens live in `web/src/styles/*.stylex.ts`; read the
   `stylex-authoring` skill before adding themes or variables.
+- Errors Solid handles (boundary fallbacks, rejected `Loading` fragments) reach
+  only the runtime error hooks: `web/src/lib/client-errors.ts` and
+  `web/src/instrument.ts`. Wire a monitor there, not per `Errored` fallback.
+  The build is `observe: true`, so their paths name components; see
+  https://v2.solidjs.com/guides/observability
 
 ## Generated files
 
