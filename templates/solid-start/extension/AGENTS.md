@@ -22,8 +22,9 @@ A project that does not ship an extension deletes, in one change:
 3. the root `package.json` `postinstall` and `extension:*` scripts, and the
    `extension:*` steps in `check` and `build`
 4. `extensionGenerated` in the root `vite.config.ts`
-5. `WXT_SITE_URL` in the root `.env.example`, and the extension section of
-   the root `AGENTS.md` and `README.md`
+5. `WXT_SITE_URL` in the root `.env.example`, the extension section of the
+   root `AGENTS.md` and `README.md`, the "shared with `extension/`" clause of
+   its Styling bullet, and the extension sections of `docs/glaze-and-ark.md`
 
 ## Convex and auth
 
