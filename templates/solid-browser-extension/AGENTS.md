@@ -55,7 +55,10 @@ to the user.
   `WXT_SENTRY_DSN` with no global integrations, per Sentry's
   shared-environment guidance. Other contexts call `reportError()` from
   `src/extension/client.ts`. Never install global error handlers in content
-  scripts, where they would capture the host page's errors.
+  scripts, where they would capture the host page's errors. Every Solid root
+  passes `{ onError: reportError }` to `render()`: errors an `Errored` boundary
+  catches reach only that root hook, and it is scoped to our tree, so it is the
+  content-script-safe way to hear them.
 - Releases go through the manual `Release` workflow (`wxt submit`, Chrome Web
   Store API v2). Bump the `package.json` version first.
 - System Google Chrome no longer accepts command-line extension sideloading.

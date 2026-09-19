@@ -34,6 +34,9 @@ const dispose = render(
 		</main>
 	),
 	target,
+	undefined,
+	// Boundary-caught errors reach only this root hook, never window.onerror.
+	{ onError: reportError },
 )
 
 if (import.meta.hot) {

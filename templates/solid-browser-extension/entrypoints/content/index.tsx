@@ -3,6 +3,7 @@ import { render } from '@solidjs/web'
 import { i18n } from '#i18n'
 import { createShadowRootUi, defineContentScript } from '#imports'
 
+import { reportError } from '../../src/extension/client'
 import { CounterPanel } from '../../src/ui/counter-panel'
 
 import './style.css'
@@ -27,6 +28,10 @@ export default defineContentScript({
 						</div>
 					),
 					container,
+					undefined,
+					// Root-scoped: hears only this tree's boundary-caught errors, never
+					// the host page's; content scripts install no global handlers.
+					{ onError: reportError },
 				)
 			},
 			onRemove(dispose) {
