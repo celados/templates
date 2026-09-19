@@ -1,10 +1,12 @@
-import type { ConvexClient } from 'convex/browser'
+import type { ConvexClient, ConvexHttpClient } from 'convex/browser'
 import type {
 	FunctionArgs,
 	FunctionReference,
 	FunctionReturnType,
+	OptionalRestArgs,
 } from 'convex/server'
 
+import { getRequestEvent, isServer } from '@solidjs/web'
 import { createContext, createMemo, useContext } from 'solid-js'
 
 // The creator owns the client lifetime; providers only scope borrowed instances.
@@ -17,17 +19,73 @@ export function useConvexClient(): ConvexClient {
 	return useContext(ConvexProvider)
 }
 
+/** One-shot, identity-carrying reads for the server render; see ./convex-server. */
+export type ServerConvex = Pick<ConvexHttpClient, 'query'> & {
+	/** No session cookie: every identity-dependent answer is the signed-out one. */
+	readonly anonymous: boolean
+}
+
+declare module '@solidjs/web' {
+	interface RequestEventLocals {
+		convex?: ServerConvex
+	}
+}
+
 type QueryClient = Pick<ConvexClient, 'onUpdate'>
 
-// Snapshots replace each other: a slow reader needs only the newest value.
-// Solid owns iterator.return() on parameter changes and owner disposal.
+// Solid's registered brand for a value-shaped live source: every subscription
+// re-yields the current answer and the newest wins. The server renders the
+// first value and closes the source; after hydration the browser re-runs the
+// compute and takes over live, whichever primitive holds it. Without the brand
+// the browser would keep the server value forever.
+// https://github.com/solidjs/solid/blob/next/packages/solid/test/client-hydration.spec.ts
+const LIVE_SOURCE: unique symbol = Symbol.for('solid.LiveSource')
+
+type LiveSource<T> = AsyncIterable<T> & { readonly [LIVE_SOURCE]: true }
+
+/**
+ * A Convex query as a Solid async source: the live subscription on `client` in
+ * the browser, one answer carrying the visitor's identity during the server
+ * render.
+ */
 function queryStream<Query extends FunctionReference<'query'>>(
 	client: QueryClient,
 	query: Query,
 	args: FunctionArgs<Query>,
-): AsyncIterable<FunctionReturnType<Query>> {
+): LiveSource<FunctionReturnType<Query>> {
+	if (!isServer) return liveStream(client, query, args)
+	const server = getRequestEvent()?.locals.convex
+	// The server's client is disabled and never answers: fail, don't hang.
+	if (!server) {
+		throw new Error(
+			'locals.convex is missing; see serverConvex in middleware.ts',
+		)
+	}
+	return {
+		[LIVE_SOURCE]: true,
+		[Symbol.asyncIterator]: () => ({
+			next: async () => ({
+				done: false,
+				value: await server.query(
+					query,
+					...([args] as OptionalRestArgs<Query>),
+				),
+			}),
+			return: async () => ({ done: true, value: undefined }),
+		}),
+	}
+}
+
+// Snapshots replace each other: a slow reader needs only the newest value.
+// Solid owns iterator.return() on parameter changes and owner disposal.
+function liveStream<Query extends FunctionReference<'query'>>(
+	client: QueryClient,
+	query: Query,
+	args: FunctionArgs<Query>,
+): LiveSource<FunctionReturnType<Query>> {
 	type Value = FunctionReturnType<Query>
 	return {
+		[LIVE_SOURCE]: true,
 		[Symbol.asyncIterator]() {
 			let subscription: (() => void) | undefined
 			let closed = false
@@ -104,14 +162,17 @@ export type QueryOptions<Query extends FunctionReference<'query'>> = {
 
 /**
  * Solid owns readiness and iterator disposal; Convex owns the live snapshots.
- * Keep the source in a stable owner above the Loading branch that reads it. A
- * child reading a prop during setup may retry that branch, so recreating the
- * source inside the same branch can produce an endless first-load loop.
+ * The server renders the first answer and the browser continues it live. Keep
+ * the source in a stable owner above the Loading branch that reads it. A child
+ * reading a prop during setup may retry that branch, so recreating the source
+ * inside the same branch can produce an endless first-load loop.
  *
- * Without options, Loading/Errored own first-load UI. With loadingValue, the
- * first flight is quiet (isPending is false): the provisional value itself must
- * distinguish unknown from a real empty/missing answer. Later changes use
- * normal transitions. Do not use this option to hide missing boundaries.
+ * Without options, Loading/Errored own first-load UI: a read under <Loading>
+ * streams in behind the shell, a read outside one holds the document. With
+ * loadingValue, the first flight is quiet (isPending is false): the provisional
+ * value itself must distinguish unknown from a real empty/missing answer. Later
+ * changes use normal transitions. Do not use this option to hide missing
+ * boundaries.
  *
  * Public async reads and their async-derived reads use a $ suffix in this app.
  * It documents a read contract, not a Promise type; commands keep verb names.
@@ -124,23 +185,10 @@ export function createQuery<Query extends FunctionReference<'query'>>(
 	args: () => FunctionArgs<Query> | null,
 	options?: QueryOptions<Query>,
 ) {
-	const compute = () => {
+	return createMemo<FunctionReturnType<Query> | undefined>(() => {
 		const input = args()
 		return input === null ? undefined : queryStream(client, query, input)
-	}
-	// Live subscriptions have no server value. Solid renders the enclosing
-	// Loading fallback and starts this source after hydration (Solid RFC 05).
-	if (options) {
-		const declared = createMemo<FunctionReturnType<Query> | undefined>(
-			compute,
-			{ ssrSource: 'client', loadingValue: options.loadingValue },
-		)
-		return declared
-	}
-	const suspended = createMemo<FunctionReturnType<Query> | undefined>(compute, {
-		ssrSource: 'client',
-	})
-	return suspended
+	}, options)
 }
 
 /** CreateQuery on the provided client, for components outside the studio store. */

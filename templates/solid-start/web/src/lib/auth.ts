@@ -2,7 +2,7 @@ import type { ConvexClient } from 'convex/browser'
 import type { FunctionReturnType } from 'convex/server'
 
 import { convexClient } from '@convex-dev/better-auth/client/plugins'
-import { getRequestEvent, isServer } from '@solidjs/web'
+import { getRequestEvent } from '@solidjs/web'
 import { createAuthClient } from 'better-auth/client'
 import { magicLinkClient } from 'better-auth/client/plugins'
 import { createContext, createMemo } from 'solid-js'
@@ -47,31 +47,18 @@ export async function sendMagicLink(email: string, callbackURL: string) {
 }
 
 /**
- * The server renders the visitor's identity; the browser seeds from that answer
- * and continues it live (`ssrSource: 'hybrid'`), so there is no unknown state
- * to render. null is an authoritative signed-out answer.
+ * The server renders the visitor's identity and the browser continues it live,
+ * so there is no unknown state to render. null is an authoritative signed-out
+ * answer.
  */
 export function createAuth(client: ConvexClient) {
-	// Captured during setup: the request scope is only reliable synchronously.
-	const server = getRequestEvent()?.locals.convex
-	// A disabled client never answers, so without the middleware the stream
-	// would hang instead of failing.
-	if (isServer && !server) {
-		throw new Error(
-			'locals.convex is missing; see serverConvex in middleware.ts',
-		)
-	}
-	const user$ = createMemo(
-		() => {
-			if (!server) return queryStream(client, api.auth.currentUser, {})
-			// Without a session the answer is known; asking Convex would hold
-			// every anonymous render for a round trip. Async so it serializes.
-			if (server.anonymous) return Promise.resolve(null)
-			return server.query(api.auth.currentUser, {})
-		},
-		// Reads outside a <Loading> hold the document for the answer; reads
-		// inside one stream it in behind the shell.
-		{ ssrSource: 'hybrid' },
+	// Without a session the answer is known; asking Convex would hold every
+	// anonymous render for a round trip. Async so it serializes.
+	const anonymous = getRequestEvent()?.locals.convex?.anonymous
+	const user$ = createMemo(() =>
+		anonymous
+			? Promise.resolve(null)
+			: queryStream(client, api.auth.currentUser, {}),
 	)
 	async function signOut() {
 		unwrap(await authClient.signOut())

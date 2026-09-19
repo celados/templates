@@ -168,6 +168,13 @@ describe('Convex live queries in Solid 2', () => {
 })
 
 describe('Convex live queries under SSR hydration', () => {
+	it('brands the stream so hydration hands the server value over to it', () => {
+		// Solid adopts an unbranded server value and never re-runs the compute,
+		// which would freeze every server-rendered query at its first answer.
+		const stream = queryStream(transport().client, query, { id: 'a' })
+		expect(Reflect.get(stream, Symbol.for('solid.LiveSource'))).toBe(true)
+	})
+
 	it('opens no subscription when hydration traces the stream', () => {
 		const feed = transport()
 		// Hydrating a server-rendered read, Solid's subFetch swaps the global

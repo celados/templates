@@ -3,18 +3,7 @@ import type { FetchMiddleware } from '@solidjs/web'
 import { getRequestEvent, parseCookieHeader } from '@solidjs/web'
 import { ConvexHttpClient } from 'convex/browser'
 
-/** One-shot, identity-carrying reads for the server render. */
-export type ServerConvex = Pick<ConvexHttpClient, 'query'> & {
-	/** No session cookie: every identity-dependent answer is the signed-out one. */
-	readonly anonymous: boolean
-}
-
-declare module '@solidjs/web' {
-	interface RequestEventLocals {
-		/** Present during the server render only; see ./auth `createAuth`. */
-		convex?: ServerConvex
-	}
-}
+import type { ServerConvex } from './convex'
 
 // Better Auth's default session cookie (`__Secure-` prefixed over HTTPS).
 const SESSION_COOKIES = [
