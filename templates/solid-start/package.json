@@ -56,6 +56,7 @@
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.56.0",
 		"@convex-dev/eslint-plugin": "^5.0.0",
+		"@solidjs/diagnostics": "2.0.0-rc.9",
 		"@solidjs/testing-library": "1.0.0-beta.3",
 		"@solidjs/vite-plugin": "3.0.0-next.44",
 		"@stylexjs/eslint-plugin": "^0.19.1",

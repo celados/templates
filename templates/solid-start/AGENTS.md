@@ -66,6 +66,7 @@ upgrade them together after checking peer ranges, and keep a single
   `web/src/instrument.ts`. Wire a monitor there, not per `Errored` fallback.
   The build is `observe: true`, so their paths name components; see
   https://v2.solidjs.com/guides/observability
+- `@solidjs/diagnostics` is a dev dependency, so `vite dev` serves `/__solid/diagnostics`: POST `{"method":"begin"}`, drive the page, POST `{"method":"end"}` for a structured artifact (diagnostic codes, re-runs, holds). The fix for each code is in `node_modules/solid-js/skills/reactivity-diagnostics/SKILL.md`; the agent loop is in `node_modules/@solidjs/diagnostics/skills/agent-loops/SKILL.md`.
 
 ## Generated files
 
