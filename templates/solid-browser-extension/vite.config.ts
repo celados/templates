@@ -1,7 +1,7 @@
-import solid from 'eslint-plugin-solid/configs/v2'
 import { defineConfig } from 'vite-plus'
 
 import { frameworkLintBase } from './tooling/lint'
+import { solidLint } from './tooling/lint-solid'
 import { oxfmtConfig } from './tooling/oxfmt'
 
 export default defineConfig({
@@ -10,15 +10,11 @@ export default defineConfig({
 	},
 	lint: {
 		...frameworkLintBase,
-		jsPlugins: ['eslint-plugin-solid'],
+		jsPlugins: [solidLint.plugin],
 		ignorePatterns: ['.output', '.wxt'],
-		settings: solid.settings,
+		settings: solidLint.settings,
 		rules: {
-			...solid.rules,
-			// Formatting preferences, not reactivity rules.
-			'solid/self-closing-comp': 'off',
-			'solid/style-prop': 'off',
-			'solid/prefer-structured-class': 'off',
+			...solidLint.rules,
 		},
 	},
 	fmt: {
