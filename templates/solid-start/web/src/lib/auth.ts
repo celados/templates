@@ -8,7 +8,7 @@ import { magicLinkClient } from 'better-auth/client/plugins'
 import { createContext, createMemo } from 'solid-js'
 
 import { api } from '../../../convex/_generated/api'
-import { queryStream } from './convex'
+import { querySource } from './convex'
 
 export type User = NonNullable<FunctionReturnType<typeof api.auth.currentUser>>
 
@@ -58,7 +58,7 @@ export function createAuth(client: ConvexClient) {
 	const user$ = createMemo(() =>
 		anonymous
 			? Promise.resolve(null)
-			: queryStream(client, api.auth.currentUser, {}),
+			: querySource(client, api.auth.currentUser, {}),
 	)
 	async function signOut() {
 		unwrap(await authClient.signOut())

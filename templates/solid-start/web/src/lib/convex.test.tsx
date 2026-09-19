@@ -18,7 +18,7 @@ import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
 import {
 	ConvexProvider,
 	createConvexQuery,
-	queryStream,
+	querySource,
 	useConvexClient,
 } from './convex'
 
@@ -169,9 +169,9 @@ describe('Convex live queries in Solid 2', () => {
 
 describe('Convex live queries under SSR hydration', () => {
 	it('brands the stream so hydration hands the server value over to it', () => {
-		// Solid adopts an unbranded server value and never re-runs the compute,
-		// which would freeze every server-rendered query at its first answer.
-		const stream = queryStream(transport().client, query, { id: 'a' })
+		// Without the brand Solid adopts the server snapshot and never re-runs
+		// the compute, freezing every server-rendered query at its first answer.
+		const stream = querySource(transport().client, query, { id: 'a' })
 		expect(Reflect.get(stream, Symbol.for('solid.LiveSource'))).toBe(true)
 	})
 
@@ -188,9 +188,9 @@ describe('Convex live queries under SSR hydration', () => {
 		}
 		globalThis.Promise = TracePromise as unknown as PromiseConstructor
 		try {
-			void queryStream(feed.client, query, { id: 'a' })
-				[Symbol.asyncIterator]()
-				.next()
+			// In the browser the source is always the live stream.
+			const source = querySource(feed.client, query, { id: 'a' })
+			void (source as AsyncIterable<string>)[Symbol.asyncIterator]().next()
 		} finally {
 			globalThis.Promise = RealPromise
 		}

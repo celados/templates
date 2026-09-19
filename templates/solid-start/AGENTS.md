@@ -58,16 +58,16 @@ upgrade them together after checking peer ranges, and keep a single
   function selection typed through `convex/_generated/api`. A query renders on
   the server with the visitor's identity and continues live after hydration:
   `web/src/middleware.ts` hangs a per-request reader on `locals.convex`
-  (`web/src/lib/convex-server.ts`), and `queryStream` answers through it on the
-  server and subscribes in the browser. It carries Solid's `solid.LiveSource`
-  brand, so any primitive returning it (memo, projection, store) gets the
-  takeover without `ssrSource`; `ssrSource: 'client'` opts a source out of the
-  server render. A read under `<Loading>` streams behind the shell; outside
+  (`web/src/lib/convex-server.ts`). `querySource` reads one HTTP snapshot
+  through it on the server, never a socket, and subscribes in the browser; the
+  browser stream carries Solid's `solid.LiveSource` brand, so any primitive
+  returning it (memo, projection, store) takes over after hydration without
+  `ssrSource`. `ssrSource: 'client'` opts a source out of the server render. A read under `<Loading>` streams behind the shell; outside
   one it holds the document for the round trips. `extension/` bundles this
   module too, so keep it free of router and Cloudflare imports. A live source
   must not subscribe before its first pull: hydrating a server-rendered read,
   Solid traces the compute and pulls once under a mock `Promise`
-  (`queryStream` subscribes inside the first `next()` executor for that reason).
+  (`querySource` subscribes inside the first `next()` executor for that reason).
 - `web/src/lib/auth.ts` owns Better Auth. Auth HTTP traffic is proxied
   same-origin through `web/src/routes/api/auth/[...all].ts` to the Convex site,
   so cookies stay first-party. `user$` renders on the server like any query;

@@ -34,25 +34,25 @@ declare module '@solidjs/web' {
 type QueryClient = Pick<ConvexClient, 'onUpdate'>
 
 // Solid's registered brand for a value-shaped live source: every subscription
-// re-yields the current answer and the newest wins. The server renders the
-// first value and closes the source; after hydration the browser re-runs the
-// compute and takes over live, whichever primitive holds it. Without the brand
-// the browser would keep the server value forever.
+// re-yields the current answer and the newest wins. Hydrating a server-rendered
+// read, Solid adopts the serialized snapshot and re-runs the compute after
+// hydration only when its browser value carries this brand, whichever
+// primitive holds it; without the brand the snapshot would never go live.
 // https://github.com/solidjs/solid/blob/next/packages/solid/test/client-hydration.spec.ts
 const LIVE_SOURCE: unique symbol = Symbol.for('solid.LiveSource')
 
 type LiveSource<T> = AsyncIterable<T> & { readonly [LIVE_SOURCE]: true }
 
 /**
- * A Convex query as a Solid async source: the live subscription on `client` in
- * the browser, one answer carrying the visitor's identity during the server
- * render.
+ * A Convex query as a Solid async source. The server render reads one snapshot
+ * over HTTP with the visitor's identity, as the hand-off; the browser seeds
+ * from it and continues with a live subscription after hydration.
  */
-function queryStream<Query extends FunctionReference<'query'>>(
+function querySource<Query extends FunctionReference<'query'>>(
 	client: QueryClient,
 	query: Query,
 	args: FunctionArgs<Query>,
-): LiveSource<FunctionReturnType<Query>> {
+): Promise<FunctionReturnType<Query>> | LiveSource<FunctionReturnType<Query>> {
 	if (!isServer) return liveStream(client, query, args)
 	const server = getRequestEvent()?.locals.convex
 	// The server's client is disabled and never answers: fail, don't hang.
@@ -61,19 +61,7 @@ function queryStream<Query extends FunctionReference<'query'>>(
 			'locals.convex is missing; see serverConvex in middleware.ts',
 		)
 	}
-	return {
-		[LIVE_SOURCE]: true,
-		[Symbol.asyncIterator]: () => ({
-			next: async () => ({
-				done: false,
-				value: await server.query(
-					query,
-					...([args] as OptionalRestArgs<Query>),
-				),
-			}),
-			return: async () => ({ done: true, value: undefined }),
-		}),
-	}
+	return server.query(query, ...([args] as OptionalRestArgs<Query>))
 }
 
 // Snapshots replace each other: a slow reader needs only the newest value.
@@ -187,7 +175,7 @@ export function createQuery<Query extends FunctionReference<'query'>>(
 ) {
 	return createMemo<FunctionReturnType<Query> | undefined>(() => {
 		const input = args()
-		return input === null ? undefined : queryStream(client, query, input)
+		return input === null ? undefined : querySource(client, query, input)
 	}, options)
 }
 
@@ -200,4 +188,4 @@ export function createConvexQuery<Query extends FunctionReference<'query'>>(
 	return createQuery(useConvexClient(), query, args, options)
 }
 
-export { queryStream }
+export { querySource }
