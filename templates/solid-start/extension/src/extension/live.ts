@@ -16,6 +16,10 @@ type WatchableItem<T> = Pick<
  * Hand-written rather than an async generator: a generator's return() queues
  * behind a pending next(), so disposing a reader that is waiting for a change
  * would never reach `finally` and the watch would leak.
+ *
+ * No `solid.LiveSource` brand: Solid reads it only to hand a server-rendered
+ * snapshot over to a live source during hydration, and extension pages render
+ * client-only.
  */
 export function live<T>(item: WatchableItem<T>): AsyncIterable<T> {
 	return {
