@@ -1,5 +1,6 @@
-import solid from 'eslint-plugin-solid/configs/v2'
 import type { OxlintConfig } from 'vite-plus/lint'
+
+import solid from 'eslint-plugin-solid/configs/v2'
 
 // Solid's own rules: reactivity, removed 1.x APIs, server-function contracts,
 // store/signal misuse. The three turned off are markup preferences, not bugs.
