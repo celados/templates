@@ -1,4 +1,5 @@
 import solid from 'eslint-plugin-solid/configs/v2'
+import type { OxlintConfig } from 'vite-plus/lint'
 
 // Solid's own rules: reactivity, removed 1.x APIs, server-function contracts,
 // store/signal misuse. The three turned off are markup preferences, not bugs.
@@ -13,5 +14,5 @@ export const solidLint = {
 		'solid/prefer-structured-class': 'off',
 		// The plugin predates rc.9's dynamic(); its source is a tracked accessor.
 		'solid/reactivity': ['warn', { customReactiveFunctions: ['dynamic'] }],
-	},
-} as const
+	} satisfies OxlintConfig['rules'],
+}
