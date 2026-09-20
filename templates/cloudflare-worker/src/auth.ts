@@ -1,8 +1,8 @@
-import type { Database } from '@app/db'
-
-import * as authSchema from '@app/db/schema/auth'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { betterAuth } from 'better-auth'
+
+import type { Database } from '@/db'
+import * as authSchema from '@/db/schema/auth'
 
 export type CreateAuthOptions = {
 	baseUrl: string

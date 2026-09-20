@@ -43,7 +43,9 @@ framework-specific values such as its Tailwind stylesheet path.
 ## Layout
 
 - `templates/cloudflare-worker/`: backend-only Cloudflare Worker template with
-  oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle.
+  oRPC contract distribution, Better Auth, Hyperdrive, and Drizzle. Worker,
+  auth, and database code share one root `package.json` under `src/`; only the
+  published `packages/api-contract` owns a second one.
 - `templates/solid-start/`: standalone Solid 2 start-mode SSR template with
   Convex, Better Auth, Stripe, StyleX, and Cloudflare Workers. Its
   `extension/` is a removable companion Manifest V3 extension (WXT, oRPC
@@ -88,6 +90,30 @@ Choose the narrowest ownership surface:
 Do not introduce compatibility shims for retired layouts or template names.
 Change mappings and consumers together.
 
+## Package Boundaries
+
+Each template is one deployable with one root `package.json` that owns every
+dependency. Splitting dependencies across internal workspace packages buys
+nothing: the partition only pays off when some consumer resolves the package on
+its own, and inside a single deployable there is no such consumer — only
+bookkeeping that drifts.
+
+A nested `package.json` needs one of two reasons:
+
+1. The directory is published to npm.celados.com for other projects to consume.
+   Its dependencies must resolve for someone who never sees this repository, so
+   it declares them itself. `templates/cloudflare-worker/packages/api-contract`
+   is the reference example.
+2. The directory needs a toolchain resolution the root cannot give it.
+   `templates/solid-start/extension/` is the reference example: WXT must own its
+   own Vite instead of inheriting the web app's Vite+ core override.
+
+Everything else is internal structure. Give it a directory under the template's
+source root and a TypeScript `paths` alias — `@/*` by convention — not a package
+name and a `workspace:*` range. Vite and Vitest do not read `paths` on their
+own; a template that relies on the alias sets `resolve: { tsconfigPaths: true }`
+in its `vite.config.ts`.
+
 ## Template Defaults
 
 - Templates include their own `AGENTS.md`, so canonical create commands keep
@@ -96,8 +122,8 @@ Change mappings and consumers together.
   non-interactive execution. Keep the exact user-facing commands in the root
   and template READMEs.
 - Vite+ owns package management, formatting, staged checks, and the aggregate
-  task runner. Formatting, type checking, framework lint, and tests are the
-  acceptance signal.
+  task runner. Formatting, type checking, framework lint, tests, and `fallow
+  dead-code` are the acceptance signal.
 - Lint is framework-only. Every template's `lint` block spreads
   `shared/tooling/lint.ts`, which turns off Oxlint's default plugins and
   `correctness` category, then enables only the rules its frameworks define
@@ -122,7 +148,7 @@ Change mappings and consumers together.
 - TanStack Router may regenerate `src/route-tree.gen.ts`. Do not hand-format
   it; the template intentionally excludes it from formatter drift.
 - `bun run cf-typegen` owns
-  `templates/cloudflare-worker/apps/worker/src/worker-configuration.d.ts` and
+  `templates/cloudflare-worker/src/worker-configuration.d.ts` and
   `templates/tanstack-start/src/worker-configuration.d.ts`. Keep the output
   under `src/` so each template's TypeScript project includes it. Inspect and
   commit generated changes when the Worker binding/type contract changes;

@@ -9,12 +9,15 @@ export default defineConfig({
 	staged: {
 		'*': 'vp check --fix',
 	},
+	// Worker, auth, and database modules reach each other through `@/*`; vitest
+	// and the dev server need the tsconfig paths that wrangler's bundler reads.
+	resolve: { tsconfigPaths: true },
 	lint: {
 		ignorePatterns: [
 			'dist',
 			'.wrangler',
-			'apps/worker/src/worker-configuration.d.ts',
-			'packages/db/drizzle',
+			'src/worker-configuration.d.ts',
+			'drizzle',
 		],
 		options: {
 			typeAware: true,
@@ -25,12 +28,12 @@ export default defineConfig({
 		...oxfmtConfig,
 		ignorePatterns: [
 			...(oxfmtConfig.ignorePatterns ?? []),
-			'apps/worker/src/worker-configuration.d.ts',
-			'packages/db/drizzle',
+			'src/worker-configuration.d.ts',
+			'drizzle',
 		],
 	},
 	test: {
-		include: ['apps/**/*.test.ts', 'packages/**/*.test.ts'],
+		include: ['src/**/*.test.ts', 'packages/**/*.test.ts'],
 		environment: 'node',
 	},
 })

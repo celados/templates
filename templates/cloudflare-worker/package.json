@@ -3,8 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"workspaces": [
-		"apps/*",
-		"packages/*"
+		"packages/api-contract"
 	],
 	"type": "module",
 	"scripts": {
@@ -15,16 +14,29 @@
 		"build:contract": "bun run --cwd packages/api-contract build",
 		"check": "bun run build:contract && vp check && tsc --noEmit && bun run cf-typegen --check && bun run verify:template && bun run test && bun run pack:check",
 		"test": "vp test --run",
-		"cf-typegen": "wrangler types apps/worker/src/worker-configuration.d.ts",
+		"cf-typegen": "wrangler types src/worker-configuration.d.ts",
 		"verify:template": "bun scripts/verify-template.ts",
 		"pack:check": "bun run --cwd packages/api-contract pack:check",
-		"db:generate": "bun run --cwd packages/db db:generate",
-		"db:migrate": "bun run --cwd packages/db db:migrate",
-		"db:push": "bun run --cwd packages/db db:push",
-		"db:studio": "bun run --cwd packages/db db:studio"
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:push": "drizzle-kit push",
+		"db:studio": "drizzle-kit studio"
+	},
+	"dependencies": {
+		"@app/api-contract": "workspace:*",
+		"@better-auth/drizzle-adapter": "^1.6.25",
+		"@orpc/server": "^1.14.8",
+		"better-auth": "^1.6.25",
+		"drizzle-orm": "^0.45.2",
+		"evlog": "^2.22.3",
+		"hono": "^4.12.32",
+		"pg": "^8.22.0"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.4.2",
+		"@types/pg": "^8.20.0",
+		"dotenv": "^17.4.2",
+		"drizzle-kit": "^0.31.10",
 		"typescript": "^7.0.2",
 		"vite-plus": "^0.3.3",
 		"vitest": "^4.1.11",

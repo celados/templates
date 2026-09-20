@@ -5,7 +5,7 @@ import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dir, '..')
 const forbiddenPackage = ['@orpc', 'openapi'].join('/')
-const sourceGlob = new Bun.Glob('{apps,packages}/**/*.{ts,json}')
+const sourceGlob = new Bun.Glob('{src,packages}/**/*.{ts,json}')
 const violations: string[] = []
 
 const rootPackageSource = await readFile(resolve(root, 'package.json'), 'utf8')
@@ -26,12 +26,7 @@ for await (const path of sourceGlob.scan({ cwd: root })) {
 }
 
 const contractSourceGlob = new Bun.Glob('packages/api-contract/src/**/*.ts')
-const forbiddenContractImports = [
-	'@app/auth',
-	'@app/db',
-	'@orpc/server',
-	'hono',
-]
+const forbiddenContractImports = ['@/auth', '@/db', '@orpc/server', 'hono']
 
 for await (const path of contractSourceGlob.scan({ cwd: root })) {
 	const source = await readFile(resolve(root, path), 'utf8')
@@ -52,10 +47,7 @@ const clientSource = await readFile(
 	resolve(root, 'packages/api-contract/src/client.ts'),
 	'utf8',
 )
-const routerSource = await readFile(
-	resolve(root, 'apps/worker/src/router.ts'),
-	'utf8',
-)
+const routerSource = await readFile(resolve(root, 'src/router.ts'), 'utf8')
 const wranglerSource = await readFile(resolve(root, 'wrangler.jsonc'), 'utf8')
 
 for (const marker of ['eventIterator(type<', 'type<', 'v.file()']) {

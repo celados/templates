@@ -1,5 +1,5 @@
-import { createAuth } from '@app/auth'
-import { withDatabase } from '@app/db'
+import { createAuth } from '@/auth'
+import { withDatabase } from '@/db'
 
 import type { WorkerBindings } from './context'
 

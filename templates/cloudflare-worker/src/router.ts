@@ -1,8 +1,9 @@
 import { contract } from '@app/api-contract'
-import { createAuth } from '@app/auth'
-import { todo, withDatabase } from '@app/db'
 import { implement, onFinish, ORPCError, os, withEventMeta } from '@orpc/server'
 import { desc, eq } from 'drizzle-orm'
+
+import { createAuth } from '@/auth'
+import { todo, withDatabase } from '@/db'
 
 import type { RpcContext } from './context'
 

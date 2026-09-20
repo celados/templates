@@ -17,9 +17,14 @@
 - This project deliberately exposes only the oRPC RPC protocol. Do not add
   `@orpc/openapi`, an OpenAPI handler/specification, Scalar, Swagger, or
   REST-shaped duplicate routes.
-- `packages/api-contract` is the distributable client boundary. Keep schemas,
-  the contract, and the client factory free of Worker, Hono, database, and auth
-  implementation imports.
+- `packages/api-contract` is the distributable client boundary, and the only
+  directory here that owns a `package.json`: it publishes to npm.celados.com, so
+  its dependencies have to resolve for consumers who never see this repository.
+  Keep schemas, the contract, and the client factory free of Worker, Hono,
+  database, and auth implementation imports.
+- Everything else is one deployable with one root `package.json`. Worker, auth,
+  and database code live under `src/` and reach each other through the `@/*`
+  path alias. Do not reintroduce internal workspace packages.
 - Worker runtime database traffic must use the `HYPERDRIVE` binding. Drizzle Kit
   migrations use the direct `DATABASE_URL`; never ship that credential as a
   Worker runtime variable.
@@ -30,5 +35,5 @@
   `publicProcedures` into narrower layers such as `databaseProcedures`; do not
   repeat the same `.use(...)` chain on every procedure.
 - `bun run cf-typegen` owns the committed Worker runtime and binding types under
-  `apps/worker/src/`. Do not add `@cloudflare/workers-types` or hand-maintain a
+  `src/`. Do not add `@cloudflare/workers-types` or hand-maintain a
   competing binding interface.

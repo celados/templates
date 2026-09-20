@@ -53,8 +53,10 @@ upgrade them together after checking peer ranges, and keep a single
   without a session cookie it answers `null` without asking Convex, so
   anonymous renders cost nothing. The browser client calls `setAuth` at
   construction, before any subscription, so no query answers anonymously first.
-- Styling is StyleX. Tokens live in `web/src/styles/*.stylex.ts`; read the
-  `stylex-authoring` skill before adding themes or variables.
+- Styling is StyleX. Tokens live in `web/src/styles/*.stylex.ts` and are
+  shared with `extension/`; read the `stylex-authoring` skill before adding
+  themes or variables. Glaze and Solid Ark are not installed; when a feature
+  needs rich interaction components, follow `docs/glaze-and-ark.md`.
 - Errors Solid handles (boundary fallbacks, rejected `Loading` fragments) reach
   only the runtime error hooks: `web/src/lib/client-errors.ts` and
   `web/src/instrument.ts`. Wire a monitor there, not per `Errored` fallback.
