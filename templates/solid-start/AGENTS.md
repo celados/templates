@@ -34,6 +34,13 @@ narrowest key that fits (`entry`, `dynamicallyLoaded`, `ignoreDependencies`,
 `ignoreUnresolvedImports`) and a comment naming the mechanism.
 `fallow-plugin-viteplus.jsonc` already covers the toolchain's own conventions.
 
+Fallow's own skill ships inside the pinned package at
+`node_modules/fallow/skills/fallow/SKILL.md`, with references beside it. Read it
+when a task needs more of the tool than `dead-code` — tracing why a symbol is
+reported, scoping a run to changed files, the JSON envelopes. It is not
+installed as a project skill because the package copy cannot drift from the
+binary the lockfile pins.
+
 # Solid 2 Start + Convex
 
 This is one full-stack application with one root `package.json`. `web/` owns
