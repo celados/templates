@@ -1,0 +1,35 @@
+{
+	"$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+	// Solid start mode names its entries inside web/vite.config.ts and generates
+	// the route tree from the filesystem; neither is visible to a static graph.
+	"entry": [
+		"web/src/app.tsx",
+		"web/src/document.tsx",
+		"web/src/middleware.ts",
+		"web/src/instrument.ts",
+		"web/src/router.ts",
+		"web/src/routes/**/*.{ts,tsx}",
+		"web/env.ts",
+	],
+	"ignoreDependencies": [
+		// Oxlint plugins named as strings in the Vite+ `lint.jsPlugins` block.
+		"@convex-dev/eslint-plugin",
+		"@stylexjs/eslint-plugin",
+		// Injected by `vite dev` to serve /__solid/diagnostics; see AGENTS.md.
+		"@solidjs/diagnostics",
+	],
+	"ignoreUnresolvedImports": [
+		// WXT generates `#imports` into the extension's own build; the specifier
+		// has no on-disk module to resolve.
+		"#imports",
+		// A `new URL()` path that wxt.config.ts hands to loadEnvFile, read as an
+		// import specifier.
+		"../.env.local",
+	],
+	"rules": {
+		// Nothing is installed at runtime: the Worker bundle inlines what it
+		// needs. So "promote this to dependencies" is never the right answer
+		// here, while the demote-side rules stay on.
+		"dev-dependency-in-production": "off",
+	},
+}

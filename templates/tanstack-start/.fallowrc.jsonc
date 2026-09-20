@@ -1,0 +1,11 @@
+{
+	"$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+	// TanStack Start generates the route tree from the filesystem, so routes are
+	// reachable only through a build step fallow does not run.
+	"entry": ["web/src/routes/**/*.tsx", "web/src/router.tsx"],
+	// TanStack Router rewrites route-tree.gen.ts; its exports exist for the
+	// generator's own typing, not for consumers.
+	"ignoreFindings": ["**/*.gen.ts"],
+	// Oxlint plugins named as strings in the Vite+ `lint.jsPlugins` block.
+	"ignoreDependencies": ["@convex-dev/eslint-plugin"],
+}

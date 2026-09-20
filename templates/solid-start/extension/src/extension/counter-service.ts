@@ -1,7 +1,5 @@
 import { counterItem } from './counter-store'
 
-export type CounterService = ReturnType<typeof createCounterService>
-
 /**
  * Background-owned counter mutations. Callers receive the new count, but UI
  * renders the storage watch, so the return value is a confirmation only.

@@ -1,0 +1,18 @@
+{
+	"$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+	// TanStack Start generates the route tree from the filesystem, so routes are
+	// reachable only through a build step fallow does not run.
+	"entry": ["src/routes/**/*.{ts,tsx}", "src/router.tsx"],
+	// Posts reach the bundle through an import.meta.glob brace pattern that the
+	// static graph resolves only for the first extension.
+	"dynamicallyLoaded": ["content/**"],
+	// TanStack Router rewrites route-tree.gen.ts; its exports exist for the
+	// generator's own typing, not for consumers.
+	"ignoreFindings": ["**/*.gen.ts"],
+	"ignoreDependencies": [
+		// The deployed server entry is wrangler.jsonc's
+		// `"main": "@tanstack/react-start/server-entry"`, a package subpath in a
+		// config file rather than an import fallow can follow.
+		"@tanstack/react-start",
+	],
+}

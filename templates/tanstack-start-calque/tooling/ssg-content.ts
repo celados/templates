@@ -21,7 +21,7 @@ function listContentFiles(directory: string): Array<string> {
 	})
 }
 
-export function contentSlug(file: string, contentRoot: string) {
+function contentSlug(file: string, contentRoot: string) {
 	return relative(contentRoot, file)
 		.split(sep)
 		.join('/')

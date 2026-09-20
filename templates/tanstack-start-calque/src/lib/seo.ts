@@ -5,7 +5,7 @@ type SeoInput = {
 	type?: 'article' | 'website'
 }
 
-export const siteUrl = (
+const siteUrl = (
 	import.meta.env.VITE_SITE_URL || 'https://example.com'
 ).replace(/\/$/, '')
 

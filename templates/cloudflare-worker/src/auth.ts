@@ -27,5 +27,3 @@ export function createAuth(options: CreateAuthOptions) {
 		trustedOrigins: [trustedOrigin],
 	})
 }
-
-export type Auth = ReturnType<typeof createAuth>

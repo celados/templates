@@ -10,10 +10,8 @@ import { createContext, createMemo } from 'solid-js'
 import { api } from '../../../convex/_generated/api'
 import { querySource } from './convex'
 
-export type User = NonNullable<FunctionReturnType<typeof api.auth.currentUser>>
-
 // Same-origin: requests go through routes/api/auth/[...all].ts.
-export const authClient = createAuthClient({
+const authClient = createAuthClient({
 	plugins: [convexClient(), magicLinkClient()],
 })
 
@@ -71,7 +69,7 @@ export function createAuth(client: ConvexClient) {
 	return { user$, signOut }
 }
 
-export type Auth = ReturnType<typeof createAuth>
+type Auth = ReturnType<typeof createAuth>
 
 export const AuthContext = createContext<Auth>(undefined, {
 	name: 'AuthContext',

@@ -134,6 +134,12 @@ in its `vite.config.ts`.
 - Oxfmt options belong in the Vite+ `fmt` block, not a competing
   `.oxfmtrc.jsonc`. Keep the common options in `shared/tooling/oxfmt.ts` and
   compose them from each template's `vite.config.ts`.
+- Fallow is split the same way. `shared/tooling/fallow-plugin-viteplus.jsonc`
+  teaches it the toolchain's conventions and is byte-identical everywhere;
+  each template's own `.fallowrc.jsonc` carries only what its framework makes
+  invisible to a static graph, with a comment naming the mechanism. A template
+  that needs no such statement ships no config. Every template must reach zero
+  findings, because `check` fails on any.
 - TanStack Start and Solid Start use the Cloudflare Vite plugin for their SSR
   environment. Do not copy that plugin into backend-only or static-output
   templates for symmetry.

@@ -1,0 +1,21 @@
+// Fallow ships no Vite+ plugin, so the toolchain's own conventions have to be
+// declared here or every template reports its config graph as dead code.
+{
+	"$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/plugin-schema.json",
+	"name": "vite-plus",
+	"enablers": ["vite-plus"],
+	"entryPoints": [
+		// `vp` reads vite.config.ts, which is what reaches tooling/*.ts. Without
+		// this the shared oxfmt and lint modules look unreachable.
+		"vite.config.ts",
+		"**/vite.config.ts",
+		// The runner loads test files and their setup directly; each template
+		// names them in a `test` block fallow does not evaluate.
+		"**/*.test.{ts,tsx,js,jsx}",
+		"**/vitest-setup.{ts,js}",
+	],
+	"configPatterns": ["vite.config.ts", "**/vite.config.ts"],
+	// Invoked as the `vp` CLI and as the test runner's module specifier, never
+	// imported by application source.
+	"toolingDependencies": ["vite-plus", "vitest"],
+}

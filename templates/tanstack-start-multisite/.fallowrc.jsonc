@@ -1,0 +1,24 @@
+{
+	"$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+	// Each site's route tree is generated from its filesystem by
+	// scripts/generate-route-tree.ts, a build step fallow does not run. That
+	// script is listed here too because wireit holds the real command, so the
+	// package.json script entry fallow reads is just "wireit".
+	"entry": [
+		"sites/*/src/routes/**/*.{ts,tsx}",
+		"sites/*/src/router.tsx",
+		"scripts/generate-route-tree.ts",
+	],
+	// TanStack Router rewrites route-tree.gen.ts; its exports exist for the
+	// generator's own typing, not for consumers.
+	"ignoreFindings": ["**/*.gen.ts"],
+	// Oxlint plugins named as strings in the Vite+ `lint.jsPlugins` block.
+	"ignoreDependencies": ["@convex-dev/eslint-plugin"],
+	"rules": {
+		// Nothing is installed at runtime: the Worker bundle inlines what it
+		// needs, and the devtools import sits behind `import.meta.env.DEV`. So
+		// "promote this to dependencies" is never the right answer here, while
+		// the demote-side rules stay on.
+		"dev-dependency-in-production": "off",
+	},
+}

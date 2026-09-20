@@ -128,6 +128,16 @@ const mappings = [
     ],
   },
   {
+    source: "shared/tooling/fallow-plugin-viteplus.jsonc",
+    targets: [
+      "templates/cloudflare-worker/fallow-plugin-viteplus.jsonc",
+      "templates/solid-start/fallow-plugin-viteplus.jsonc",
+      "templates/tanstack-start-calque/fallow-plugin-viteplus.jsonc",
+      "templates/tanstack-start/fallow-plugin-viteplus.jsonc",
+      "templates/tanstack-start-multisite/fallow-plugin-viteplus.jsonc",
+    ],
+  },
+  {
     source: "shared/tooling/lint.ts",
     targets: [
       "templates/solid-start/tooling/lint.ts",

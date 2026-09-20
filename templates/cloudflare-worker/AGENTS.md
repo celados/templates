@@ -20,6 +20,20 @@ to the user.
 
 <!--VITE PLUS END-->
 
+## Dead code
+
+`bun run check` ends with `fallow dead-code`, a project-graph pass that finds
+what a file-level linter cannot: files no entry point reaches, exports with no
+consumer, and dependencies that are declared but unused or used but undeclared.
+Fix what it reports; do not reach for a suppression first.
+
+When a finding is wrong, the cause is almost always that something reaches the
+code through a mechanism the static graph cannot follow — a generated route
+tree, a runtime glob, a string in a config. Say so in `.fallowrc.jsonc` with the
+narrowest key that fits (`entry`, `dynamicallyLoaded`, `ignoreDependencies`,
+`ignoreUnresolvedImports`) and a comment naming the mechanism.
+`fallow-plugin-viteplus.jsonc` already covers the toolchain's own conventions.
+
 ## Cloudflare Worker backend contract
 
 - TypeScript is intentionally pinned to the latest 6.x line because the current
