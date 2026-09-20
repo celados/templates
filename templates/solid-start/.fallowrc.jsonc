@@ -27,9 +27,10 @@
 		"../.env.local",
 	],
 	"rules": {
-		// Nothing is installed at runtime: the Worker bundle inlines what it
-		// needs. So "promote this to dependencies" is never the right answer
-		// here, while the demote-side rules stay on.
+		// Every template deploys a bundle; nothing runs `install` at the other
+		// end. So "promote this to dependencies" is never the right answer here,
+		// while the demote-side rules (test-only, type-only) stay on. A template
+		// that ships a node_modules install instead must drop this line.
 		"dev-dependency-in-production": "off",
 	},
 }

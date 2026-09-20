@@ -8,4 +8,11 @@
 	"ignoreFindings": ["**/*.gen.ts"],
 	// Oxlint plugins named as strings in the Vite+ `lint.jsPlugins` block.
 	"ignoreDependencies": ["@convex-dev/eslint-plugin"],
+	"rules": {
+		// Every template deploys a bundle; nothing runs `install` at the other
+		// end. So "promote this to dependencies" is never the right answer here,
+		// while the demote-side rules (test-only, type-only) stay on. A template
+		// that ships a node_modules install instead must drop this line.
+		"dev-dependency-in-production": "off",
+	},
 }

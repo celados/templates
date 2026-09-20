@@ -36,9 +36,9 @@ narrowest key that fits (`entry`, `dynamicallyLoaded`, `ignoreDependencies`,
 
 ## Cloudflare Worker backend contract
 
-- TypeScript is intentionally pinned to the latest 6.x line because the current
-  `tsdown` release warns that TypeScript 7's compiler API is experimental. Do
-  not upgrade until contract declaration builds are warning-free.
+- `tsdown` warns on every contract build that TypeScript 7's compiler API is
+  experimental. The declarations it emits are correct; the warning is the build
+  tool lagging the compiler, not a reason to hold TypeScript back.
 - Before inspecting or changing oRPC contracts, procedures, handlers, clients,
   streaming, or file transfer, read https://orpc.dev/llms.txt and the relevant
   linked pages.

@@ -137,9 +137,15 @@ in its `vite.config.ts`.
 - Fallow is split the same way. `shared/tooling/fallow-plugin-viteplus.jsonc`
   teaches it the toolchain's conventions and is byte-identical everywhere;
   each template's own `.fallowrc.jsonc` carries only what its framework makes
-  invisible to a static graph, with a comment naming the mechanism. A template
-  that needs no such statement ships no config. Every template must reach zero
-  findings, because `check` fails on any.
+  invisible to a static graph, with a comment naming the mechanism. Every
+  template must reach zero findings, because `check` fails on any.
+- Every template turns off `dev-dependency-in-production`, because they all
+  deploy a bundle and nothing runs `install` at the other end, which makes
+  "promote this to dependencies" always the wrong answer. Fallow has no
+  repository-level config that survives subdirectory extraction, so the rule is
+  repeated in each `.fallowrc.jsonc` rather than shared. The demote-side rules
+  (`test-only-dependency`, `type-only-dependency`) stay on: a build-time package
+  sitting in `dependencies` is still worth moving.
 - TanStack Start and Solid Start use the Cloudflare Vite plugin for their SSR
   environment. Do not copy that plugin into backend-only or static-output
   templates for symmetry.

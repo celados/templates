@@ -15,4 +15,11 @@
 		// config file rather than an import fallow can follow.
 		"@tanstack/react-start",
 	],
+	"rules": {
+		// Every template deploys a bundle; nothing runs `install` at the other
+		// end. So "promote this to dependencies" is never the right answer here,
+		// while the demote-side rules (test-only, type-only) stay on. A template
+		// that ships a node_modules install instead must drop this line.
+		"dev-dependency-in-production": "off",
+	},
 }
