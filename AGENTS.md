@@ -122,8 +122,8 @@ in its `vite.config.ts`.
   non-interactive execution. Keep the exact user-facing commands in the root
   and template READMEs.
 - Vite+ owns package management, formatting, staged checks, and the aggregate
-  task runner. Formatting, type checking, framework lint, tests, and `fallow
-  dead-code` are the acceptance signal.
+  task runner. Formatting, type checking, framework lint, tests, and
+  `fallow dead-code` are the acceptance signal.
 - Lint is framework-only. Every template's `lint` block spreads
   `shared/tooling/lint.ts`, which turns off Oxlint's default plugins and
   `correctness` category, then enables only the rules its frameworks define
