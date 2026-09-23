@@ -7,7 +7,7 @@
 	],
 	"type": "module",
 	"scripts": {
-		"prepare": "bun scripts/install-skills.mjs && bun run build:contract",
+		"prepare": "[ -n \"$CI\" ] || skill install && bun run build:contract",
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy",
 		"build": "bun run build:contract && wrangler deploy --dry-run --outdir dist/worker",

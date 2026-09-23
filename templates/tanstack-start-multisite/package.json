@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"prepare": "bun scripts/install-skills.mjs",
+		"prepare": "[ -n \"$CI\" ] || skill install",
 		"dev": "wireit",
 		"dev:alpha": "wireit",
 		"dev:beta": "wireit",

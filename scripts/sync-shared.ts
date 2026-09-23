@@ -15,16 +15,6 @@ const root = resolve(import.meta.dir, "..");
 const checkOnly = process.argv.includes("--check");
 const mappings = [
   {
-    source: "shared/agent/install-skills.mjs",
-    targets: [
-      "templates/cloudflare-worker/scripts/install-skills.mjs",
-      "templates/solid-start/scripts/install-skills.mjs",
-      "templates/tanstack-start/scripts/install-skills.mjs",
-      "templates/tanstack-start-calque/scripts/install-skills.mjs",
-      "templates/tanstack-start-multisite/scripts/install-skills.mjs",
-    ],
-  },
-  {
     appendTextSources: ["shared/agent/solid-start.md", "shared/agent/convex.md"],
     source: "shared/agent/AGENTS.md",
     targets: ["templates/solid-start/AGENTS.md"],

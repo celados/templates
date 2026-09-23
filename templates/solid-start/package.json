@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"prepare": "bun scripts/install-skills.mjs",
+		"prepare": "[ -n \"$CI\" ] || skill install",
 		"postinstall": "bun install --cwd extension --frozen-lockfile",
 		"dev": "wireit",
 		"web:dev": "wireit",
