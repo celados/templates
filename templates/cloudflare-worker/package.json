@@ -25,24 +25,24 @@
 	},
 	"dependencies": {
 		"@app/api-contract": "workspace:*",
-		"@better-auth/drizzle-adapter": "^1.6.25",
-		"@orpc/server": "^1.14.8",
-		"better-auth": "^1.6.25",
-		"drizzle-orm": "^0.45.2",
-		"evlog": "^2.22.3",
-		"hono": "^4.12.32",
-		"pg": "^8.22.0"
+		"@better-auth/drizzle-adapter": "^1.7.5",
+		"@orpc/server": "2.0.0-beta.39",
+		"better-auth": "^1.7.5",
+		"drizzle-orm": "^0.45.3",
+		"evlog": "^2.29.0",
+		"hono": "^4.13.8",
+		"pg": "^8.23.0"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.4.2",
-		"@types/pg": "^8.20.0",
+		"@types/pg": "^8.23.1",
 		"dotenv": "^17.4.2",
-		"drizzle-kit": "^0.31.10",
-		"fallow": "^3.27.0",
+		"drizzle-kit": "^0.31.11",
+		"fallow": "^3.28.0",
 		"typescript": "^7.0.2",
 		"vite-plus": "^0.3.3",
 		"vitest": "^4.1.11",
-		"wrangler": "^4.135.0"
+		"wrangler": "^4.136.3"
 	},
 	"devEngines": {
 		"packageManager": {

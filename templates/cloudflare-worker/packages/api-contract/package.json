@@ -20,16 +20,16 @@
 		"registry": "https://npm.celados.com"
 	},
 	"scripts": {
-		"build": "tsdown",
+		"build": "vp pack",
 		"pack:check": "bun run build && bun pm pack --dry-run"
 	},
 	"dependencies": {
-		"@orpc/client": "^1.14.8",
-		"@orpc/contract": "^1.14.8",
-		"valibot": "^1.4.2"
+		"@orpc/client": "2.0.0-beta.39",
+		"@orpc/contract": "2.0.0-beta.39",
+		"valibot": "^1.5.0"
 	},
 	"devDependencies": {
-		"tsdown": "^0.22.14",
-		"typescript": "^7.0.2"
+		"typescript": "^7.0.2",
+		"vite-plus": "^0.3.3"
 	}
 }

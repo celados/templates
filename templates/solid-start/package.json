@@ -53,7 +53,7 @@
 		"@convex-dev/better-auth": "^0.12.5",
 		"@convex-dev/stripe": "^0.1.6",
 		"@solidjs/meta": "1.0.0-next.2",
-		"@solidjs/router": "2.0.0-next.26",
+		"@solidjs/router": "2.0.0-next.27",
 		"@solidjs/web": "2.0.0-rc.9",
 		"@stylexjs/stylex": "^0.19.1",
 		"better-auth": "~1.6.33",
@@ -62,7 +62,7 @@
 		"valibot": "^1.5.0"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "^1.56.0",
+		"@cloudflare/vite-plugin": "^1.57.3",
 		"@convex-dev/eslint-plugin": "^5.0.0",
 		"@solidjs/diagnostics": "2.0.0-rc.9",
 		"@solidjs/testing-library": "1.0.0-beta.3",
@@ -70,17 +70,17 @@
 		"@stylexjs/eslint-plugin": "^0.19.1",
 		"@stylexjs/unplugin": "^0.19.1",
 		"@testing-library/jest-dom": "^7.0.1",
-		"@types/node": "^26.6.1",
+		"@types/node": "^26.6.2",
 		"eslint-plugin-solid": "^0.18.0",
-		"fallow": "^3.27.0",
+		"fallow": "^3.28.0",
 		"filesystem-routing": "^0.3.1",
-		"jsdom": "^30.1.0",
+		"jsdom": "^30.1.1",
 		"playwright-core": "^1.63.0",
 		"typescript": "^7.0.2",
 		"vite": "npm:@voidzero-dev/vite-plus-core@^0.3.3",
 		"vite-plus": "^0.3.3",
 		"wireit": "^0.14.13",
-		"wrangler": "^4.135.0"
+		"wrangler": "^4.136.3"
 	},
 	"overrides": {
 		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.3"

@@ -16,8 +16,8 @@ const env = {
 
 function createTestClient() {
 	return createApiClient({
-		fetch: async (request) => app.fetch(request, env),
-		url: 'http://localhost:8787/rpc',
+		fetch: async (url, init) => app.fetch(new Request(url, init), env),
+		origin: 'http://localhost:8787',
 	})
 }
 

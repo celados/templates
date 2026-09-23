@@ -50,19 +50,21 @@ const clientSource = await readFile(
 const routerSource = await readFile(resolve(root, 'src/router.ts'), 'utf8')
 const wranglerSource = await readFile(resolve(root, 'wrangler.jsonc'), 'utf8')
 
-for (const marker of ['eventIterator(type<', 'type<', 'v.file()']) {
+for (const marker of ['asyncIteratorObject(type<', 'type<', 'v.file()']) {
 	if (!contractSource.includes(marker)) {
 		violations.push(`contract is missing required capability: ${marker}`)
 	}
 }
 
-if (/\.output\(\s*(?!type<|eventIterator\(\s*type<)/.test(contractSource)) {
+if (
+	/\.output\(\s*(?!type<|asyncIteratorObject\(\s*type<)/.test(contractSource)
+) {
 	violations.push(
 		'every procedure output must use an oRPC TypeScript type helper',
 	)
 }
 
-if (clientSource.includes('ResponseValidationPlugin')) {
+if (clientSource.includes('ResponseValidationLinkPlugin')) {
 	violations.push('client must not runtime-validate procedure outputs')
 }
 

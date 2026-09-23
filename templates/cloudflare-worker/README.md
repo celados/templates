@@ -129,7 +129,7 @@ wire schemas:
 import { createApiClient } from '@celados/example-api'
 
 const api = createApiClient({
-	url: 'https://api.example.com/rpc',
+	origin: 'https://api.example.com',
 })
 
 const health = await api.system.health()

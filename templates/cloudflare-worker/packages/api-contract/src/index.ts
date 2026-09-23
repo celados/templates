@@ -11,4 +11,4 @@ export {
 	type ViewerOutput,
 } from './contract'
 
-export type { ContractRouterClient } from '@orpc/contract'
+export type { RouterContractClient } from '@orpc/contract'

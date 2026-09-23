@@ -1,5 +1,6 @@
 import { onError } from '@orpc/server'
-import { BodyLimitPlugin, RPCHandler } from '@orpc/server/fetch'
+import { RPCHandler } from '@orpc/server/fetch'
+import { RequestLimitHandlerPlugin } from '@orpc/server/plugins'
 import { initLogger } from 'evlog'
 import { evlog } from 'evlog/hono'
 import { Hono } from 'hono'
@@ -23,9 +24,17 @@ app.use('*', evlog())
 app.use(
 	'*',
 	cors({
-		allowHeaders: ['Authorization', 'Content-Type'],
+		// oRPC sends root-level File/Blob bodies with these two headers; browsers
+		// hide them cross-origin unless listed. https://orpc.dev/docs/binary-data
+		allowHeaders: [
+			'Authorization',
+			'Content-Disposition',
+			'Content-Type',
+			'Standard-Server',
+		],
 		allowMethods: ['GET', 'POST', 'OPTIONS'],
 		credentials: true,
+		exposeHeaders: ['Content-Disposition', 'Standard-Server'],
 		origin: (origin, context) => {
 			return origin === context.env.CORS_ORIGIN ? origin : undefined
 		},
@@ -43,7 +52,7 @@ const rpcHandler = new RPCHandler(router, {
 		}),
 	],
 	plugins: [
-		new BodyLimitPlugin({
+		new RequestLimitHandlerPlugin({
 			maxBodySize: 10 * 1024 * 1024,
 		}),
 	],

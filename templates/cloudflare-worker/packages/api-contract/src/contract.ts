@@ -1,4 +1,4 @@
-import { eventIterator, oc, type } from '@orpc/contract'
+import { asyncIteratorObject, oc, type } from '@orpc/contract'
 import * as v from 'valibot'
 
 export type TodoOutput = {
@@ -43,7 +43,6 @@ export type ListTodosOutput = TodoOutput[]
 
 const notFoundError = {
 	NOT_FOUND: {
-		status: 404,
 		message: 'Todo not found',
 		data: v.strictObject({
 			id: v.string(),
@@ -55,7 +54,6 @@ export const contract = {
 	auth: {
 		viewer: oc.output(type<ViewerOutput>()).errors({
 			UNAUTHORIZED: {
-				status: 401,
 				message: 'Authentication required',
 			},
 		}),
@@ -74,7 +72,7 @@ export const contract = {
 					message: v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
 				}),
 			)
-			.output(eventIterator(type<TickOutput>())),
+			.output(asyncIteratorObject(type<TickOutput>())),
 	},
 	files: {
 		download: oc

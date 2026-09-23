@@ -1,14 +1,19 @@
 ## Cloudflare Worker backend contract
 
-- `tsdown` warns on every contract build that TypeScript 7's compiler API is
-  experimental. The declarations it emits are correct; the warning is the build
+- The contract package builds with `vp pack` (Vite+'s bundled tsdown) from the
+  `pack` block in its `vite.config.ts`; do not add `tsdown` as a dependency or a
+  `tsdown.config.ts`. tsdown warns on every build that TypeScript 7's compiler
+  API is experimental. The declarations it emits are correct; the warning is the build
   tool lagging the compiler, not a reason to hold TypeScript back.
-- Before inspecting or changing oRPC contracts, procedures, handlers, clients,
-  streaming, or file transfer, read https://orpc.dev/llms.txt and the relevant
-  linked pages.
+- oRPC is on the v2 beta, pinned to one exact version because betas break
+  between releases; bump every `@orpc/*` package together. Before inspecting or
+  changing oRPC contracts, procedures, handlers, clients, streaming, or file
+  transfer, read https://orpc.dev/llms.txt and the relevant linked pages; v1
+  examples from memory or search results are wrong for v2
+  (https://orpc.dev/docs/migrations/from-v1).
 - Validate procedure inputs with Valibot. Define every output with an exported
   TypeScript type and oRPC's `type<Output>()` helper; do not add output schemas
-  or `ResponseValidationPlugin`.
+  or `ResponseValidationLinkPlugin`.
 - Before changing database bindings or connection lifecycle, read
   https://developers.cloudflare.com/hyperdrive/llms.txt and the current
   PlanetScale Postgres connection guidance at https://planetscale.com/docs/llms.txt.
