@@ -8,15 +8,23 @@ import {
 } from 'solid-js'
 
 import { AuthContext } from '../lib/auth'
+import { errorMessage } from '../lib/error-message'
+import { paths } from '../router'
 import { ui } from '../styles/ui'
 
 export function AuthStatus() {
 	const auth = useContext(AuthContext)
 	const [signingOut, setSigningOut] = createOptimistic(false)
 	const [error, setError] = createSignal<string>()
+	// The action records its own failure, so callers only start it.
 	const signOut = action(function* () {
 		setSigningOut(true)
-		yield auth.signOut()
+		try {
+			yield auth.signOut()
+			setError(undefined)
+		} catch (cause) {
+			setError(errorMessage(cause))
+		}
 	})
 
 	return (
@@ -30,7 +38,7 @@ export function AuthStatus() {
 						<p {...stylex.attrs(ui.muted)}>
 							Google OAuth and short-lived magic links are ready to configure.
 						</p>
-						<a href="/sign-in" {...stylex.attrs(ui.button)}>
+						<a href={paths['sign-in']} {...stylex.attrs(ui.button)}>
 							Sign in
 						</a>
 					</>
@@ -45,10 +53,7 @@ export function AuthStatus() {
 							type="button"
 							{...stylex.attrs(ui.button, ui.outline)}
 							disabled={signingOut()}
-							onClick={() => {
-								setError(undefined)
-								signOut().catch((cause: Error) => setError(cause.message))
-							}}
+							onClick={() => void signOut()}
 						>
 							{signingOut() ? 'Signing out…' : 'Sign out'}
 						</button>

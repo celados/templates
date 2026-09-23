@@ -44,8 +44,9 @@ export default defineConfig({
 			observe: true,
 			extensions: ['.jsx', '.tsx'],
 		}),
-		// Eager routes until lazy hydration is verified for the application.
-		fileRoutes({ types: true, httpMethods: true, codeSplitting: false }),
+		// Pages load as their own chunks (the default); `bun run diagnose` covers
+		// lazy-route hydration and client navigation.
+		fileRoutes({ types: true, httpMethods: true }),
 	],
 	resolve: { dedupe: ['solid-js', '@solidjs/web'] },
 	// A pre-bundled copy of the Solid runtime next to the source one makes

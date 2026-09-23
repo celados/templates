@@ -12,6 +12,7 @@ import {
 import { api } from '../../../convex/_generated/api'
 import { AuthContext } from '../lib/auth'
 import { createConvexQuery, useConvexClient } from '../lib/convex'
+import { errorMessage } from '../lib/error-message'
 import { ui } from '../styles/ui'
 
 export function BillingDemo() {
@@ -47,16 +48,16 @@ function Billing() {
 	// needs to cover the round trip that mints the URL.
 	const open = action(function* (kind: 'checkout' | 'portal') {
 		setRedirecting(true)
-		const session: { url: string | null } = yield kind === 'checkout'
-			? client.action(api.billing.createSubscriptionCheckout, {})
-			: client.action(api.billing.createCustomerPortal, {})
-		if (!session.url) throw new Error('Stripe did not return a session URL')
-		window.location.assign(session.url)
+		try {
+			const session: { url: string | null } = yield kind === 'checkout'
+				? client.action(api.billing.createSubscriptionCheckout, {})
+				: client.action(api.billing.createCustomerPortal, {})
+			if (!session.url) throw new Error('Stripe did not return a session URL')
+			window.location.assign(session.url)
+		} catch (cause) {
+			setError(errorMessage(cause))
+		}
 	})
-	const start = (kind: 'checkout' | 'portal') => {
-		setError(undefined)
-		open(kind).catch((cause: Error) => setError(cause.message))
-	}
 
 	return (
 		<>
@@ -85,7 +86,7 @@ function Billing() {
 					type="button"
 					{...stylex.attrs(ui.button)}
 					disabled={redirecting()}
-					onClick={() => start('checkout')}
+					onClick={() => void open('checkout')}
 				>
 					Start checkout
 				</button>
@@ -93,7 +94,7 @@ function Billing() {
 					type="button"
 					{...stylex.attrs(ui.button, ui.outline)}
 					disabled={redirecting()}
-					onClick={() => start('portal')}
+					onClick={() => void open('portal')}
 				>
 					Billing portal
 				</button>

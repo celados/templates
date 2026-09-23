@@ -10,6 +10,7 @@ import {
 } from 'solid-js'
 
 import { sendMagicLink, signInWithGoogle } from '../lib/auth'
+import { errorMessage } from '../lib/error-message'
 import { ui } from '../styles/ui'
 
 export default function SignIn() {
@@ -27,17 +28,22 @@ export default function SignIn() {
 	// flag intentionally stays on until the navigation replaces this page.
 	const google = action(function* () {
 		setBusy(true)
-		yield signInWithGoogle(next())
+		try {
+			yield signInWithGoogle(next())
+		} catch (cause) {
+			setError(errorMessage(cause))
+		}
 	})
 	const magicLink = action(function* (email: string) {
 		setBusy(true)
-		yield sendMagicLink(email, next())
-		setSentTo(email)
+		try {
+			yield sendMagicLink(email, next())
+			setError(undefined)
+			setSentTo(email)
+		} catch (cause) {
+			setError(errorMessage(cause))
+		}
 	})
-	const run = (work: Promise<unknown>) => {
-		setError(undefined)
-		work.catch((cause: Error) => setError(cause.message))
-	}
 
 	return (
 		<main {...stylex.attrs(ui.centered)}>
@@ -51,7 +57,7 @@ export default function SignIn() {
 					type="button"
 					{...stylex.attrs(ui.button, ui.outline)}
 					disabled={busy()}
-					onClick={() => run(google())}
+					onClick={() => void google()}
 				>
 					<img src="/google.svg" alt="" width="16" height="16" />
 					Continue with Google
@@ -64,7 +70,7 @@ export default function SignIn() {
 							onSubmit={(event) => {
 								event.preventDefault()
 								const email = new FormData(event.currentTarget).get('email')
-								if (typeof email === 'string' && email) run(magicLink(email))
+								if (typeof email === 'string' && email) void magicLink(email)
 							}}
 						>
 							<input

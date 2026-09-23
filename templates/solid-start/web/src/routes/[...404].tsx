@@ -1,6 +1,7 @@
 import { httpStatus } from '@solidjs/web'
 import * as stylex from '@stylexjs/stylex'
 
+import { paths } from '../router'
 import { ui } from '../styles/ui'
 
 export default function NotFound() {
@@ -14,7 +15,7 @@ export default function NotFound() {
 				<p {...stylex.attrs(ui.muted)}>
 					The page you requested does not exist.
 				</p>
-				<a href="/">Back home</a>
+				<a href={paths()}>Back home</a>
 			</section>
 		</main>
 	)
