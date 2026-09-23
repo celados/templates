@@ -9,6 +9,7 @@ repository does not maintain versioned template releases.
 | Template                  | Source directory                     | Runtime                                            |
 | ------------------------- | ------------------------------------ | -------------------------------------------------- |
 | Cloudflare Worker         | `templates/cloudflare-worker`        | Hono, oRPC, Better Auth, Hyperdrive, Drizzle       |
+| Solid 2 Start             | `templates/solid-start`              | Solid 2 SSR, Convex, Better Auth, Stripe, StyleX   |
 | TanStack Start            | `templates/tanstack-start`           | TanStack Start, React 19, Tailwind CSS v4          |
 | TanStack Start Calque     | `templates/tanstack-start-calque`    | Thin clone UI, Cloudflare Workers, Calque workflow |
 | TanStack Start Multi-site | `templates/tanstack-start-multisite` | Two Start sites, shared Convex product core        |

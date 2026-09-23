@@ -88,7 +88,10 @@ Create a Stripe webhook endpoint at `<VITE_CONVEX_SITE_URL>/stripe/webhook`.
   `convex.test.tsx` pins that contract.
 - `web/src/lib/auth.ts` exposes `user$` through `AuthContext`; the browser
   client authenticates before its first subscription.
-- Mutations are Solid `action`s; the live query remains the source of truth.
+- `web/src/lib/todos.ts` is the reference screen store: the live query as an
+  optimistic store, one `action` per intent held until the query carries its
+  write, and a context the screen's components read. `todos.test.tsx` pins
+  confirmation, rollback, and overlapping mutations.
 
 ## Validate and deploy
 
@@ -99,8 +102,12 @@ bunx convex deploy --cmd 'bun run build' --cmd-url-env-var-name VITE_CONVEX_URL
 bun run deploy
 ```
 
-`check` runs formatting, the Solid lint rules, Web and Convex type checks, and
-tests. The production build must see the deployment's `VITE_CONVEX_URL` and
+`check` runs formatting, the Solid lint rules, Web and Convex type checks,
+tests, the extension's checks, and the dead-code pass. With `bun run dev`
+running, `bun run diagnose [path ...]` loads pages in the system Chrome and
+fails on any Solid dev diagnostic, uncaught error, or console error.
+
+The production build must see the deployment's `VITE_CONVEX_URL` and
 `VITE_CONVEX_SITE_URL`; `convex deploy --cmd` supplies the first. Export the
 second (`https://<deployment>.convex.site`) in the build environment yourself:
 without it the `/api/auth/*` proxy answers 500.
