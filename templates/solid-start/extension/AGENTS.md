@@ -128,7 +128,7 @@ A project that does not ship an extension deletes, in one change:
 - UI is Solid 2, client-only: `@solidjs/vite-plugin` without start mode runs
   inside WXT's Vite build. Solid 2 is not Solid 1 and not React; read
   `node_modules/solid-js/CHEATSHEET.md` before editing components, and use the
-  `solid-migration` skill for state design. Solid packages are pinned to exact
+  `solid2` skill for state design. Solid packages are pinned to exact
   pre-release versions that share one runtime; upgrade them together.
 - Extension storage is the authority for extension-local shared state (the
   counter example); product data belongs to Convex. UI roots read storage as a

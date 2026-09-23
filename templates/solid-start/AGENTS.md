@@ -57,7 +57,7 @@ removal checklist. The runtime set is `solid-js`, `@solidjs/web`,
 Solid 2 is not Solid 1 and not React. Read
 `node_modules/solid-js/CHEATSHEET.md` before editing anything under `web/`;
 1.x and React priors compile here and then misbehave at runtime. The
-`solid-migration` skill covers the same reset plus state-design patterns.
+`solid2` skill covers the same reset plus state-design patterns.
 Current documentation: https://v2.solidjs.com/llms.txt and the RFCs at
 https://github.com/solidjs/solid/tree/next/documentation/solid-2.0.
 

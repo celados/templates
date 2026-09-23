@@ -6,8 +6,8 @@
       "repo": "celados/agents",
       "skills": [
         {
-          "id": "solid-migration",
-          "source": "skills/solid-migration"
+          "id": "solid2",
+          "source": "skills/solid2"
         },
         {
           "id": "stylex-authoring",
