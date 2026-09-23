@@ -15,7 +15,8 @@
 		// Oxlint plugins named as strings in the Vite+ `lint.jsPlugins` block.
 		"@convex-dev/eslint-plugin",
 		"@stylexjs/eslint-plugin",
-		// Injected by `vite dev` to serve /__solid/diagnostics; see AGENTS.md.
+		// extension/ declares it only so the Solid Vite plugin injects the dev
+		// diagnostics bridge; nothing there imports it.
 		"@solidjs/diagnostics",
 	],
 	"ignoreUnresolvedImports": [
@@ -25,6 +26,9 @@
 		// A `new URL()` path that wxt.config.ts hands to loadEnvFile, read as an
 		// import specifier.
 		"../.env.local",
+		// A `new URL()` path the extension e2e reads from its own build output,
+		// which does not exist until `extension:build` has run.
+		"../../.output/chrome-mv3/manifest.json",
 	],
 	"rules": {
 		// Every template deploys a bundle; nothing runs `install` at the other
