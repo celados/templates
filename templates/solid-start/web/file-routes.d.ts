@@ -19,6 +19,8 @@ declare module "virtual:file-routes" {
   export interface FileRouteEntry {
     path: string;
     page?: boolean;
+    /** The page component is a server function; its `$component` is delivered eagerly. */
+    server?: boolean;
     $component?: FileRouteLazyRef<any> | FileRouteEagerRef<any>;
     $$route?: FileRouteEagerRef<any>;
     [key: string]: unknown;
@@ -39,6 +41,14 @@ declare module "virtual:file-routes" {
       $$route?: undefined;
     },
     {
+      path: "/api/auth/*all";
+      page: false;
+      $GET: FileRouteLazyRef<typeof import("./src/routes/api/auth/[...all]")>;
+      $POST: FileRouteLazyRef<typeof import("./src/routes/api/auth/[...all]")>;
+      $HEAD: FileRouteLazyRef<typeof import("./src/routes/api/auth/[...all]")>;
+      $$route?: undefined;
+    },
+    {
       path: "/";
       page: true;
       $component: FileRouteLazyRef<typeof import("./src/routes/index")>;
@@ -48,14 +58,6 @@ declare module "virtual:file-routes" {
       path: "/sign-in";
       page: true;
       $component: FileRouteLazyRef<typeof import("./src/routes/sign-in")>;
-      $$route?: undefined;
-    },
-    {
-      path: "/api/auth/*all";
-      page: false;
-      $GET: FileRouteLazyRef<typeof import("./src/routes/api/auth/[...all]")>;
-      $POST: FileRouteLazyRef<typeof import("./src/routes/api/auth/[...all]")>;
-      $HEAD: FileRouteLazyRef<typeof import("./src/routes/api/auth/[...all]")>;
       $$route?: undefined;
     }
   ];
