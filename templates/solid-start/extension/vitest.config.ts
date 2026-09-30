@@ -11,6 +11,9 @@ export default defineConfig({
 	plugins: [WxtVitest(), stylex.vite(stylexOptions), solid()],
 	test: {
 		clearMocks: true,
+		// web/src/lib/convex.ts reads through the router's liveQuery, and the
+		// router ships .jsx that Node cannot load as an external.
+		server: { deps: { inline: [/@solidjs\/router/] } },
 		// With the StyleX plugin loaded, Vitest waits out the close timeout on a
 		// handle it leaves open; exit status is unaffected. Same as web/.
 		teardownTimeout: 1000,

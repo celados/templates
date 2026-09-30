@@ -6,7 +6,10 @@ import type {
 	OptionalRestArgs,
 } from 'convex/server'
 
+import { liveQuery } from '@solidjs/router'
 import { getRequestEvent, isServer } from '@solidjs/web'
+import { getFunctionName } from 'convex/server'
+import { convexToJson, jsonToConvex } from 'convex/values'
 import { createContext, createMemo, useContext } from 'solid-js'
 
 // The creator owns the client lifetime; providers only scope borrowed instances.
@@ -33,16 +36,6 @@ declare module '@solidjs/web' {
 
 type QueryClient = Pick<ConvexClient, 'onUpdate'>
 
-// Solid's registered brand for a value-shaped live source: every subscription
-// re-yields the current answer and the newest wins. Hydrating a server-rendered
-// read, Solid adopts the serialized snapshot and re-runs the compute after
-// hydration only when its browser value carries this brand, whichever
-// primitive holds it; without the brand the snapshot would never go live.
-// https://github.com/solidjs/solid/blob/next/packages/solid/test/client-hydration.spec.ts
-const LIVE_SOURCE: unique symbol = Symbol.for('solid.LiveSource')
-
-type LiveSource<T> = AsyncIterable<T> & { readonly [LIVE_SOURCE]: true }
-
 /**
  * A Convex query as a Solid async source. The server render reads one snapshot
  * over HTTP with the visitor's identity, as the hand-off; the browser seeds
@@ -52,8 +45,12 @@ function querySource<Query extends FunctionReference<'query'>>(
 	client: QueryClient,
 	query: Query,
 	args: FunctionArgs<Query>,
-): Promise<FunctionReturnType<Query>> | LiveSource<FunctionReturnType<Query>> {
-	if (!isServer) return liveStream(client, query, args)
+):
+	| Promise<FunctionReturnType<Query>>
+	| AsyncIterable<FunctionReturnType<Query>> {
+	if (!isServer) {
+		return liveChannel(client, query)(JSON.stringify(convexToJson(args)))
+	}
 	const server = getRequestEvent()?.locals.convex
 	// The server's client is disabled and never answers: fail, don't hang.
 	if (!server) {
@@ -61,19 +58,67 @@ function querySource<Query extends FunctionReference<'query'>>(
 			'locals.convex is missing; see serverConvex in middleware.ts',
 		)
 	}
+	// The reader's own promise, not the router's: query() and liveQuery() hand
+	// back a new pending answer on every call, which a retried <Loading> never
+	// settles on (see ./convex-server).
 	return server.query(query, ...([args] as OptionalRestArgs<Query>))
 }
 
+type Channel<T> = (args: string) => AsyncIterable<T>
+
+const channels = new WeakMap<
+	QueryClient,
+	{ id: number; byFunction: Map<string, Channel<unknown>> }
+>()
+let clients = 0
+
+/**
+ * The router's live layer over one Convex function: a channel per arguments,
+ * shared by every reader, branded so a hydrated server snapshot goes live, and
+ * warmed by a link preload. The router keys channels process-wide by name, so
+ * the name carries the client; arguments travel as Convex JSON, which encodes
+ * what JSON.stringify cannot (int64, bytes).
+ */
+function liveChannel<Query extends FunctionReference<'query'>>(
+	client: QueryClient,
+	query: Query,
+): Channel<FunctionReturnType<Query>> {
+	let own = channels.get(client)
+	if (!own)
+		channels.set(client, (own = { id: ++clients, byFunction: new Map() }))
+	const name = getFunctionName(query)
+	let channel = own.byFunction.get(name)
+	if (!channel) {
+		channel = liveQuery(
+			(args: string) =>
+				subscription(
+					client,
+					query,
+					jsonToConvex(JSON.parse(args)) as FunctionArgs<Query>,
+				),
+			`convex:${own.id}:${name}`,
+		)
+		own.byFunction.set(name, channel)
+	}
+	return channel as Channel<FunctionReturnType<Query>>
+}
+
+// A channel reconnects a stream that fails after a value, unless the failure
+// carries a 4xx status. A Convex query error is the function's answer (the
+// client recovers its own transport), so it ends the channel and reaches
+// <Errored>.
+const terminal = (error: Error) =>
+	'status' in error ? error : Object.assign(error, { status: 400 })
+
 // Snapshots replace each other: a slow reader needs only the newest value.
-// Solid owns iterator.return() on parameter changes and owner disposal.
-function liveStream<Query extends FunctionReference<'query'>>(
+// The channel owns iterator.return(), once its last reader has left.
+function subscription<Query extends FunctionReference<'query'>>(
 	client: QueryClient,
 	query: Query,
 	args: FunctionArgs<Query>,
-): LiveSource<FunctionReturnType<Query>> {
+): AsyncIterable<FunctionReturnType<Query>> {
 	type Value = FunctionReturnType<Query>
 	return {
-		[LIVE_SOURCE]: true,
 		[Symbol.asyncIterator]() {
 			let subscription: (() => void) | undefined
 			let closed = false
@@ -99,8 +144,8 @@ function liveStream<Query extends FunctionReference<'query'>>(
 					},
 					(error) => {
 						if (closed) return
-						failure = error
-						waiting?.reject(error)
+						failure = terminal(error)
+						waiting?.reject(failure)
 						waiting = undefined
 						close()
 					},
@@ -125,10 +170,7 @@ function liveStream<Query extends FunctionReference<'query'>>(
 						buffered = undefined
 						return Promise.resolve(result)
 					}
-					// The first pull subscribes, inside the executor: hydrating a
-					// server-rendered read, Solid traces the compute and pulls once
-					// with a mock Promise that never runs executors, so the trace
-					// opens no subscription that nothing would ever close.
+					// The first pull subscribes.
 					return new Promise<IteratorResult<Value>>((resolve, reject) => {
 						waiting = { resolve, reject }
 						if (!subscription) subscribe()
@@ -143,27 +185,37 @@ function liveStream<Query extends FunctionReference<'query'>>(
 	}
 }
 
-/** Declared first paint, only for UI that deliberately renders provisional data. */
 export type QueryOptions<Query extends FunctionReference<'query'>> = {
-	loadingValue: FunctionReturnType<Query> | undefined
+	/**
+	 * Declared first paint, only for UI that deliberately renders provisional
+	 * data.
+	 */
+	loadingValue?: FunctionReturnType<Query> | undefined
+	/**
+	 * 'client': the server renders the fallback or loadingValue and the browser
+	 * asks.
+	 */
+	ssrSource?: 'server' | 'client'
 }
 
 /**
- * Solid owns readiness and iterator disposal; Convex owns the live snapshots.
- * The server renders the first answer and the browser continues it live. Keep
- * the source in a stable owner above the Loading branch that reads it. A child
- * reading a prop during setup may retry that branch, so recreating the source
- * inside the same branch can produce an endless first-load loop.
+ * Solid owns readiness and disposal; Convex owns the live snapshots. By default
+ * the server renders the first answer and the browser continues it live; an app
+ * that must not server-render a read passes `ssrSource: 'client'`.
  *
- * Without options, Loading/Errored own first-load UI: a read under <Loading>
- * streams in behind the shell, a read outside one holds the document. With
- * loadingValue, the first flight is quiet (isPending is false): the provisional
- * value itself must distinguish unknown from a real empty/missing answer. Later
- * changes use normal transitions. Do not use this option to hide missing
- * boundaries.
+ * Keep the source in a stable owner above the Loading branch that reads it. A
+ * child reading a prop during setup may retry that branch, so recreating the
+ * source inside the same branch can produce an endless first-load loop.
  *
- * Public async reads and their async-derived reads use a $ suffix in this app.
- * It documents a read contract, not a Promise type; commands keep verb names.
+ * Without loadingValue, Loading/Errored own first-load UI: a read under
+ * <Loading> streams in behind the shell, a read outside one holds the document.
+ * With loadingValue, the first flight is quiet (isPending is false): the
+ * provisional value itself must distinguish unknown from a real empty/missing
+ * answer. Later changes use normal transitions. Do not use this option to hide
+ * missing boundaries.
+ *
+ * Public async reads and their async-derived reads use a $ suffix. It documents
+ * a read contract, not a Promise type; commands keep verb names.
  *
  * @see https://github.com/solidjs/solid/blob/next/documentation/solid-2.0/05-async-data.md
  */

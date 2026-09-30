@@ -16,7 +16,7 @@ export type Watchable<T> = {
  * reads it like any async value, and a `<Loading>` above covers the first read.
  * Snapshots replace each other, so a slow reader only needs the newest one.
  * Solid calls return() on owner disposal. The Convex counterpart is
- * `liveStream` in `web/src/lib/convex.ts`.
+ * `subscription` in `web/src/lib/convex.ts`.
  *
  * Hand-written rather than an async generator: a generator's return() queues
  * behind a pending next(), so disposing a reader that is waiting for a change
