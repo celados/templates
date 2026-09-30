@@ -39,6 +39,11 @@ export default defineConfig({
 				instrument: './src/instrument.ts',
 			},
 			ssr: true,
+			// Off: performance tracks hold Solid's attribution engine, which is not
+			// mature yet (RC10: cost checks flood every dev page, and an optimistic
+			// store fails to revert while it is on, solidjs/solid#3687). Correctness
+			// diagnostics do not depend on it. Turn it back on when it settles.
+			performanceTracks: false,
 			// Component labels in error paths and OBSERVE records in production
 			// (~1.5 KB brotli). https://v2.solidjs.com/guides/observability
 			observe: true,

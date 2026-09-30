@@ -84,6 +84,11 @@ function mount(client: TodosClient) {
 	return { todos, seen, dispose }
 }
 
+// Captures run with the attribution engine off: it is not mature yet, and in
+// Solid 2.0.0-rc.10 an optimistic store fails to revert while it is on
+// (solidjs/solid#3687). Diagnostics, which these tests assert on, do not need it.
+const quiet = { attribution: false } as const
+
 describe('todos store', () => {
 	it('confirms an optimistic toggle without flashing the old value', async () => {
 		const { artifact } = await captureArtifact(
@@ -103,7 +108,7 @@ describe('todos store', () => {
 				expect(seen).toEqual(['a:false', 'a:true'])
 				dispose()
 			},
-			{ scenario: 'todo-toggle-confirmed' },
+			{ scenario: 'todo-toggle-confirmed', ...quiet },
 		)
 		expectNoDiagnostics(artifact)
 	})
@@ -127,7 +132,7 @@ describe('todos store', () => {
 				expect(todos.error()).toBe('Todo not found')
 				dispose()
 			},
-			{ scenario: 'todo-toggle-failed' },
+			{ scenario: 'todo-toggle-failed', ...quiet },
 		)
 		expectNoDiagnostics(artifact)
 	})
@@ -159,7 +164,7 @@ describe('todos store', () => {
 				)
 				dispose()
 			},
-			{ scenario: 'todo-overlap' },
+			{ scenario: 'todo-overlap', ...quiet },
 		)
 		expectNoDiagnostics(artifact)
 	})

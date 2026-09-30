@@ -47,7 +47,12 @@ export default defineConfig({
 	vite: () => ({
 		// The StyleX compiler must see source before the Solid JSX transform.
 		// Solid runs client-only: extension pages and content scripts never SSR.
-		plugins: [stylex.vite(stylexOptions), stylexExtensionPageDev(), solid()],
+		plugins: [
+			stylex.vite(stylexOptions),
+			stylexExtensionPageDev(),
+			// Attribution engine off until it matures (see web/vite.config.ts).
+			solid({ performanceTracks: false }),
+		],
 		// Two copies of the Solid runtime break context and ownership lookups.
 		// Modules imported from ../web resolve from the root node_modules, so
 		// this also requires both package.json files to pin the same versions.
