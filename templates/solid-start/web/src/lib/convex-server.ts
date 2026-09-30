@@ -2,6 +2,8 @@ import type { FetchMiddleware } from '@solidjs/web'
 
 import { getRequestEvent, parseCookieHeader } from '@solidjs/web'
 import { ConvexHttpClient } from 'convex/browser'
+import { getFunctionName } from 'convex/server'
+import { convexToJson } from 'convex/values'
 
 import type { ServerConvex } from './convex'
 
@@ -35,16 +37,36 @@ function createServerConvex(request: Request): ServerConvex {
 	// request contexts, and the token belongs to this visitor only.
 	const http = new ConvexHttpClient(url)
 	let authenticated: Promise<void> | undefined
+	const ask = async (
+		query: Parameters<ServerConvex['query']>[0],
+		args: Parameters<ServerConvex['query']>[1],
+	) => {
+		if (!anonymous) {
+			authenticated ??= fetchToken(site, cookie!).then((token) => {
+				if (token) http.setAuth(token)
+			})
+			await authenticated
+		}
+		return http.query(query, args)
+	}
+	// One answer per question for the whole render. A <Loading> boundary whose
+	// children suspend re-runs them, and a source created in them asks again;
+	// a fresh promise each time is a new pending answer on every pass, and the
+	// boundary never converges: the Worker burns its CPU on 10001 passes and the
+	// document ends after the shell, in a production build only. The same
+	// promise comes back settled, so the next pass reads the value.
+	const answers = new Map<string, Promise<unknown>>()
 	return {
 		anonymous,
-		async query(query, ...args) {
-			if (!anonymous) {
-				authenticated ??= fetchToken(site, cookie!).then((token) => {
-					if (token) http.setAuth(token)
-				})
-				await authenticated
+		query(query, ...rest) {
+			const args = rest[0] ?? {}
+			const key = `${getFunctionName(query)}:${JSON.stringify(convexToJson(args))}`
+			let answer = answers.get(key)
+			if (!answer) {
+				answer = ask(query, args)
+				answers.set(key, answer)
 			}
-			return http.query(query, ...args)
+			return answer as never
 		},
 	}
 }
