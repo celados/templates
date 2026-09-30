@@ -23,16 +23,11 @@ const list = makeFunctionReference<
 	{ path: string }
 >('todos:list')
 
-afterEach(() => {
-	vi.unstubAllGlobals()
-	vi.unstubAllEnvs()
-})
+afterEach(() => vi.unstubAllGlobals())
 
 /** Convex over HTTP: the session's token, then one answer per query request. */
 function convexOverHttp() {
 	const asked: string[] = []
-	vi.stubEnv('VITE_CONVEX_URL', 'https://deployment.convex.cloud')
-	vi.stubEnv('VITE_CONVEX_SITE_URL', 'https://deployment.convex.site')
 	vi.stubGlobal(
 		'fetch',
 		vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -54,7 +49,11 @@ async function signedInRender() {
 	const request = new Request('https://app.example/', {
 		headers: { cookie: '__Secure-better-auth.session_token=session' },
 	})
-	await serverConvex(request, async () => new Response())
+	const middleware = serverConvex({
+		url: 'https://deployment.convex.cloud',
+		site: 'https://deployment.convex.site',
+	})
+	await middleware(request, async () => new Response())
 	return event.locals.convex!
 }
 

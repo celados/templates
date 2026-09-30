@@ -82,6 +82,8 @@ describe('persisted Convex queries', () => {
 		expect(isPending(todos$)).toBe(false)
 
 		backend.snapshots.confirm(user)
+		// The subscription opens a microtask after the reader asks.
+		await vi.waitFor(() => expect(backend.client.onUpdate).toHaveBeenCalled())
 		emit(['live'])
 		await vi.waitFor(() => expect(todos$()).toEqual(['live']))
 

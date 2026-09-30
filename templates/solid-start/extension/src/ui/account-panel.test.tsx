@@ -46,10 +46,12 @@ function fakeBackend() {
 		),
 		dispose: () => {},
 	} satisfies Backend
+	// A subscription opens a microtask after its reader asks, so an answer
+	// with nobody listening is a test that ran ahead: throw, and waitFor retries.
 	const each = (query: string, send: (listener: Listener) => void) => {
-		for (const listener of [...listeners]) {
-			if (listener.query === query) send(listener)
-		}
+		const asking = [...listeners].filter((listener) => listener.query === query)
+		if (asking.length === 0) throw new Error(`nothing subscribes to ${query}`)
+		for (const listener of asking) send(listener)
 	}
 	return {
 		backend,
@@ -87,7 +89,7 @@ async function signedInPanel() {
 	expect(view.getByTestId('account-loading')).toBeDefined()
 	await waitFor(() => current.answer('auth:currentUser', user))
 	await waitFor(() => view.getByTestId('account-user'))
-	current.answer('todos:list', [todo])
+	await waitFor(() => current.answer('todos:list', [todo]))
 	await waitFor(() =>
 		expect(view.getByTestId('todos').textContent).toBe(todo.text),
 	)

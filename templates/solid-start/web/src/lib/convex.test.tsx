@@ -54,6 +54,10 @@ function renderWithClient(client: ConvexClient, view: () => Element) {
 
 afterEach(cleanup)
 
+// A channel closes a microtask after its last reader leaves, so a compute
+// re-running with the same arguments keeps its subscription.
+const released = () => new Promise((resolve) => setTimeout(resolve, 0))
+
 describe('Convex live queries in Solid 2', () => {
 	it('uses Loading, streams updates, switches arguments, skips, and disposes pending reads', async () => {
 		const feed = transport()
@@ -86,6 +90,7 @@ describe('Convex live queries in Solid 2', () => {
 		setId('c')
 		await waitFor(() => expect(feed.subscriptions).toHaveLength(3))
 		view.unmount()
+		await released()
 		expect(feed.subscriptions[2]!.unsubscribe).toHaveBeenCalledTimes(1)
 	})
 
@@ -126,6 +131,49 @@ describe('Convex live queries in Solid 2', () => {
 		feed.subscriptions[0]!.error(new Error('Denied'))
 		await waitFor(() => expect(view.getByText('Failed')).toBeDefined())
 		expect(feed.subscriptions[0]!.unsubscribe).toHaveBeenCalledTimes(1)
+	})
+
+	// The router's live layer retries a stream that fails after a value, for
+	// transports that drop. Convex recovers its own socket; an error here is the
+	// function's answer.
+	it('routes an error after a value to Errored instead of resubscribing', async () => {
+		const feed = transport()
+		const view = renderWithClient(feed.client, () => {
+			const value = createConvexQuery(query, () => ({ id: 'a' }))
+			return (
+				<Errored fallback={() => <p>Failed</p>}>
+					<Loading fallback={<p>Loading</p>}>
+						<p>{value()}</p>
+					</Loading>
+				</Errored>
+			)
+		})
+		await waitFor(() => expect(feed.subscriptions).toHaveLength(1))
+		feed.subscriptions[0]!.value('First')
+		await waitFor(() => expect(view.getByText('First')).toBeDefined())
+		feed.subscriptions[0]!.error(new Error('Denied'))
+		await waitFor(() => expect(view.getByText('Failed')).toBeDefined())
+		expect(feed.subscriptions).toHaveLength(1)
+		expect(feed.subscriptions[0]!.unsubscribe).toHaveBeenCalledTimes(1)
+	})
+
+	it('shares one subscription between readers of the same question', async () => {
+		const feed = transport()
+		const view = renderWithClient(feed.client, () => {
+			const a = createConvexQuery(query, () => ({ id: 'a' }))
+			const b = createConvexQuery(query, () => ({ id: 'a' }))
+			return (
+				<Loading fallback={<p>Loading</p>}>
+					<p>
+						{a()} and {b()}
+					</p>
+				</Loading>
+			)
+		})
+		await waitFor(() => expect(feed.subscriptions).toHaveLength(1))
+		feed.subscriptions[0]!.value('Same')
+		await waitFor(() => expect(view.getByText('Same and Same')).toBeDefined())
+		expect(feed.subscriptions).toHaveLength(1)
 	})
 
 	it('composes native optimism with live confirmation and rolls back failures', async () => {
@@ -175,25 +223,29 @@ describe('Convex live queries under SSR hydration', () => {
 		expect(Reflect.get(stream, Symbol.for('solid.LiveSource'))).toBe(true)
 	})
 
-	it('opens no subscription when hydration traces the stream', () => {
+	it('opens no subscription when hydration traces the stream', async () => {
 		const feed = transport()
-		// Hydrating a server-rendered read, Solid's subFetch swaps the global
-		// Promise for one that never runs executors and pulls the traced
-		// iterable once; nothing would ever close a subscription opened there.
+		// Hydrating a server-rendered read, Solid's subFetch runs the compute
+		// with the global Promise swapped for one that never runs executors, and
+		// pulls the result once only when it is its own iterator (a generator).
+		// Nothing would ever close a subscription opened there, so calling the
+		// source must do no transport work and must not hand back a generator.
 		const RealPromise = globalThis.Promise
 		class TracePromise {
 			then() {
 				return new TracePromise()
 			}
 		}
+		let source: object
 		globalThis.Promise = TracePromise as unknown as PromiseConstructor
 		try {
-			// In the browser the source is always the live stream.
-			const source = querySource(feed.client, query, { id: 'a' })
-			void (source as AsyncIterable<string>)[Symbol.asyncIterator]().next()
+			source = querySource(feed.client, query, { id: 'a' })
 		} finally {
 			globalThis.Promise = RealPromise
 		}
+		expect(Reflect.get(source, 'next')).toBeUndefined()
+		// A channel would subscribe a microtask after being opened.
+		await released()
 		expect(feed.subscriptions).toHaveLength(0)
 	})
 })
@@ -249,6 +301,7 @@ describe('Convex context ownership', () => {
 		outer.subscriptions[1]!.value('Still live')
 		await waitFor(() => expect(view.getByText('Still live')).toBeDefined())
 		view.unmount()
+		await released()
 		expect(outer.subscriptions[0]!.unsubscribe).toHaveBeenCalledTimes(1)
 		expect(outer.subscriptions[1]!.unsubscribe).toHaveBeenCalledTimes(1)
 		expect(inner.close).not.toHaveBeenCalled()
@@ -279,6 +332,7 @@ describe('Convex context ownership', () => {
 			expect(b.container.textContent).toBe('Second')
 		})
 		a.unmount()
+		await released()
 		expect(first.subscriptions[0]!.unsubscribe).toHaveBeenCalledTimes(1)
 		expect(second.subscriptions[0]!.unsubscribe).not.toHaveBeenCalled()
 		second.subscriptions[0]!.value('Independent')

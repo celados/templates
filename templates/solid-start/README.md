@@ -83,7 +83,10 @@ Create a Stripe webhook endpoint at `<VITE_CONVEX_SITE_URL>/stripe/webhook`.
 - `web/src/lib/convex.ts` turns Convex queries into Solid 2 async sources.
   The server renders each query with the visitor's Convex token
   (`web/src/lib/convex-server.ts`, wired in `web/src/middleware.ts`); after
-  hydration the browser takes over with a live subscription. Reads suspend the
+  hydration the browser takes over with a live subscription, a channel of
+  the router's `liveQuery` shared by every reader of the same question. The
+  server half keeps its own promise per question: the router's `query()` does
+  not settle a retried `<Loading>`. Reads suspend the
   nearest `<Loading>`, switch arguments, and unsubscribe on disposal;
   `convex.test.tsx` pins that contract.
 - `web/src/lib/auth.ts` exposes `user$` through `AuthContext`; the browser

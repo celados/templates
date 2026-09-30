@@ -17,14 +17,22 @@ const SESSION_COOKIES = [
  * Hang a per-request Convex reader on `locals`. Nothing is fetched until the
  * render asks, so API routes and the auth proxy never pay for a token.
  */
-export const serverConvex: FetchMiddleware = (request, next) => {
-	getRequestEvent()!.locals.convex = createServerConvex(request)
-	return next()
+export function serverConvex(deployment: {
+	/** The deployment's client URL (`VITE_CONVEX_URL`). */
+	url: string | undefined
+	/** The deployment's HTTP actions URL (`VITE_CONVEX_SITE_URL`). */
+	site: string | undefined
+}): FetchMiddleware {
+	return (request, next) => {
+		getRequestEvent()!.locals.convex = createServerConvex(request, deployment)
+		return next()
+	}
 }
 
-function createServerConvex(request: Request): ServerConvex {
-	const url = import.meta.env.VITE_CONVEX_URL
-	const site = import.meta.env.VITE_CONVEX_SITE_URL
+function createServerConvex(
+	request: Request,
+	{ url, site }: { url: string | undefined; site: string | undefined },
+): ServerConvex {
 	if (!url || !site) {
 		throw new Error(
 			'VITE_CONVEX_URL and VITE_CONVEX_SITE_URL are required to render Convex reads.',
@@ -52,9 +60,11 @@ function createServerConvex(request: Request): ServerConvex {
 	// One answer per question for the whole render. A <Loading> boundary whose
 	// children suspend re-runs them, and a source created in them asks again;
 	// a fresh promise each time is a new pending answer on every pass, and the
-	// boundary never converges: the Worker burns its CPU on 10001 passes and the
-	// document ends after the shell, in a production build only. The same
-	// promise comes back settled, so the next pass reads the value.
+	// boundary never converges: the Worker burns its CPU on 10001 passes and
+	// the document ends after the shell, in a production build only. The same
+	// promise comes back settled, so the next pass reads the value. Deduping
+	// the request is not enough: it has to be the same promise, which the
+	// router's query() and liveQuery() do not return.
 	const answers = new Map<string, Promise<unknown>>()
 	return {
 		anonymous,
